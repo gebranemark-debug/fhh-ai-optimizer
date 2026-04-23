@@ -1,0 +1,4 @@
+git checkout main
+git pull origin main
+git merge claude/add-more-products-AHgLR
+git push origin main
