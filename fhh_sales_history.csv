@@ -1,889 +1,889 @@
 date,sku,product_name,category,units_sold,unit
 2023-01-01,FHH-TIS-001,Fine Facial Tissues 200s (Box),Tissues,5458,boxes
-2023-01-01,FHH-TIS-001,Fine Facial Tissues 200s (Box),Tissues,5209,boxes
+2023-02-01,FHH-TIS-001,Fine Facial Tissues 200s (Box),Tissues,5000,boxes
 2023-03-01,FHH-TIS-001,Fine Facial Tissues 200s (Box),Tissues,4669,boxes
 2023-04-01,FHH-TIS-001,Fine Facial Tissues 200s (Box),Tissues,4520,boxes
 2023-05-01,FHH-TIS-001,Fine Facial Tissues 200s (Box),Tissues,3758,boxes
-2023-05-01,FHH-TIS-001,Fine Facial Tissues 200s (Box),Tissues,3771,boxes
-2023-06-01,FHH-TIS-001,Fine Facial Tissues 200s (Box),Tissues,4246,boxes
-2023-07-01,FHH-TIS-001,Fine Facial Tissues 200s (Box),Tissues,4105,boxes
-2023-08-01,FHH-TIS-001,Fine Facial Tissues 200s (Box),Tissues,3942,boxes
-2023-09-01,FHH-TIS-001,Fine Facial Tissues 200s (Box),Tissues,4965,boxes
-2023-10-01,FHH-TIS-001,Fine Facial Tissues 200s (Box),Tissues,4388,boxes
-2023-11-01,FHH-TIS-001,Fine Facial Tissues 200s (Box),Tissues,4820,boxes
-2023-12-01,FHH-TIS-001,Fine Facial Tissues 200s (Box),Tissues,5788,boxes
-2024-01-01,FHH-TIS-001,Fine Facial Tissues 200s (Box),Tissues,4994,boxes
-2024-02-01,FHH-TIS-001,Fine Facial Tissues 200s (Box),Tissues,4894,boxes
-2024-03-01,FHH-TIS-001,Fine Facial Tissues 200s (Box),Tissues,4759,boxes
-2024-04-01,FHH-TIS-001,Fine Facial Tissues 200s (Box),Tissues,4155,boxes
-2024-05-01,FHH-TIS-001,Fine Facial Tissues 200s (Box),Tissues,4404,boxes
-2024-06-01,FHH-TIS-001,Fine Facial Tissues 200s (Box),Tissues,3907,boxes
-2024-07-01,FHH-TIS-001,Fine Facial Tissues 200s (Box),Tissues,3833,boxes
-2024-08-01,FHH-TIS-001,Fine Facial Tissues 200s (Box),Tissues,5111,boxes
-2024-09-01,FHH-TIS-001,Fine Facial Tissues 200s (Box),Tissues,5217,boxes
-2024-10-01,FHH-TIS-001,Fine Facial Tissues 200s (Box),Tissues,5113,boxes
-2024-11-01,FHH-TIS-001,Fine Facial Tissues 200s (Box),Tissues,4949,boxes
-2023-01-01,FHH-TIS-002,Fine Travel Pocket Tissues 10s (Pack),Tissues,4543,packs
-2023-01-01,FHH-TIS-002,Fine Travel Pocket Tissues 10s (Pack),Tissues,4808,packs
-2023-03-01,FHH-TIS-002,Fine Travel Pocket Tissues 10s (Pack),Tissues,3646,packs
-2023-04-01,FHH-TIS-002,Fine Travel Pocket Tissues 10s (Pack),Tissues,3755,packs
-2023-05-01,FHH-TIS-002,Fine Travel Pocket Tissues 10s (Pack),Tissues,3299,packs
-2023-05-01,FHH-TIS-002,Fine Travel Pocket Tissues 10s (Pack),Tissues,3395,packs
-2023-06-01,FHH-TIS-002,Fine Travel Pocket Tissues 10s (Pack),Tissues,3246,packs
-2023-07-01,FHH-TIS-002,Fine Travel Pocket Tissues 10s (Pack),Tissues,4018,packs
-2023-08-01,FHH-TIS-002,Fine Travel Pocket Tissues 10s (Pack),Tissues,3702,packs
-2023-09-01,FHH-TIS-002,Fine Travel Pocket Tissues 10s (Pack),Tissues,3941,packs
-2023-10-01,FHH-TIS-002,Fine Travel Pocket Tissues 10s (Pack),Tissues,4394,packs
-2023-11-01,FHH-TIS-002,Fine Travel Pocket Tissues 10s (Pack),Tissues,4087,packs
-2023-12-01,FHH-TIS-002,Fine Travel Pocket Tissues 10s (Pack),Tissues,5223,packs
-2024-01-01,FHH-TIS-002,Fine Travel Pocket Tissues 10s (Pack),Tissues,4499,packs
-2024-02-01,FHH-TIS-002,Fine Travel Pocket Tissues 10s (Pack),Tissues,4591,packs
-2024-03-01,FHH-TIS-002,Fine Travel Pocket Tissues 10s (Pack),Tissues,4579,packs
-2024-04-01,FHH-TIS-002,Fine Travel Pocket Tissues 10s (Pack),Tissues,4333,packs
-2024-05-01,FHH-TIS-002,Fine Travel Pocket Tissues 10s (Pack),Tissues,3940,packs
-2024-06-01,FHH-TIS-002,Fine Travel Pocket Tissues 10s (Pack),Tissues,3776,packs
-2024-07-01,FHH-TIS-002,Fine Travel Pocket Tissues 10s (Pack),Tissues,3816,packs
-2024-08-01,FHH-TIS-002,Fine Travel Pocket Tissues 10s (Pack),Tissues,3649,packs
-2024-09-01,FHH-TIS-002,Fine Travel Pocket Tissues 10s (Pack),Tissues,4530,packs
-2024-10-01,FHH-TIS-002,Fine Travel Pocket Tissues 10s (Pack),Tissues,4432,packs
-2024-11-01,FHH-TIS-002,Fine Travel Pocket Tissues 10s (Pack),Tissues,5482,packs
-2023-01-01,FHH-TIS-003,Fine Soft Box Tissues 150s,Tissues,4495,boxes
-2023-01-01,FHH-TIS-003,Fine Soft Box Tissues 150s,Tissues,3770,boxes
-2023-03-01,FHH-TIS-003,Fine Soft Box Tissues 150s,Tissues,3795,boxes
-2023-04-01,FHH-TIS-003,Fine Soft Box Tissues 150s,Tissues,3254,boxes
-2023-05-01,FHH-TIS-003,Fine Soft Box Tissues 150s,Tissues,3019,boxes
-2023-05-01,FHH-TIS-003,Fine Soft Box Tissues 150s,Tissues,3359,boxes
-2023-06-01,FHH-TIS-003,Fine Soft Box Tissues 150s,Tissues,3400,boxes
-2023-07-01,FHH-TIS-003,Fine Soft Box Tissues 150s,Tissues,3463,boxes
-2023-08-01,FHH-TIS-003,Fine Soft Box Tissues 150s,Tissues,3184,boxes
-2023-09-01,FHH-TIS-003,Fine Soft Box Tissues 150s,Tissues,3867,boxes
-2023-10-01,FHH-TIS-003,Fine Soft Box Tissues 150s,Tissues,3898,boxes
-2023-11-01,FHH-TIS-003,Fine Soft Box Tissues 150s,Tissues,4498,boxes
-2023-12-01,FHH-TIS-003,Fine Soft Box Tissues 150s,Tissues,4550,boxes
-2024-01-01,FHH-TIS-003,Fine Soft Box Tissues 150s,Tissues,4841,boxes
-2024-02-01,FHH-TIS-003,Fine Soft Box Tissues 150s,Tissues,4313,boxes
-2024-03-01,FHH-TIS-003,Fine Soft Box Tissues 150s,Tissues,3755,boxes
-2024-04-01,FHH-TIS-003,Fine Soft Box Tissues 150s,Tissues,4013,boxes
-2024-05-01,FHH-TIS-003,Fine Soft Box Tissues 150s,Tissues,3968,boxes
-2024-06-01,FHH-TIS-003,Fine Soft Box Tissues 150s,Tissues,3490,boxes
-2024-07-01,FHH-TIS-003,Fine Soft Box Tissues 150s,Tissues,3890,boxes
-2024-08-01,FHH-TIS-003,Fine Soft Box Tissues 150s,Tissues,3922,boxes
-2024-09-01,FHH-TIS-003,Fine Soft Box Tissues 150s,Tissues,4198,boxes
-2024-10-01,FHH-TIS-003,Fine Soft Box Tissues 150s,Tissues,4361,boxes
-2024-11-01,FHH-TIS-003,Fine Soft Box Tissues 150s,Tissues,5228,boxes
-2023-01-01,FHH-TIS-004,Fine Ultra Soft Facial Tissues 100s,Tissues,3614,boxes
-2023-01-01,FHH-TIS-004,Fine Ultra Soft Facial Tissues 100s,Tissues,4092,boxes
-2023-03-01,FHH-TIS-004,Fine Ultra Soft Facial Tissues 100s,Tissues,2422,boxes
-2023-04-01,FHH-TIS-004,Fine Ultra Soft Facial Tissues 100s,Tissues,2965,boxes
-2023-05-01,FHH-TIS-004,Fine Ultra Soft Facial Tissues 100s,Tissues,2663,boxes
-2023-05-01,FHH-TIS-004,Fine Ultra Soft Facial Tissues 100s,Tissues,2590,boxes
-2023-06-01,FHH-TIS-004,Fine Ultra Soft Facial Tissues 100s,Tissues,2622,boxes
-2023-07-01,FHH-TIS-004,Fine Ultra Soft Facial Tissues 100s,Tissues,2246,boxes
-2023-08-01,FHH-TIS-004,Fine Ultra Soft Facial Tissues 100s,Tissues,2778,boxes
-2023-09-01,FHH-TIS-004,Fine Ultra Soft Facial Tissues 100s,Tissues,3379,boxes
-2023-10-01,FHH-TIS-004,Fine Ultra Soft Facial Tissues 100s,Tissues,3518,boxes
-2023-11-01,FHH-TIS-004,Fine Ultra Soft Facial Tissues 100s,Tissues,3313,boxes
-2023-12-01,FHH-TIS-004,Fine Ultra Soft Facial Tissues 100s,Tissues,3667,boxes
-2024-01-01,FHH-TIS-004,Fine Ultra Soft Facial Tissues 100s,Tissues,3908,boxes
-2024-02-01,FHH-TIS-004,Fine Ultra Soft Facial Tissues 100s,Tissues,4207,boxes
-2024-03-01,FHH-TIS-004,Fine Ultra Soft Facial Tissues 100s,Tissues,3531,boxes
-2024-04-01,FHH-TIS-004,Fine Ultra Soft Facial Tissues 100s,Tissues,2990,boxes
-2024-05-01,FHH-TIS-004,Fine Ultra Soft Facial Tissues 100s,Tissues,3088,boxes
-2024-06-01,FHH-TIS-004,Fine Ultra Soft Facial Tissues 100s,Tissues,2931,boxes
-2024-07-01,FHH-TIS-004,Fine Ultra Soft Facial Tissues 100s,Tissues,3215,boxes
-2024-08-01,FHH-TIS-004,Fine Ultra Soft Facial Tissues 100s,Tissues,2981,boxes
-2024-09-01,FHH-TIS-004,Fine Ultra Soft Facial Tissues 100s,Tissues,3572,boxes
-2024-10-01,FHH-TIS-004,Fine Ultra Soft Facial Tissues 100s,Tissues,3401,boxes
-2024-11-01,FHH-TIS-004,Fine Ultra Soft Facial Tissues 100s,Tissues,3405,boxes
-2023-01-01,FHH-TIS-005,Fine Jumbo Tissue Box 200s,Tissues,2687,boxes
-2023-01-01,FHH-TIS-005,Fine Jumbo Tissue Box 200s,Tissues,2688,boxes
-2023-03-01,FHH-TIS-005,Fine Jumbo Tissue Box 200s,Tissues,2220,boxes
-2023-04-01,FHH-TIS-005,Fine Jumbo Tissue Box 200s,Tissues,1977,boxes
-2023-05-01,FHH-TIS-005,Fine Jumbo Tissue Box 200s,Tissues,1698,boxes
-2023-05-01,FHH-TIS-005,Fine Jumbo Tissue Box 200s,Tissues,1856,boxes
-2023-06-01,FHH-TIS-005,Fine Jumbo Tissue Box 200s,Tissues,1833,boxes
-2023-07-01,FHH-TIS-005,Fine Jumbo Tissue Box 200s,Tissues,1809,boxes
-2023-08-01,FHH-TIS-005,Fine Jumbo Tissue Box 200s,Tissues,2021,boxes
-2023-09-01,FHH-TIS-005,Fine Jumbo Tissue Box 200s,Tissues,2456,boxes
-2023-10-01,FHH-TIS-005,Fine Jumbo Tissue Box 200s,Tissues,2622,boxes
-2023-11-01,FHH-TIS-005,Fine Jumbo Tissue Box 200s,Tissues,2538,boxes
-2023-12-01,FHH-TIS-005,Fine Jumbo Tissue Box 200s,Tissues,2897,boxes
-2024-01-01,FHH-TIS-005,Fine Jumbo Tissue Box 200s,Tissues,2931,boxes
-2024-02-01,FHH-TIS-005,Fine Jumbo Tissue Box 200s,Tissues,2403,boxes
-2024-03-01,FHH-TIS-005,Fine Jumbo Tissue Box 200s,Tissues,2486,boxes
-2024-04-01,FHH-TIS-005,Fine Jumbo Tissue Box 200s,Tissues,2271,boxes
-2024-05-01,FHH-TIS-005,Fine Jumbo Tissue Box 200s,Tissues,2571,boxes
-2024-06-01,FHH-TIS-005,Fine Jumbo Tissue Box 200s,Tissues,2074,boxes
-2024-07-01,FHH-TIS-005,Fine Jumbo Tissue Box 200s,Tissues,2213,boxes
-2024-08-01,FHH-TIS-005,Fine Jumbo Tissue Box 200s,Tissues,2281,boxes
-2024-09-01,FHH-TIS-005,Fine Jumbo Tissue Box 200s,Tissues,2408,boxes
-2024-10-01,FHH-TIS-005,Fine Jumbo Tissue Box 200s,Tissues,2775,boxes
-2024-11-01,FHH-TIS-005,Fine Jumbo Tissue Box 200s,Tissues,2961,boxes
-2023-01-01,FHH-TOI-001,Fine Toilet Rolls 10-Pack,Toilet Paper,5858,packs
-2023-01-01,FHH-TOI-001,Fine Toilet Rolls 10-Pack,Toilet Paper,5126,packs
-2023-03-01,FHH-TOI-001,Fine Toilet Rolls 10-Pack,Toilet Paper,7922,packs
-2023-04-01,FHH-TOI-001,Fine Toilet Rolls 10-Pack,Toilet Paper,6137,packs
-2023-05-01,FHH-TOI-001,Fine Toilet Rolls 10-Pack,Toilet Paper,6460,packs
-2023-05-01,FHH-TOI-001,Fine Toilet Rolls 10-Pack,Toilet Paper,7276,packs
-2023-06-01,FHH-TOI-001,Fine Toilet Rolls 10-Pack,Toilet Paper,5447,packs
-2023-07-01,FHH-TOI-001,Fine Toilet Rolls 10-Pack,Toilet Paper,5496,packs
-2023-08-01,FHH-TOI-001,Fine Toilet Rolls 10-Pack,Toilet Paper,5822,packs
-2023-09-01,FHH-TOI-001,Fine Toilet Rolls 10-Pack,Toilet Paper,5733,packs
-2023-10-01,FHH-TOI-001,Fine Toilet Rolls 10-Pack,Toilet Paper,5354,packs
-2023-11-01,FHH-TOI-001,Fine Toilet Rolls 10-Pack,Toilet Paper,6347,packs
-2023-12-01,FHH-TOI-001,Fine Toilet Rolls 10-Pack,Toilet Paper,6181,packs
-2024-01-01,FHH-TOI-001,Fine Toilet Rolls 10-Pack,Toilet Paper,6424,packs
-2024-02-01,FHH-TOI-001,Fine Toilet Rolls 10-Pack,Toilet Paper,5872,packs
-2024-03-01,FHH-TOI-001,Fine Toilet Rolls 10-Pack,Toilet Paper,8987,packs
-2024-04-01,FHH-TOI-001,Fine Toilet Rolls 10-Pack,Toilet Paper,7270,packs
-2024-05-01,FHH-TOI-001,Fine Toilet Rolls 10-Pack,Toilet Paper,6743,packs
-2024-06-01,FHH-TOI-001,Fine Toilet Rolls 10-Pack,Toilet Paper,7042,packs
-2024-07-01,FHH-TOI-001,Fine Toilet Rolls 10-Pack,Toilet Paper,5799,packs
-2024-08-01,FHH-TOI-001,Fine Toilet Rolls 10-Pack,Toilet Paper,6568,packs
-2024-09-01,FHH-TOI-001,Fine Toilet Rolls 10-Pack,Toilet Paper,7367,packs
-2024-10-01,FHH-TOI-001,Fine Toilet Rolls 10-Pack,Toilet Paper,5945,packs
-2024-11-01,FHH-TOI-001,Fine Toilet Rolls 10-Pack,Toilet Paper,7148,packs
-2023-01-01,FHH-TOI-002,Fine Toilet Rolls 4-Pack,Toilet Paper,4072,packs
-2023-01-01,FHH-TOI-002,Fine Toilet Rolls 4-Pack,Toilet Paper,4253,packs
-2023-03-01,FHH-TOI-002,Fine Toilet Rolls 4-Pack,Toilet Paper,4647,packs
-2023-04-01,FHH-TOI-002,Fine Toilet Rolls 4-Pack,Toilet Paper,4476,packs
-2023-05-01,FHH-TOI-002,Fine Toilet Rolls 4-Pack,Toilet Paper,4655,packs
-2023-05-01,FHH-TOI-002,Fine Toilet Rolls 4-Pack,Toilet Paper,4590,packs
-2023-06-01,FHH-TOI-002,Fine Toilet Rolls 4-Pack,Toilet Paper,4369,packs
-2023-07-01,FHH-TOI-002,Fine Toilet Rolls 4-Pack,Toilet Paper,4284,packs
-2023-08-01,FHH-TOI-002,Fine Toilet Rolls 4-Pack,Toilet Paper,3955,packs
-2023-09-01,FHH-TOI-002,Fine Toilet Rolls 4-Pack,Toilet Paper,4406,packs
-2023-10-01,FHH-TOI-002,Fine Toilet Rolls 4-Pack,Toilet Paper,4530,packs
-2023-11-01,FHH-TOI-002,Fine Toilet Rolls 4-Pack,Toilet Paper,4310,packs
-2023-12-01,FHH-TOI-002,Fine Toilet Rolls 4-Pack,Toilet Paper,5622,packs
-2024-01-01,FHH-TOI-002,Fine Toilet Rolls 4-Pack,Toilet Paper,4652,packs
-2024-02-01,FHH-TOI-002,Fine Toilet Rolls 4-Pack,Toilet Paper,4152,packs
-2024-03-01,FHH-TOI-002,Fine Toilet Rolls 4-Pack,Toilet Paper,6094,packs
-2024-04-01,FHH-TOI-002,Fine Toilet Rolls 4-Pack,Toilet Paper,5178,packs
-2024-05-01,FHH-TOI-002,Fine Toilet Rolls 4-Pack,Toilet Paper,5328,packs
-2024-06-01,FHH-TOI-002,Fine Toilet Rolls 4-Pack,Toilet Paper,5231,packs
-2024-07-01,FHH-TOI-002,Fine Toilet Rolls 4-Pack,Toilet Paper,4352,packs
-2024-08-01,FHH-TOI-002,Fine Toilet Rolls 4-Pack,Toilet Paper,5031,packs
-2024-09-01,FHH-TOI-002,Fine Toilet Rolls 4-Pack,Toilet Paper,4989,packs
-2024-10-01,FHH-TOI-002,Fine Toilet Rolls 4-Pack,Toilet Paper,5265,packs
-2024-11-01,FHH-TOI-002,Fine Toilet Rolls 4-Pack,Toilet Paper,5874,packs
-2023-01-01,FHH-TOI-003,Fine Ultra Soft Toilet Rolls 10-Pack,Toilet Paper,3352,packs
-2023-01-01,FHH-TOI-003,Fine Ultra Soft Toilet Rolls 10-Pack,Toilet Paper,3224,packs
-2023-03-01,FHH-TOI-003,Fine Ultra Soft Toilet Rolls 10-Pack,Toilet Paper,4106,packs
-2023-04-01,FHH-TOI-003,Fine Ultra Soft Toilet Rolls 10-Pack,Toilet Paper,4010,packs
-2023-05-01,FHH-TOI-003,Fine Ultra Soft Toilet Rolls 10-Pack,Toilet Paper,3806,packs
-2023-05-01,FHH-TOI-003,Fine Ultra Soft Toilet Rolls 10-Pack,Toilet Paper,3947,packs
-2023-06-01,FHH-TOI-003,Fine Ultra Soft Toilet Rolls 10-Pack,Toilet Paper,3753,packs
-2023-07-01,FHH-TOI-003,Fine Ultra Soft Toilet Rolls 10-Pack,Toilet Paper,3809,packs
-2023-08-01,FHH-TOI-003,Fine Ultra Soft Toilet Rolls 10-Pack,Toilet Paper,3588,packs
-2023-09-01,FHH-TOI-003,Fine Ultra Soft Toilet Rolls 10-Pack,Toilet Paper,4139,packs
-2023-10-01,FHH-TOI-003,Fine Ultra Soft Toilet Rolls 10-Pack,Toilet Paper,3714,packs
-2023-11-01,FHH-TOI-003,Fine Ultra Soft Toilet Rolls 10-Pack,Toilet Paper,4771,packs
-2023-12-01,FHH-TOI-003,Fine Ultra Soft Toilet Rolls 10-Pack,Toilet Paper,4403,packs
-2024-01-01,FHH-TOI-003,Fine Ultra Soft Toilet Rolls 10-Pack,Toilet Paper,3578,packs
-2024-02-01,FHH-TOI-003,Fine Ultra Soft Toilet Rolls 10-Pack,Toilet Paper,3597,packs
-2024-03-01,FHH-TOI-003,Fine Ultra Soft Toilet Rolls 10-Pack,Toilet Paper,5154,packs
-2024-04-01,FHH-TOI-003,Fine Ultra Soft Toilet Rolls 10-Pack,Toilet Paper,4728,packs
-2024-05-01,FHH-TOI-003,Fine Ultra Soft Toilet Rolls 10-Pack,Toilet Paper,4542,packs
-2024-06-01,FHH-TOI-003,Fine Ultra Soft Toilet Rolls 10-Pack,Toilet Paper,4259,packs
-2024-07-01,FHH-TOI-003,Fine Ultra Soft Toilet Rolls 10-Pack,Toilet Paper,3969,packs
-2024-08-01,FHH-TOI-003,Fine Ultra Soft Toilet Rolls 10-Pack,Toilet Paper,3732,packs
-2024-09-01,FHH-TOI-003,Fine Ultra Soft Toilet Rolls 10-Pack,Toilet Paper,3638,packs
-2024-10-01,FHH-TOI-003,Fine Ultra Soft Toilet Rolls 10-Pack,Toilet Paper,4083,packs
-2024-11-01,FHH-TOI-003,Fine Ultra Soft Toilet Rolls 10-Pack,Toilet Paper,4671,packs
-2023-01-01,FHH-TOI-004,Fine Compact Toilet Rolls 48-Pack,Toilet Paper,2705,packs
-2023-01-01,FHH-TOI-004,Fine Compact Toilet Rolls 48-Pack,Toilet Paper,2402,packs
-2023-03-01,FHH-TOI-004,Fine Compact Toilet Rolls 48-Pack,Toilet Paper,3486,packs
-2023-04-01,FHH-TOI-004,Fine Compact Toilet Rolls 48-Pack,Toilet Paper,3439,packs
-2023-05-01,FHH-TOI-004,Fine Compact Toilet Rolls 48-Pack,Toilet Paper,2768,packs
-2023-05-01,FHH-TOI-004,Fine Compact Toilet Rolls 48-Pack,Toilet Paper,3025,packs
-2023-06-01,FHH-TOI-004,Fine Compact Toilet Rolls 48-Pack,Toilet Paper,2869,packs
-2023-07-01,FHH-TOI-004,Fine Compact Toilet Rolls 48-Pack,Toilet Paper,2525,packs
-2023-08-01,FHH-TOI-004,Fine Compact Toilet Rolls 48-Pack,Toilet Paper,2868,packs
-2023-09-01,FHH-TOI-004,Fine Compact Toilet Rolls 48-Pack,Toilet Paper,3013,packs
-2023-10-01,FHH-TOI-004,Fine Compact Toilet Rolls 48-Pack,Toilet Paper,3206,packs
-2023-11-01,FHH-TOI-004,Fine Compact Toilet Rolls 48-Pack,Toilet Paper,3304,packs
-2023-12-01,FHH-TOI-004,Fine Compact Toilet Rolls 48-Pack,Toilet Paper,2901,packs
-2024-01-01,FHH-TOI-004,Fine Compact Toilet Rolls 48-Pack,Toilet Paper,2763,packs
-2024-02-01,FHH-TOI-004,Fine Compact Toilet Rolls 48-Pack,Toilet Paper,3186,packs
-2024-03-01,FHH-TOI-004,Fine Compact Toilet Rolls 48-Pack,Toilet Paper,4018,packs
-2024-04-01,FHH-TOI-004,Fine Compact Toilet Rolls 48-Pack,Toilet Paper,3898,packs
-2024-05-01,FHH-TOI-004,Fine Compact Toilet Rolls 48-Pack,Toilet Paper,4371,packs
-2024-06-01,FHH-TOI-004,Fine Compact Toilet Rolls 48-Pack,Toilet Paper,3337,packs
-2024-07-01,FHH-TOI-004,Fine Compact Toilet Rolls 48-Pack,Toilet Paper,3387,packs
-2024-08-01,FHH-TOI-004,Fine Compact Toilet Rolls 48-Pack,Toilet Paper,3352,packs
-2024-09-01,FHH-TOI-004,Fine Compact Toilet Rolls 48-Pack,Toilet Paper,3387,packs
-2024-10-01,FHH-TOI-004,Fine Compact Toilet Rolls 48-Pack,Toilet Paper,3210,packs
-2024-11-01,FHH-TOI-004,Fine Compact Toilet Rolls 48-Pack,Toilet Paper,3607,packs
-2023-01-01,FHH-KIT-001,Fine Kitchen Towels 2-Roll Pack,Kitchen Towels,2762,packs
-2023-01-01,FHH-KIT-001,Fine Kitchen Towels 2-Roll Pack,Kitchen Towels,2898,packs
-2023-03-01,FHH-KIT-001,Fine Kitchen Towels 2-Roll Pack,Kitchen Towels,2999,packs
-2023-04-01,FHH-KIT-001,Fine Kitchen Towels 2-Roll Pack,Kitchen Towels,3309,packs
-2023-05-01,FHH-KIT-001,Fine Kitchen Towels 2-Roll Pack,Kitchen Towels,4169,packs
-2023-05-01,FHH-KIT-001,Fine Kitchen Towels 2-Roll Pack,Kitchen Towels,3002,packs
-2023-06-01,FHH-KIT-001,Fine Kitchen Towels 2-Roll Pack,Kitchen Towels,4069,packs
-2023-07-01,FHH-KIT-001,Fine Kitchen Towels 2-Roll Pack,Kitchen Towels,3453,packs
-2023-08-01,FHH-KIT-001,Fine Kitchen Towels 2-Roll Pack,Kitchen Towels,3613,packs
-2023-09-01,FHH-KIT-001,Fine Kitchen Towels 2-Roll Pack,Kitchen Towels,3644,packs
-2023-10-01,FHH-KIT-001,Fine Kitchen Towels 2-Roll Pack,Kitchen Towels,3219,packs
-2023-11-01,FHH-KIT-001,Fine Kitchen Towels 2-Roll Pack,Kitchen Towels,3083,packs
-2023-12-01,FHH-KIT-001,Fine Kitchen Towels 2-Roll Pack,Kitchen Towels,3495,packs
-2024-01-01,FHH-KIT-001,Fine Kitchen Towels 2-Roll Pack,Kitchen Towels,3488,packs
-2024-02-01,FHH-KIT-001,Fine Kitchen Towels 2-Roll Pack,Kitchen Towels,3025,packs
-2024-03-01,FHH-KIT-001,Fine Kitchen Towels 2-Roll Pack,Kitchen Towels,3563,packs
-2024-04-01,FHH-KIT-001,Fine Kitchen Towels 2-Roll Pack,Kitchen Towels,3702,packs
-2024-05-01,FHH-KIT-001,Fine Kitchen Towels 2-Roll Pack,Kitchen Towels,3740,packs
-2024-06-01,FHH-KIT-001,Fine Kitchen Towels 2-Roll Pack,Kitchen Towels,5050,packs
-2024-07-01,FHH-KIT-001,Fine Kitchen Towels 2-Roll Pack,Kitchen Towels,4655,packs
-2024-08-01,FHH-KIT-001,Fine Kitchen Towels 2-Roll Pack,Kitchen Towels,3514,packs
-2024-09-01,FHH-KIT-001,Fine Kitchen Towels 2-Roll Pack,Kitchen Towels,3799,packs
-2024-10-01,FHH-KIT-001,Fine Kitchen Towels 2-Roll Pack,Kitchen Towels,3386,packs
-2024-11-01,FHH-KIT-001,Fine Kitchen Towels 2-Roll Pack,Kitchen Towels,4021,packs
-2023-01-01,FHH-KIT-002,Fine Kitchen Towels 4-Roll Pack,Kitchen Towels,2135,packs
-2023-01-01,FHH-KIT-002,Fine Kitchen Towels 4-Roll Pack,Kitchen Towels,2266,packs
-2023-03-01,FHH-KIT-002,Fine Kitchen Towels 4-Roll Pack,Kitchen Towels,2513,packs
-2023-04-01,FHH-KIT-002,Fine Kitchen Towels 4-Roll Pack,Kitchen Towels,2721,packs
-2023-05-01,FHH-KIT-002,Fine Kitchen Towels 4-Roll Pack,Kitchen Towels,2462,packs
-2023-05-01,FHH-KIT-002,Fine Kitchen Towels 4-Roll Pack,Kitchen Towels,2659,packs
-2023-06-01,FHH-KIT-002,Fine Kitchen Towels 4-Roll Pack,Kitchen Towels,2873,packs
-2023-07-01,FHH-KIT-002,Fine Kitchen Towels 4-Roll Pack,Kitchen Towels,2909,packs
-2023-08-01,FHH-KIT-002,Fine Kitchen Towels 4-Roll Pack,Kitchen Towels,3318,packs
-2023-09-01,FHH-KIT-002,Fine Kitchen Towels 4-Roll Pack,Kitchen Towels,2679,packs
-2023-10-01,FHH-KIT-002,Fine Kitchen Towels 4-Roll Pack,Kitchen Towels,2229,packs
-2023-11-01,FHH-KIT-002,Fine Kitchen Towels 4-Roll Pack,Kitchen Towels,2804,packs
-2023-12-01,FHH-KIT-002,Fine Kitchen Towels 4-Roll Pack,Kitchen Towels,3357,packs
-2024-01-01,FHH-KIT-002,Fine Kitchen Towels 4-Roll Pack,Kitchen Towels,2772,packs
-2024-02-01,FHH-KIT-002,Fine Kitchen Towels 4-Roll Pack,Kitchen Towels,2185,packs
-2024-03-01,FHH-KIT-002,Fine Kitchen Towels 4-Roll Pack,Kitchen Towels,2606,packs
-2024-04-01,FHH-KIT-002,Fine Kitchen Towels 4-Roll Pack,Kitchen Towels,3145,packs
-2024-05-01,FHH-KIT-002,Fine Kitchen Towels 4-Roll Pack,Kitchen Towels,2882,packs
-2024-06-01,FHH-KIT-002,Fine Kitchen Towels 4-Roll Pack,Kitchen Towels,3456,packs
-2024-07-01,FHH-KIT-002,Fine Kitchen Towels 4-Roll Pack,Kitchen Towels,3642,packs
-2024-08-01,FHH-KIT-002,Fine Kitchen Towels 4-Roll Pack,Kitchen Towels,3006,packs
-2024-09-01,FHH-KIT-002,Fine Kitchen Towels 4-Roll Pack,Kitchen Towels,2884,packs
-2024-10-01,FHH-KIT-002,Fine Kitchen Towels 4-Roll Pack,Kitchen Towels,2050,packs
-2024-11-01,FHH-KIT-002,Fine Kitchen Towels 4-Roll Pack,Kitchen Towels,2675,packs
-2023-01-01,FHH-KIT-003,Fine Mega Kitchen Roll,Kitchen Towels,1768,rolls
-2023-01-01,FHH-KIT-003,Fine Mega Kitchen Roll,Kitchen Towels,1630,rolls
-2023-03-01,FHH-KIT-003,Fine Mega Kitchen Roll,Kitchen Towels,2162,rolls
-2023-04-01,FHH-KIT-003,Fine Mega Kitchen Roll,Kitchen Towels,1784,rolls
-2023-05-01,FHH-KIT-003,Fine Mega Kitchen Roll,Kitchen Towels,2080,rolls
-2023-05-01,FHH-KIT-003,Fine Mega Kitchen Roll,Kitchen Towels,2186,rolls
-2023-06-01,FHH-KIT-003,Fine Mega Kitchen Roll,Kitchen Towels,2636,rolls
-2023-07-01,FHH-KIT-003,Fine Mega Kitchen Roll,Kitchen Towels,2151,rolls
-2023-08-01,FHH-KIT-003,Fine Mega Kitchen Roll,Kitchen Towels,2515,rolls
-2023-09-01,FHH-KIT-003,Fine Mega Kitchen Roll,Kitchen Towels,2056,rolls
-2023-10-01,FHH-KIT-003,Fine Mega Kitchen Roll,Kitchen Towels,1809,rolls
-2023-11-01,FHH-KIT-003,Fine Mega Kitchen Roll,Kitchen Towels,2144,rolls
-2023-12-01,FHH-KIT-003,Fine Mega Kitchen Roll,Kitchen Towels,2308,rolls
-2024-01-01,FHH-KIT-003,Fine Mega Kitchen Roll,Kitchen Towels,1930,rolls
-2024-02-01,FHH-KIT-003,Fine Mega Kitchen Roll,Kitchen Towels,1980,rolls
-2024-03-01,FHH-KIT-003,Fine Mega Kitchen Roll,Kitchen Towels,2080,rolls
-2024-04-01,FHH-KIT-003,Fine Mega Kitchen Roll,Kitchen Towels,2281,rolls
-2024-05-01,FHH-KIT-003,Fine Mega Kitchen Roll,Kitchen Towels,2546,rolls
-2024-06-01,FHH-KIT-003,Fine Mega Kitchen Roll,Kitchen Towels,2977,rolls
-2024-07-01,FHH-KIT-003,Fine Mega Kitchen Roll,Kitchen Towels,2446,rolls
-2024-08-01,FHH-KIT-003,Fine Mega Kitchen Roll,Kitchen Towels,3009,rolls
-2024-09-01,FHH-KIT-003,Fine Mega Kitchen Roll,Kitchen Towels,1935,rolls
-2024-10-01,FHH-KIT-003,Fine Mega Kitchen Roll,Kitchen Towels,2164,rolls
-2024-11-01,FHH-KIT-003,Fine Mega Kitchen Roll,Kitchen Towels,2416,rolls
-2023-01-01,FHH-NAP-001,Fine Napkins 150s (Pack),Napkins,3302,packs
-2023-01-01,FHH-NAP-001,Fine Napkins 150s (Pack),Napkins,3079,packs
-2023-03-01,FHH-NAP-001,Fine Napkins 150s (Pack),Napkins,4038,packs
-2023-04-01,FHH-NAP-001,Fine Napkins 150s (Pack),Napkins,4288,packs
-2023-05-01,FHH-NAP-001,Fine Napkins 150s (Pack),Napkins,3775,packs
-2023-05-01,FHH-NAP-001,Fine Napkins 150s (Pack),Napkins,4245,packs
-2023-06-01,FHH-NAP-001,Fine Napkins 150s (Pack),Napkins,3388,packs
-2023-07-01,FHH-NAP-001,Fine Napkins 150s (Pack),Napkins,3023,packs
-2023-08-01,FHH-NAP-001,Fine Napkins 150s (Pack),Napkins,3442,packs
-2023-09-01,FHH-NAP-001,Fine Napkins 150s (Pack),Napkins,3588,packs
-2023-10-01,FHH-NAP-001,Fine Napkins 150s (Pack),Napkins,3928,packs
-2023-11-01,FHH-NAP-001,Fine Napkins 150s (Pack),Napkins,4072,packs
-2023-12-01,FHH-NAP-001,Fine Napkins 150s (Pack),Napkins,3961,packs
-2024-01-01,FHH-NAP-001,Fine Napkins 150s (Pack),Napkins,3465,packs
-2024-02-01,FHH-NAP-001,Fine Napkins 150s (Pack),Napkins,3856,packs
-2024-03-01,FHH-NAP-001,Fine Napkins 150s (Pack),Napkins,4835,packs
-2024-04-01,FHH-NAP-001,Fine Napkins 150s (Pack),Napkins,5000,packs
-2024-05-01,FHH-NAP-001,Fine Napkins 150s (Pack),Napkins,4486,packs
-2024-06-01,FHH-NAP-001,Fine Napkins 150s (Pack),Napkins,4058,packs
-2024-07-01,FHH-NAP-001,Fine Napkins 150s (Pack),Napkins,3407,packs
-2024-08-01,FHH-NAP-001,Fine Napkins 150s (Pack),Napkins,3743,packs
-2024-09-01,FHH-NAP-001,Fine Napkins 150s (Pack),Napkins,3846,packs
-2024-10-01,FHH-NAP-001,Fine Napkins 150s (Pack),Napkins,4045,packs
-2024-11-01,FHH-NAP-001,Fine Napkins 150s (Pack),Napkins,4706,packs
-2023-01-01,FHH-NAP-002,Fine Dinner Napkins 100s,Napkins,2835,packs
-2023-01-01,FHH-NAP-002,Fine Dinner Napkins 100s,Napkins,2842,packs
-2023-03-01,FHH-NAP-002,Fine Dinner Napkins 100s,Napkins,3735,packs
-2023-04-01,FHH-NAP-002,Fine Dinner Napkins 100s,Napkins,3682,packs
-2023-05-01,FHH-NAP-002,Fine Dinner Napkins 100s,Napkins,3440,packs
-2023-05-01,FHH-NAP-002,Fine Dinner Napkins 100s,Napkins,3192,packs
-2023-06-01,FHH-NAP-002,Fine Dinner Napkins 100s,Napkins,2783,packs
-2023-07-01,FHH-NAP-002,Fine Dinner Napkins 100s,Napkins,2608,packs
-2023-08-01,FHH-NAP-002,Fine Dinner Napkins 100s,Napkins,2665,packs
-2023-09-01,FHH-NAP-002,Fine Dinner Napkins 100s,Napkins,3021,packs
-2023-10-01,FHH-NAP-002,Fine Dinner Napkins 100s,Napkins,2839,packs
-2023-11-01,FHH-NAP-002,Fine Dinner Napkins 100s,Napkins,3727,packs
-2023-12-01,FHH-NAP-002,Fine Dinner Napkins 100s,Napkins,3213,packs
-2024-01-01,FHH-NAP-002,Fine Dinner Napkins 100s,Napkins,2697,packs
-2024-02-01,FHH-NAP-002,Fine Dinner Napkins 100s,Napkins,3274,packs
-2024-03-01,FHH-NAP-002,Fine Dinner Napkins 100s,Napkins,4037,packs
-2024-04-01,FHH-NAP-002,Fine Dinner Napkins 100s,Napkins,4331,packs
-2024-05-01,FHH-NAP-002,Fine Dinner Napkins 100s,Napkins,3844,packs
-2024-06-01,FHH-NAP-002,Fine Dinner Napkins 100s,Napkins,3029,packs
-2024-07-01,FHH-NAP-002,Fine Dinner Napkins 100s,Napkins,2733,packs
-2024-08-01,FHH-NAP-002,Fine Dinner Napkins 100s,Napkins,2971,packs
-2024-09-01,FHH-NAP-002,Fine Dinner Napkins 100s,Napkins,3045,packs
-2024-10-01,FHH-NAP-002,Fine Dinner Napkins 100s,Napkins,3655,packs
-2024-11-01,FHH-NAP-002,Fine Dinner Napkins 100s,Napkins,3520,packs
-2023-01-01,FHH-NAP-003,Fine Cocktail Napkins 50s,Napkins,1951,packs
-2023-01-01,FHH-NAP-003,Fine Cocktail Napkins 50s,Napkins,2043,packs
-2023-03-01,FHH-NAP-003,Fine Cocktail Napkins 50s,Napkins,2745,packs
-2023-04-01,FHH-NAP-003,Fine Cocktail Napkins 50s,Napkins,2758,packs
-2023-05-01,FHH-NAP-003,Fine Cocktail Napkins 50s,Napkins,2395,packs
-2023-05-01,FHH-NAP-003,Fine Cocktail Napkins 50s,Napkins,2622,packs
-2023-06-01,FHH-NAP-003,Fine Cocktail Napkins 50s,Napkins,2173,packs
-2023-07-01,FHH-NAP-003,Fine Cocktail Napkins 50s,Napkins,1987,packs
-2023-08-01,FHH-NAP-003,Fine Cocktail Napkins 50s,Napkins,1999,packs
-2023-09-01,FHH-NAP-003,Fine Cocktail Napkins 50s,Napkins,2308,packs
-2023-10-01,FHH-NAP-003,Fine Cocktail Napkins 50s,Napkins,2110,packs
-2023-11-01,FHH-NAP-003,Fine Cocktail Napkins 50s,Napkins,2226,packs
-2023-12-01,FHH-NAP-003,Fine Cocktail Napkins 50s,Napkins,2587,packs
-2024-01-01,FHH-NAP-003,Fine Cocktail Napkins 50s,Napkins,2307,packs
-2024-02-01,FHH-NAP-003,Fine Cocktail Napkins 50s,Napkins,2413,packs
-2024-03-01,FHH-NAP-003,Fine Cocktail Napkins 50s,Napkins,3335,packs
-2024-04-01,FHH-NAP-003,Fine Cocktail Napkins 50s,Napkins,3463,packs
-2024-05-01,FHH-NAP-003,Fine Cocktail Napkins 50s,Napkins,2838,packs
-2024-06-01,FHH-NAP-003,Fine Cocktail Napkins 50s,Napkins,2378,packs
-2024-07-01,FHH-NAP-003,Fine Cocktail Napkins 50s,Napkins,2128,packs
-2024-08-01,FHH-NAP-003,Fine Cocktail Napkins 50s,Napkins,2317,packs
-2024-09-01,FHH-NAP-003,Fine Cocktail Napkins 50s,Napkins,2471,packs
-2024-10-01,FHH-NAP-003,Fine Cocktail Napkins 50s,Napkins,2732,packs
-2024-11-01,FHH-NAP-003,Fine Cocktail Napkins 50s,Napkins,2613,packs
-2023-01-01,FHH-WIP-001,Fine Baby Wipes 80s,Baby Wipes,5811,packs
-2023-01-01,FHH-WIP-001,Fine Baby Wipes 80s,Baby Wipes,6285,packs
-2023-03-01,FHH-WIP-001,Fine Baby Wipes 80s,Baby Wipes,6805,packs
-2023-04-01,FHH-WIP-001,Fine Baby Wipes 80s,Baby Wipes,7432,packs
-2023-05-01,FHH-WIP-001,Fine Baby Wipes 80s,Baby Wipes,7292,packs
-2023-05-01,FHH-WIP-001,Fine Baby Wipes 80s,Baby Wipes,6711,packs
-2023-06-01,FHH-WIP-001,Fine Baby Wipes 80s,Baby Wipes,8046,packs
-2023-07-01,FHH-WIP-001,Fine Baby Wipes 80s,Baby Wipes,8256,packs
-2023-08-01,FHH-WIP-001,Fine Baby Wipes 80s,Baby Wipes,8211,packs
-2023-09-01,FHH-WIP-001,Fine Baby Wipes 80s,Baby Wipes,6290,packs
-2023-10-01,FHH-WIP-001,Fine Baby Wipes 80s,Baby Wipes,6098,packs
-2023-11-01,FHH-WIP-001,Fine Baby Wipes 80s,Baby Wipes,6015,packs
-2023-12-01,FHH-WIP-001,Fine Baby Wipes 80s,Baby Wipes,6332,packs
-2024-01-01,FHH-WIP-001,Fine Baby Wipes 80s,Baby Wipes,6749,packs
-2024-02-01,FHH-WIP-001,Fine Baby Wipes 80s,Baby Wipes,7533,packs
-2024-03-01,FHH-WIP-001,Fine Baby Wipes 80s,Baby Wipes,7233,packs
-2024-04-01,FHH-WIP-001,Fine Baby Wipes 80s,Baby Wipes,8644,packs
-2024-05-01,FHH-WIP-001,Fine Baby Wipes 80s,Baby Wipes,7865,packs
-2024-06-01,FHH-WIP-001,Fine Baby Wipes 80s,Baby Wipes,10382,packs
-2024-07-01,FHH-WIP-001,Fine Baby Wipes 80s,Baby Wipes,8619,packs
-2024-08-01,FHH-WIP-001,Fine Baby Wipes 80s,Baby Wipes,8488,packs
-2024-09-01,FHH-WIP-001,Fine Baby Wipes 80s,Baby Wipes,7127,packs
-2024-10-01,FHH-WIP-001,Fine Baby Wipes 80s,Baby Wipes,5638,packs
-2024-11-01,FHH-WIP-001,Fine Baby Wipes 80s,Baby Wipes,6182,packs
-2023-01-01,FHH-WIP-002,Fine Baby Wipes 120s,Baby Wipes,4057,packs
-2023-01-01,FHH-WIP-002,Fine Baby Wipes 120s,Baby Wipes,4386,packs
-2023-03-01,FHH-WIP-002,Fine Baby Wipes 120s,Baby Wipes,5460,packs
-2023-04-01,FHH-WIP-002,Fine Baby Wipes 120s,Baby Wipes,6412,packs
-2023-05-01,FHH-WIP-002,Fine Baby Wipes 120s,Baby Wipes,5757,packs
-2023-05-01,FHH-WIP-002,Fine Baby Wipes 120s,Baby Wipes,5120,packs
-2023-06-01,FHH-WIP-002,Fine Baby Wipes 120s,Baby Wipes,5680,packs
-2023-07-01,FHH-WIP-002,Fine Baby Wipes 120s,Baby Wipes,6636,packs
-2023-08-01,FHH-WIP-002,Fine Baby Wipes 120s,Baby Wipes,5641,packs
-2023-09-01,FHH-WIP-002,Fine Baby Wipes 120s,Baby Wipes,5951,packs
-2023-10-01,FHH-WIP-002,Fine Baby Wipes 120s,Baby Wipes,5156,packs
-2023-11-01,FHH-WIP-002,Fine Baby Wipes 120s,Baby Wipes,4310,packs
-2023-12-01,FHH-WIP-002,Fine Baby Wipes 120s,Baby Wipes,3790,packs
-2024-01-01,FHH-WIP-002,Fine Baby Wipes 120s,Baby Wipes,5378,packs
-2024-02-01,FHH-WIP-002,Fine Baby Wipes 120s,Baby Wipes,4929,packs
-2024-03-01,FHH-WIP-002,Fine Baby Wipes 120s,Baby Wipes,6557,packs
-2024-04-01,FHH-WIP-002,Fine Baby Wipes 120s,Baby Wipes,5458,packs
-2024-05-01,FHH-WIP-002,Fine Baby Wipes 120s,Baby Wipes,5713,packs
-2024-06-01,FHH-WIP-002,Fine Baby Wipes 120s,Baby Wipes,6842,packs
-2024-07-01,FHH-WIP-002,Fine Baby Wipes 120s,Baby Wipes,7161,packs
-2024-08-01,FHH-WIP-002,Fine Baby Wipes 120s,Baby Wipes,6791,packs
-2024-09-01,FHH-WIP-002,Fine Baby Wipes 120s,Baby Wipes,6084,packs
-2024-10-01,FHH-WIP-002,Fine Baby Wipes 120s,Baby Wipes,4810,packs
-2024-11-01,FHH-WIP-002,Fine Baby Wipes 120s,Baby Wipes,4939,packs
-2023-01-01,FHH-WIP-003,Fine Baby Extra Sensitive Wipes 80s,Baby Wipes,2907,packs
-2023-01-01,FHH-WIP-003,Fine Baby Extra Sensitive Wipes 80s,Baby Wipes,3008,packs
-2023-03-01,FHH-WIP-003,Fine Baby Extra Sensitive Wipes 80s,Baby Wipes,3745,packs
-2023-04-01,FHH-WIP-003,Fine Baby Extra Sensitive Wipes 80s,Baby Wipes,3382,packs
-2023-05-01,FHH-WIP-003,Fine Baby Extra Sensitive Wipes 80s,Baby Wipes,3129,packs
-2023-05-01,FHH-WIP-003,Fine Baby Extra Sensitive Wipes 80s,Baby Wipes,3944,packs
-2023-06-01,FHH-WIP-003,Fine Baby Extra Sensitive Wipes 80s,Baby Wipes,4188,packs
-2023-07-01,FHH-WIP-003,Fine Baby Extra Sensitive Wipes 80s,Baby Wipes,4002,packs
-2023-08-01,FHH-WIP-003,Fine Baby Extra Sensitive Wipes 80s,Baby Wipes,4727,packs
-2023-09-01,FHH-WIP-003,Fine Baby Extra Sensitive Wipes 80s,Baby Wipes,3492,packs
-2023-10-01,FHH-WIP-003,Fine Baby Extra Sensitive Wipes 80s,Baby Wipes,3437,packs
-2023-11-01,FHH-WIP-003,Fine Baby Extra Sensitive Wipes 80s,Baby Wipes,3001,packs
-2023-12-01,FHH-WIP-003,Fine Baby Extra Sensitive Wipes 80s,Baby Wipes,3411,packs
-2024-01-01,FHH-WIP-003,Fine Baby Extra Sensitive Wipes 80s,Baby Wipes,3689,packs
-2024-02-01,FHH-WIP-003,Fine Baby Extra Sensitive Wipes 80s,Baby Wipes,3250,packs
-2024-03-01,FHH-WIP-003,Fine Baby Extra Sensitive Wipes 80s,Baby Wipes,4286,packs
-2024-04-01,FHH-WIP-003,Fine Baby Extra Sensitive Wipes 80s,Baby Wipes,4385,packs
-2024-05-01,FHH-WIP-003,Fine Baby Extra Sensitive Wipes 80s,Baby Wipes,4439,packs
-2024-06-01,FHH-WIP-003,Fine Baby Extra Sensitive Wipes 80s,Baby Wipes,4207,packs
-2024-07-01,FHH-WIP-003,Fine Baby Extra Sensitive Wipes 80s,Baby Wipes,5017,packs
-2024-08-01,FHH-WIP-003,Fine Baby Extra Sensitive Wipes 80s,Baby Wipes,5094,packs
-2024-09-01,FHH-WIP-003,Fine Baby Extra Sensitive Wipes 80s,Baby Wipes,3320,packs
-2024-10-01,FHH-WIP-003,Fine Baby Extra Sensitive Wipes 80s,Baby Wipes,3174,packs
-2024-11-01,FHH-WIP-003,Fine Baby Extra Sensitive Wipes 80s,Baby Wipes,2787,packs
-2023-01-01,FHH-DIA-001,Fine Baby Diapers Size 1 (0-5 kg / 36s),Baby Diapers,2109,packs
-2023-01-01,FHH-DIA-001,Fine Baby Diapers Size 1 (0-5 kg / 36s),Baby Diapers,2287,packs
-2023-03-01,FHH-DIA-001,Fine Baby Diapers Size 1 (0-5 kg / 36s),Baby Diapers,2604,packs
-2023-04-01,FHH-DIA-001,Fine Baby Diapers Size 1 (0-5 kg / 36s),Baby Diapers,2413,packs
-2023-05-01,FHH-DIA-001,Fine Baby Diapers Size 1 (0-5 kg / 36s),Baby Diapers,2645,packs
-2023-05-01,FHH-DIA-001,Fine Baby Diapers Size 1 (0-5 kg / 36s),Baby Diapers,2089,packs
-2023-06-01,FHH-DIA-001,Fine Baby Diapers Size 1 (0-5 kg / 36s),Baby Diapers,1976,packs
-2023-07-01,FHH-DIA-001,Fine Baby Diapers Size 1 (0-5 kg / 36s),Baby Diapers,2241,packs
-2023-08-01,FHH-DIA-001,Fine Baby Diapers Size 1 (0-5 kg / 36s),Baby Diapers,2328,packs
-2023-09-01,FHH-DIA-001,Fine Baby Diapers Size 1 (0-5 kg / 36s),Baby Diapers,2327,packs
-2023-10-01,FHH-DIA-001,Fine Baby Diapers Size 1 (0-5 kg / 36s),Baby Diapers,1935,packs
-2023-11-01,FHH-DIA-001,Fine Baby Diapers Size 1 (0-5 kg / 36s),Baby Diapers,2219,packs
-2023-12-01,FHH-DIA-001,Fine Baby Diapers Size 1 (0-5 kg / 36s),Baby Diapers,1987,packs
-2024-01-01,FHH-DIA-001,Fine Baby Diapers Size 1 (0-5 kg / 36s),Baby Diapers,2551,packs
-2024-02-01,FHH-DIA-001,Fine Baby Diapers Size 1 (0-5 kg / 36s),Baby Diapers,2474,packs
-2024-03-01,FHH-DIA-001,Fine Baby Diapers Size 1 (0-5 kg / 36s),Baby Diapers,2414,packs
-2024-04-01,FHH-DIA-001,Fine Baby Diapers Size 1 (0-5 kg / 36s),Baby Diapers,2582,packs
-2024-05-01,FHH-DIA-001,Fine Baby Diapers Size 1 (0-5 kg / 36s),Baby Diapers,2403,packs
-2024-06-01,FHH-DIA-001,Fine Baby Diapers Size 1 (0-5 kg / 36s),Baby Diapers,2545,packs
-2024-07-01,FHH-DIA-001,Fine Baby Diapers Size 1 (0-5 kg / 36s),Baby Diapers,2707,packs
-2024-08-01,FHH-DIA-001,Fine Baby Diapers Size 1 (0-5 kg / 36s),Baby Diapers,2323,packs
-2024-09-01,FHH-DIA-001,Fine Baby Diapers Size 1 (0-5 kg / 36s),Baby Diapers,2710,packs
-2024-10-01,FHH-DIA-001,Fine Baby Diapers Size 1 (0-5 kg / 36s),Baby Diapers,2478,packs
-2024-11-01,FHH-DIA-001,Fine Baby Diapers Size 1 (0-5 kg / 36s),Baby Diapers,2335,packs
-2023-01-01,FHH-DIA-002,Fine Baby Diapers Size 2 (3-6 kg / 40s),Baby Diapers,2720,packs
-2023-01-01,FHH-DIA-002,Fine Baby Diapers Size 2 (3-6 kg / 40s),Baby Diapers,2525,packs
-2023-03-01,FHH-DIA-002,Fine Baby Diapers Size 2 (3-6 kg / 40s),Baby Diapers,2828,packs
-2023-04-01,FHH-DIA-002,Fine Baby Diapers Size 2 (3-6 kg / 40s),Baby Diapers,2761,packs
-2023-05-01,FHH-DIA-002,Fine Baby Diapers Size 2 (3-6 kg / 40s),Baby Diapers,3447,packs
-2023-05-01,FHH-DIA-002,Fine Baby Diapers Size 2 (3-6 kg / 40s),Baby Diapers,2997,packs
-2023-06-01,FHH-DIA-002,Fine Baby Diapers Size 2 (3-6 kg / 40s),Baby Diapers,2750,packs
-2023-07-01,FHH-DIA-002,Fine Baby Diapers Size 2 (3-6 kg / 40s),Baby Diapers,2914,packs
-2023-08-01,FHH-DIA-002,Fine Baby Diapers Size 2 (3-6 kg / 40s),Baby Diapers,2848,packs
-2023-09-01,FHH-DIA-002,Fine Baby Diapers Size 2 (3-6 kg / 40s),Baby Diapers,2918,packs
-2023-10-01,FHH-DIA-002,Fine Baby Diapers Size 2 (3-6 kg / 40s),Baby Diapers,3096,packs
-2023-11-01,FHH-DIA-002,Fine Baby Diapers Size 2 (3-6 kg / 40s),Baby Diapers,3016,packs
-2023-12-01,FHH-DIA-002,Fine Baby Diapers Size 2 (3-6 kg / 40s),Baby Diapers,2704,packs
-2024-01-01,FHH-DIA-002,Fine Baby Diapers Size 2 (3-6 kg / 40s),Baby Diapers,2940,packs
-2024-02-01,FHH-DIA-002,Fine Baby Diapers Size 2 (3-6 kg / 40s),Baby Diapers,2992,packs
-2024-03-01,FHH-DIA-002,Fine Baby Diapers Size 2 (3-6 kg / 40s),Baby Diapers,2710,packs
-2024-04-01,FHH-DIA-002,Fine Baby Diapers Size 2 (3-6 kg / 40s),Baby Diapers,3011,packs
-2024-05-01,FHH-DIA-002,Fine Baby Diapers Size 2 (3-6 kg / 40s),Baby Diapers,3707,packs
-2024-06-01,FHH-DIA-002,Fine Baby Diapers Size 2 (3-6 kg / 40s),Baby Diapers,3684,packs
-2024-07-01,FHH-DIA-002,Fine Baby Diapers Size 2 (3-6 kg / 40s),Baby Diapers,3137,packs
-2024-08-01,FHH-DIA-002,Fine Baby Diapers Size 2 (3-6 kg / 40s),Baby Diapers,3358,packs
-2024-09-01,FHH-DIA-002,Fine Baby Diapers Size 2 (3-6 kg / 40s),Baby Diapers,3399,packs
-2024-10-01,FHH-DIA-002,Fine Baby Diapers Size 2 (3-6 kg / 40s),Baby Diapers,4105,packs
-2024-11-01,FHH-DIA-002,Fine Baby Diapers Size 2 (3-6 kg / 40s),Baby Diapers,3458,packs
-2023-01-01,FHH-DIA-003,Fine Baby Diapers Size 3 (4-9 kg / 46s),Baby Diapers,3685,packs
-2023-01-01,FHH-DIA-003,Fine Baby Diapers Size 3 (4-9 kg / 46s),Baby Diapers,3450,packs
-2023-03-01,FHH-DIA-003,Fine Baby Diapers Size 3 (4-9 kg / 46s),Baby Diapers,3500,packs
-2023-04-01,FHH-DIA-003,Fine Baby Diapers Size 3 (4-9 kg / 46s),Baby Diapers,4212,packs
-2023-05-01,FHH-DIA-003,Fine Baby Diapers Size 3 (4-9 kg / 46s),Baby Diapers,3798,packs
-2023-05-01,FHH-DIA-003,Fine Baby Diapers Size 3 (4-9 kg / 46s),Baby Diapers,3594,packs
-2023-06-01,FHH-DIA-003,Fine Baby Diapers Size 3 (4-9 kg / 46s),Baby Diapers,3749,packs
-2023-07-01,FHH-DIA-003,Fine Baby Diapers Size 3 (4-9 kg / 46s),Baby Diapers,3552,packs
-2023-08-01,FHH-DIA-003,Fine Baby Diapers Size 3 (4-9 kg / 46s),Baby Diapers,4427,packs
-2023-09-01,FHH-DIA-003,Fine Baby Diapers Size 3 (4-9 kg / 46s),Baby Diapers,4315,packs
-2023-10-01,FHH-DIA-003,Fine Baby Diapers Size 3 (4-9 kg / 46s),Baby Diapers,4002,packs
-2023-11-01,FHH-DIA-003,Fine Baby Diapers Size 3 (4-9 kg / 46s),Baby Diapers,4317,packs
-2023-12-01,FHH-DIA-003,Fine Baby Diapers Size 3 (4-9 kg / 46s),Baby Diapers,3857,packs
-2024-01-01,FHH-DIA-003,Fine Baby Diapers Size 3 (4-9 kg / 46s),Baby Diapers,3895,packs
-2024-02-01,FHH-DIA-003,Fine Baby Diapers Size 3 (4-9 kg / 46s),Baby Diapers,4658,packs
-2024-03-01,FHH-DIA-003,Fine Baby Diapers Size 3 (4-9 kg / 46s),Baby Diapers,4703,packs
-2024-04-01,FHH-DIA-003,Fine Baby Diapers Size 3 (4-9 kg / 46s),Baby Diapers,4265,packs
-2024-05-01,FHH-DIA-003,Fine Baby Diapers Size 3 (4-9 kg / 46s),Baby Diapers,4466,packs
-2024-06-01,FHH-DIA-003,Fine Baby Diapers Size 3 (4-9 kg / 46s),Baby Diapers,4109,packs
-2024-07-01,FHH-DIA-003,Fine Baby Diapers Size 3 (4-9 kg / 46s),Baby Diapers,3864,packs
-2024-08-01,FHH-DIA-003,Fine Baby Diapers Size 3 (4-9 kg / 46s),Baby Diapers,4680,packs
-2024-09-01,FHH-DIA-003,Fine Baby Diapers Size 3 (4-9 kg / 46s),Baby Diapers,5188,packs
-2024-10-01,FHH-DIA-003,Fine Baby Diapers Size 3 (4-9 kg / 46s),Baby Diapers,3970,packs
-2024-11-01,FHH-DIA-003,Fine Baby Diapers Size 3 (4-9 kg / 46s),Baby Diapers,4501,packs
-2023-01-01,FHH-DIA-004,Fine Baby Diapers Size 4 (7-14 kg / 40s),Baby Diapers,3808,packs
-2023-01-01,FHH-DIA-004,Fine Baby Diapers Size 4 (7-14 kg / 40s),Baby Diapers,3874,packs
-2023-03-01,FHH-DIA-004,Fine Baby Diapers Size 4 (7-14 kg / 40s),Baby Diapers,4128,packs
-2023-04-01,FHH-DIA-004,Fine Baby Diapers Size 4 (7-14 kg / 40s),Baby Diapers,4163,packs
-2023-05-01,FHH-DIA-004,Fine Baby Diapers Size 4 (7-14 kg / 40s),Baby Diapers,4379,packs
-2023-05-01,FHH-DIA-004,Fine Baby Diapers Size 4 (7-14 kg / 40s),Baby Diapers,4085,packs
-2023-06-01,FHH-DIA-004,Fine Baby Diapers Size 4 (7-14 kg / 40s),Baby Diapers,4357,packs
-2023-07-01,FHH-DIA-004,Fine Baby Diapers Size 4 (7-14 kg / 40s),Baby Diapers,4178,packs
-2023-08-01,FHH-DIA-004,Fine Baby Diapers Size 4 (7-14 kg / 40s),Baby Diapers,4128,packs
-2023-09-01,FHH-DIA-004,Fine Baby Diapers Size 4 (7-14 kg / 40s),Baby Diapers,4033,packs
-2023-10-01,FHH-DIA-004,Fine Baby Diapers Size 4 (7-14 kg / 40s),Baby Diapers,4122,packs
-2023-11-01,FHH-DIA-004,Fine Baby Diapers Size 4 (7-14 kg / 40s),Baby Diapers,4417,packs
-2023-12-01,FHH-DIA-004,Fine Baby Diapers Size 4 (7-14 kg / 40s),Baby Diapers,4301,packs
-2024-01-01,FHH-DIA-004,Fine Baby Diapers Size 4 (7-14 kg / 40s),Baby Diapers,4160,packs
-2024-02-01,FHH-DIA-004,Fine Baby Diapers Size 4 (7-14 kg / 40s),Baby Diapers,4516,packs
-2024-03-01,FHH-DIA-004,Fine Baby Diapers Size 4 (7-14 kg / 40s),Baby Diapers,5157,packs
-2024-04-01,FHH-DIA-004,Fine Baby Diapers Size 4 (7-14 kg / 40s),Baby Diapers,4348,packs
-2024-05-01,FHH-DIA-004,Fine Baby Diapers Size 4 (7-14 kg / 40s),Baby Diapers,5106,packs
-2024-06-01,FHH-DIA-004,Fine Baby Diapers Size 4 (7-14 kg / 40s),Baby Diapers,4514,packs
-2024-07-01,FHH-DIA-004,Fine Baby Diapers Size 4 (7-14 kg / 40s),Baby Diapers,4901,packs
-2024-08-01,FHH-DIA-004,Fine Baby Diapers Size 4 (7-14 kg / 40s),Baby Diapers,4414,packs
-2024-09-01,FHH-DIA-004,Fine Baby Diapers Size 4 (7-14 kg / 40s),Baby Diapers,4155,packs
-2024-10-01,FHH-DIA-004,Fine Baby Diapers Size 4 (7-14 kg / 40s),Baby Diapers,4195,packs
-2024-11-01,FHH-DIA-004,Fine Baby Diapers Size 4 (7-14 kg / 40s),Baby Diapers,4665,packs
-2023-01-01,FHH-DIA-005,Fine Baby Diapers Size 5 (11-16 kg / 36s),Baby Diapers,3201,packs
-2023-01-01,FHH-DIA-005,Fine Baby Diapers Size 5 (11-16 kg / 36s),Baby Diapers,2918,packs
-2023-03-01,FHH-DIA-005,Fine Baby Diapers Size 5 (11-16 kg / 36s),Baby Diapers,3555,packs
-2023-04-01,FHH-DIA-005,Fine Baby Diapers Size 5 (11-16 kg / 36s),Baby Diapers,3026,packs
-2023-05-01,FHH-DIA-005,Fine Baby Diapers Size 5 (11-16 kg / 36s),Baby Diapers,3386,packs
-2023-05-01,FHH-DIA-005,Fine Baby Diapers Size 5 (11-16 kg / 36s),Baby Diapers,3085,packs
-2023-06-01,FHH-DIA-005,Fine Baby Diapers Size 5 (11-16 kg / 36s),Baby Diapers,3155,packs
-2023-07-01,FHH-DIA-005,Fine Baby Diapers Size 5 (11-16 kg / 36s),Baby Diapers,3287,packs
-2023-08-01,FHH-DIA-005,Fine Baby Diapers Size 5 (11-16 kg / 36s),Baby Diapers,3059,packs
-2023-09-01,FHH-DIA-005,Fine Baby Diapers Size 5 (11-16 kg / 36s),Baby Diapers,3290,packs
-2023-10-01,FHH-DIA-005,Fine Baby Diapers Size 5 (11-16 kg / 36s),Baby Diapers,3644,packs
-2023-11-01,FHH-DIA-005,Fine Baby Diapers Size 5 (11-16 kg / 36s),Baby Diapers,3100,packs
-2023-12-01,FHH-DIA-005,Fine Baby Diapers Size 5 (11-16 kg / 36s),Baby Diapers,3443,packs
-2024-01-01,FHH-DIA-005,Fine Baby Diapers Size 5 (11-16 kg / 36s),Baby Diapers,3204,packs
-2024-02-01,FHH-DIA-005,Fine Baby Diapers Size 5 (11-16 kg / 36s),Baby Diapers,3645,packs
-2024-03-01,FHH-DIA-005,Fine Baby Diapers Size 5 (11-16 kg / 36s),Baby Diapers,4234,packs
-2024-04-01,FHH-DIA-005,Fine Baby Diapers Size 5 (11-16 kg / 36s),Baby Diapers,3142,packs
-2024-05-01,FHH-DIA-005,Fine Baby Diapers Size 5 (11-16 kg / 36s),Baby Diapers,3575,packs
-2024-06-01,FHH-DIA-005,Fine Baby Diapers Size 5 (11-16 kg / 36s),Baby Diapers,3892,packs
-2024-07-01,FHH-DIA-005,Fine Baby Diapers Size 5 (11-16 kg / 36s),Baby Diapers,3599,packs
-2024-08-01,FHH-DIA-005,Fine Baby Diapers Size 5 (11-16 kg / 36s),Baby Diapers,3778,packs
-2024-09-01,FHH-DIA-005,Fine Baby Diapers Size 5 (11-16 kg / 36s),Baby Diapers,3607,packs
-2024-10-01,FHH-DIA-005,Fine Baby Diapers Size 5 (11-16 kg / 36s),Baby Diapers,3790,packs
-2024-11-01,FHH-DIA-005,Fine Baby Diapers Size 5 (11-16 kg / 36s),Baby Diapers,3582,packs
-2023-01-01,FHH-AWP-001,Fine Flushable Wipes 40s,Adult Wipes,2602,packs
-2023-01-01,FHH-AWP-001,Fine Flushable Wipes 40s,Adult Wipes,2436,packs
-2023-03-01,FHH-AWP-001,Fine Flushable Wipes 40s,Adult Wipes,2750,packs
-2023-04-01,FHH-AWP-001,Fine Flushable Wipes 40s,Adult Wipes,2871,packs
-2023-05-01,FHH-AWP-001,Fine Flushable Wipes 40s,Adult Wipes,3217,packs
-2023-05-01,FHH-AWP-001,Fine Flushable Wipes 40s,Adult Wipes,3242,packs
-2023-06-01,FHH-AWP-001,Fine Flushable Wipes 40s,Adult Wipes,3888,packs
-2023-07-01,FHH-AWP-001,Fine Flushable Wipes 40s,Adult Wipes,3737,packs
-2023-08-01,FHH-AWP-001,Fine Flushable Wipes 40s,Adult Wipes,3764,packs
-2023-09-01,FHH-AWP-001,Fine Flushable Wipes 40s,Adult Wipes,3530,packs
-2023-10-01,FHH-AWP-001,Fine Flushable Wipes 40s,Adult Wipes,2940,packs
-2023-11-01,FHH-AWP-001,Fine Flushable Wipes 40s,Adult Wipes,2487,packs
-2023-12-01,FHH-AWP-001,Fine Flushable Wipes 40s,Adult Wipes,2808,packs
-2024-01-01,FHH-AWP-001,Fine Flushable Wipes 40s,Adult Wipes,2586,packs
-2024-02-01,FHH-AWP-001,Fine Flushable Wipes 40s,Adult Wipes,2323,packs
-2024-03-01,FHH-AWP-001,Fine Flushable Wipes 40s,Adult Wipes,2763,packs
-2024-04-01,FHH-AWP-001,Fine Flushable Wipes 40s,Adult Wipes,2833,packs
-2024-05-01,FHH-AWP-001,Fine Flushable Wipes 40s,Adult Wipes,3649,packs
-2024-06-01,FHH-AWP-001,Fine Flushable Wipes 40s,Adult Wipes,4219,packs
-2024-07-01,FHH-AWP-001,Fine Flushable Wipes 40s,Adult Wipes,4901,packs
-2024-08-01,FHH-AWP-001,Fine Flushable Wipes 40s,Adult Wipes,4217,packs
-2024-09-01,FHH-AWP-001,Fine Flushable Wipes 40s,Adult Wipes,3321,packs
-2024-10-01,FHH-AWP-001,Fine Flushable Wipes 40s,Adult Wipes,3271,packs
-2024-11-01,FHH-AWP-001,Fine Flushable Wipes 40s,Adult Wipes,2345,packs
-2023-01-01,FHH-AWP-002,Fine Antibacterial Wipes 80s,Adult Wipes,2078,packs
-2023-01-01,FHH-AWP-002,Fine Antibacterial Wipes 80s,Adult Wipes,2173,packs
-2023-03-01,FHH-AWP-002,Fine Antibacterial Wipes 80s,Adult Wipes,2023,packs
-2023-04-01,FHH-AWP-002,Fine Antibacterial Wipes 80s,Adult Wipes,2778,packs
-2023-05-01,FHH-AWP-002,Fine Antibacterial Wipes 80s,Adult Wipes,2947,packs
-2023-05-01,FHH-AWP-002,Fine Antibacterial Wipes 80s,Adult Wipes,2783,packs
-2023-06-01,FHH-AWP-002,Fine Antibacterial Wipes 80s,Adult Wipes,3394,packs
-2023-07-01,FHH-AWP-002,Fine Antibacterial Wipes 80s,Adult Wipes,3917,packs
-2023-08-01,FHH-AWP-002,Fine Antibacterial Wipes 80s,Adult Wipes,3199,packs
-2023-09-01,FHH-AWP-002,Fine Antibacterial Wipes 80s,Adult Wipes,2647,packs
-2023-10-01,FHH-AWP-002,Fine Antibacterial Wipes 80s,Adult Wipes,2269,packs
-2023-11-01,FHH-AWP-002,Fine Antibacterial Wipes 80s,Adult Wipes,2040,packs
-2023-12-01,FHH-AWP-002,Fine Antibacterial Wipes 80s,Adult Wipes,2342,packs
-2024-01-01,FHH-AWP-002,Fine Antibacterial Wipes 80s,Adult Wipes,2134,packs
-2024-02-01,FHH-AWP-002,Fine Antibacterial Wipes 80s,Adult Wipes,2393,packs
-2024-03-01,FHH-AWP-002,Fine Antibacterial Wipes 80s,Adult Wipes,2477,packs
-2024-04-01,FHH-AWP-002,Fine Antibacterial Wipes 80s,Adult Wipes,2965,packs
-2024-05-01,FHH-AWP-002,Fine Antibacterial Wipes 80s,Adult Wipes,3304,packs
-2024-06-01,FHH-AWP-002,Fine Antibacterial Wipes 80s,Adult Wipes,3911,packs
-2024-07-01,FHH-AWP-002,Fine Antibacterial Wipes 80s,Adult Wipes,3553,packs
-2024-08-01,FHH-AWP-002,Fine Antibacterial Wipes 80s,Adult Wipes,3446,packs
-2024-09-01,FHH-AWP-002,Fine Antibacterial Wipes 80s,Adult Wipes,2671,packs
-2024-10-01,FHH-AWP-002,Fine Antibacterial Wipes 80s,Adult Wipes,2536,packs
-2024-11-01,FHH-AWP-002,Fine Antibacterial Wipes 80s,Adult Wipes,2516,packs
-2023-01-01,FHH-SAN-001,Fine Hand Sanitizer 500ml,Hand Sanitizers,4505,bottles
-2023-01-01,FHH-SAN-001,Fine Hand Sanitizer 500ml,Hand Sanitizers,3947,bottles
-2023-03-01,FHH-SAN-001,Fine Hand Sanitizer 500ml,Hand Sanitizers,4728,bottles
-2023-04-01,FHH-SAN-001,Fine Hand Sanitizer 500ml,Hand Sanitizers,4755,bottles
-2023-05-01,FHH-SAN-001,Fine Hand Sanitizer 500ml,Hand Sanitizers,3768,bottles
-2023-05-01,FHH-SAN-001,Fine Hand Sanitizer 500ml,Hand Sanitizers,4209,bottles
-2023-06-01,FHH-SAN-001,Fine Hand Sanitizer 500ml,Hand Sanitizers,3100,bottles
-2023-07-01,FHH-SAN-001,Fine Hand Sanitizer 500ml,Hand Sanitizers,2919,bottles
-2023-08-01,FHH-SAN-001,Fine Hand Sanitizer 500ml,Hand Sanitizers,2789,bottles
-2023-09-01,FHH-SAN-001,Fine Hand Sanitizer 500ml,Hand Sanitizers,3944,bottles
-2023-10-01,FHH-SAN-001,Fine Hand Sanitizer 500ml,Hand Sanitizers,3914,bottles
-2023-11-01,FHH-SAN-001,Fine Hand Sanitizer 500ml,Hand Sanitizers,4086,bottles
-2023-12-01,FHH-SAN-001,Fine Hand Sanitizer 500ml,Hand Sanitizers,4402,bottles
-2024-01-01,FHH-SAN-001,Fine Hand Sanitizer 500ml,Hand Sanitizers,4342,bottles
-2024-02-01,FHH-SAN-001,Fine Hand Sanitizer 500ml,Hand Sanitizers,5431,bottles
-2024-03-01,FHH-SAN-001,Fine Hand Sanitizer 500ml,Hand Sanitizers,5014,bottles
-2024-04-01,FHH-SAN-001,Fine Hand Sanitizer 500ml,Hand Sanitizers,4856,bottles
-2024-05-01,FHH-SAN-001,Fine Hand Sanitizer 500ml,Hand Sanitizers,4329,bottles
-2024-06-01,FHH-SAN-001,Fine Hand Sanitizer 500ml,Hand Sanitizers,3835,bottles
-2024-07-01,FHH-SAN-001,Fine Hand Sanitizer 500ml,Hand Sanitizers,3686,bottles
-2024-08-01,FHH-SAN-001,Fine Hand Sanitizer 500ml,Hand Sanitizers,3402,bottles
-2024-09-01,FHH-SAN-001,Fine Hand Sanitizer 500ml,Hand Sanitizers,4081,bottles
-2024-10-01,FHH-SAN-001,Fine Hand Sanitizer 500ml,Hand Sanitizers,4777,bottles
-2024-11-01,FHH-SAN-001,Fine Hand Sanitizer 500ml,Hand Sanitizers,5073,bottles
-2023-01-01,FHH-SAN-002,Fine Hand Sanitizer 250ml,Hand Sanitizers,5587,bottles
-2023-01-01,FHH-SAN-002,Fine Hand Sanitizer 250ml,Hand Sanitizers,4769,bottles
-2023-03-01,FHH-SAN-002,Fine Hand Sanitizer 250ml,Hand Sanitizers,4749,bottles
-2023-04-01,FHH-SAN-002,Fine Hand Sanitizer 250ml,Hand Sanitizers,4955,bottles
-2023-05-01,FHH-SAN-002,Fine Hand Sanitizer 250ml,Hand Sanitizers,4274,bottles
-2023-05-01,FHH-SAN-002,Fine Hand Sanitizer 250ml,Hand Sanitizers,4643,bottles
-2023-06-01,FHH-SAN-002,Fine Hand Sanitizer 250ml,Hand Sanitizers,3333,bottles
-2023-07-01,FHH-SAN-002,Fine Hand Sanitizer 250ml,Hand Sanitizers,4245,bottles
-2023-08-01,FHH-SAN-002,Fine Hand Sanitizer 250ml,Hand Sanitizers,3746,bottles
-2023-09-01,FHH-SAN-002,Fine Hand Sanitizer 250ml,Hand Sanitizers,3969,bottles
-2023-10-01,FHH-SAN-002,Fine Hand Sanitizer 250ml,Hand Sanitizers,3988,bottles
-2023-11-01,FHH-SAN-002,Fine Hand Sanitizer 250ml,Hand Sanitizers,4155,bottles
-2023-12-01,FHH-SAN-002,Fine Hand Sanitizer 250ml,Hand Sanitizers,5353,bottles
-2024-01-01,FHH-SAN-002,Fine Hand Sanitizer 250ml,Hand Sanitizers,5599,bottles
-2024-02-01,FHH-SAN-002,Fine Hand Sanitizer 250ml,Hand Sanitizers,4752,bottles
-2024-03-01,FHH-SAN-002,Fine Hand Sanitizer 250ml,Hand Sanitizers,5190,bottles
-2024-04-01,FHH-SAN-002,Fine Hand Sanitizer 250ml,Hand Sanitizers,5465,bottles
-2024-05-01,FHH-SAN-002,Fine Hand Sanitizer 250ml,Hand Sanitizers,5411,bottles
-2024-06-01,FHH-SAN-002,Fine Hand Sanitizer 250ml,Hand Sanitizers,4219,bottles
-2024-07-01,FHH-SAN-002,Fine Hand Sanitizer 250ml,Hand Sanitizers,3717,bottles
-2024-08-01,FHH-SAN-002,Fine Hand Sanitizer 250ml,Hand Sanitizers,4154,bottles
-2024-09-01,FHH-SAN-002,Fine Hand Sanitizer 250ml,Hand Sanitizers,4488,bottles
-2024-10-01,FHH-SAN-002,Fine Hand Sanitizer 250ml,Hand Sanitizers,3798,bottles
-2024-11-01,FHH-SAN-002,Fine Hand Sanitizer 250ml,Hand Sanitizers,5320,bottles
-2023-01-01,FHH-SAN-003,Fine Antibacterial Hand Wash 400ml,Hand Sanitizers,3590,bottles
-2023-01-01,FHH-SAN-003,Fine Antibacterial Hand Wash 400ml,Hand Sanitizers,3874,bottles
-2023-03-01,FHH-SAN-003,Fine Antibacterial Hand Wash 400ml,Hand Sanitizers,4370,bottles
-2023-04-01,FHH-SAN-003,Fine Antibacterial Hand Wash 400ml,Hand Sanitizers,4027,bottles
-2023-05-01,FHH-SAN-003,Fine Antibacterial Hand Wash 400ml,Hand Sanitizers,3073,bottles
-2023-05-01,FHH-SAN-003,Fine Antibacterial Hand Wash 400ml,Hand Sanitizers,2872,bottles
-2023-06-01,FHH-SAN-003,Fine Antibacterial Hand Wash 400ml,Hand Sanitizers,3431,bottles
-2023-07-01,FHH-SAN-003,Fine Antibacterial Hand Wash 400ml,Hand Sanitizers,2804,bottles
-2023-08-01,FHH-SAN-003,Fine Antibacterial Hand Wash 400ml,Hand Sanitizers,2803,bottles
-2023-09-01,FHH-SAN-003,Fine Antibacterial Hand Wash 400ml,Hand Sanitizers,3027,bottles
-2023-10-01,FHH-SAN-003,Fine Antibacterial Hand Wash 400ml,Hand Sanitizers,3254,bottles
-2023-11-01,FHH-SAN-003,Fine Antibacterial Hand Wash 400ml,Hand Sanitizers,3494,bottles
-2023-12-01,FHH-SAN-003,Fine Antibacterial Hand Wash 400ml,Hand Sanitizers,3537,bottles
-2024-01-01,FHH-SAN-003,Fine Antibacterial Hand Wash 400ml,Hand Sanitizers,3929,bottles
-2024-02-01,FHH-SAN-003,Fine Antibacterial Hand Wash 400ml,Hand Sanitizers,3901,bottles
-2024-03-01,FHH-SAN-003,Fine Antibacterial Hand Wash 400ml,Hand Sanitizers,4087,bottles
-2024-04-01,FHH-SAN-003,Fine Antibacterial Hand Wash 400ml,Hand Sanitizers,3909,bottles
-2024-05-01,FHH-SAN-003,Fine Antibacterial Hand Wash 400ml,Hand Sanitizers,3553,bottles
-2024-06-01,FHH-SAN-003,Fine Antibacterial Hand Wash 400ml,Hand Sanitizers,3115,bottles
-2024-07-01,FHH-SAN-003,Fine Antibacterial Hand Wash 400ml,Hand Sanitizers,3494,bottles
-2024-08-01,FHH-SAN-003,Fine Antibacterial Hand Wash 400ml,Hand Sanitizers,2464,bottles
-2024-09-01,FHH-SAN-003,Fine Antibacterial Hand Wash 400ml,Hand Sanitizers,3682,bottles
-2024-10-01,FHH-SAN-003,Fine Antibacterial Hand Wash 400ml,Hand Sanitizers,3931,bottles
-2024-11-01,FHH-SAN-003,Fine Antibacterial Hand Wash 400ml,Hand Sanitizers,3289,bottles
-2023-01-01,FHH-FEM-001,Fine Lady Maxi Pads Regular 20s,Feminine Care,4668,packs
-2023-01-01,FHH-FEM-001,Fine Lady Maxi Pads Regular 20s,Feminine Care,4672,packs
-2023-03-01,FHH-FEM-001,Fine Lady Maxi Pads Regular 20s,Feminine Care,4373,packs
-2023-04-01,FHH-FEM-001,Fine Lady Maxi Pads Regular 20s,Feminine Care,4637,packs
-2023-05-01,FHH-FEM-001,Fine Lady Maxi Pads Regular 20s,Feminine Care,4520,packs
-2023-05-01,FHH-FEM-001,Fine Lady Maxi Pads Regular 20s,Feminine Care,5675,packs
-2023-06-01,FHH-FEM-001,Fine Lady Maxi Pads Regular 20s,Feminine Care,5157,packs
-2023-07-01,FHH-FEM-001,Fine Lady Maxi Pads Regular 20s,Feminine Care,5249,packs
-2023-08-01,FHH-FEM-001,Fine Lady Maxi Pads Regular 20s,Feminine Care,5056,packs
-2023-09-01,FHH-FEM-001,Fine Lady Maxi Pads Regular 20s,Feminine Care,4497,packs
-2023-10-01,FHH-FEM-001,Fine Lady Maxi Pads Regular 20s,Feminine Care,4751,packs
-2023-11-01,FHH-FEM-001,Fine Lady Maxi Pads Regular 20s,Feminine Care,5170,packs
-2023-12-01,FHH-FEM-001,Fine Lady Maxi Pads Regular 20s,Feminine Care,4594,packs
-2024-01-01,FHH-FEM-001,Fine Lady Maxi Pads Regular 20s,Feminine Care,5699,packs
-2024-02-01,FHH-FEM-001,Fine Lady Maxi Pads Regular 20s,Feminine Care,5304,packs
-2024-03-01,FHH-FEM-001,Fine Lady Maxi Pads Regular 20s,Feminine Care,5366,packs
-2024-04-01,FHH-FEM-001,Fine Lady Maxi Pads Regular 20s,Feminine Care,5864,packs
-2024-05-01,FHH-FEM-001,Fine Lady Maxi Pads Regular 20s,Feminine Care,5762,packs
-2024-06-01,FHH-FEM-001,Fine Lady Maxi Pads Regular 20s,Feminine Care,5207,packs
-2024-07-01,FHH-FEM-001,Fine Lady Maxi Pads Regular 20s,Feminine Care,5817,packs
-2024-08-01,FHH-FEM-001,Fine Lady Maxi Pads Regular 20s,Feminine Care,4877,packs
-2024-09-01,FHH-FEM-001,Fine Lady Maxi Pads Regular 20s,Feminine Care,5791,packs
-2024-10-01,FHH-FEM-001,Fine Lady Maxi Pads Regular 20s,Feminine Care,5798,packs
-2024-11-01,FHH-FEM-001,Fine Lady Maxi Pads Regular 20s,Feminine Care,5414,packs
-2023-01-01,FHH-FEM-002,Fine Lady Maxi Pads Night 16s,Feminine Care,3693,packs
-2023-01-01,FHH-FEM-002,Fine Lady Maxi Pads Night 16s,Feminine Care,3250,packs
-2023-03-01,FHH-FEM-002,Fine Lady Maxi Pads Night 16s,Feminine Care,3969,packs
-2023-04-01,FHH-FEM-002,Fine Lady Maxi Pads Night 16s,Feminine Care,3653,packs
-2023-05-01,FHH-FEM-002,Fine Lady Maxi Pads Night 16s,Feminine Care,3565,packs
-2023-05-01,FHH-FEM-002,Fine Lady Maxi Pads Night 16s,Feminine Care,4046,packs
-2023-06-01,FHH-FEM-002,Fine Lady Maxi Pads Night 16s,Feminine Care,3395,packs
-2023-07-01,FHH-FEM-002,Fine Lady Maxi Pads Night 16s,Feminine Care,3170,packs
-2023-08-01,FHH-FEM-002,Fine Lady Maxi Pads Night 16s,Feminine Care,3138,packs
-2023-09-01,FHH-FEM-002,Fine Lady Maxi Pads Night 16s,Feminine Care,3887,packs
-2023-10-01,FHH-FEM-002,Fine Lady Maxi Pads Night 16s,Feminine Care,3338,packs
-2023-11-01,FHH-FEM-002,Fine Lady Maxi Pads Night 16s,Feminine Care,4255,packs
-2023-12-01,FHH-FEM-002,Fine Lady Maxi Pads Night 16s,Feminine Care,3182,packs
-2024-01-01,FHH-FEM-002,Fine Lady Maxi Pads Night 16s,Feminine Care,4592,packs
-2024-02-01,FHH-FEM-002,Fine Lady Maxi Pads Night 16s,Feminine Care,4124,packs
-2024-03-01,FHH-FEM-002,Fine Lady Maxi Pads Night 16s,Feminine Care,4117,packs
-2024-04-01,FHH-FEM-002,Fine Lady Maxi Pads Night 16s,Feminine Care,3980,packs
-2024-05-01,FHH-FEM-002,Fine Lady Maxi Pads Night 16s,Feminine Care,4307,packs
-2024-06-01,FHH-FEM-002,Fine Lady Maxi Pads Night 16s,Feminine Care,4009,packs
-2024-07-01,FHH-FEM-002,Fine Lady Maxi Pads Night 16s,Feminine Care,4344,packs
-2024-08-01,FHH-FEM-002,Fine Lady Maxi Pads Night 16s,Feminine Care,4040,packs
-2024-09-01,FHH-FEM-002,Fine Lady Maxi Pads Night 16s,Feminine Care,4189,packs
-2024-10-01,FHH-FEM-002,Fine Lady Maxi Pads Night 16s,Feminine Care,4031,packs
-2024-11-01,FHH-FEM-002,Fine Lady Maxi Pads Night 16s,Feminine Care,4145,packs
-2023-01-01,FHH-FEM-003,Fine Lady Panty Liners 30s,Feminine Care,5328,packs
-2023-01-01,FHH-FEM-003,Fine Lady Panty Liners 30s,Feminine Care,4503,packs
-2023-03-01,FHH-FEM-003,Fine Lady Panty Liners 30s,Feminine Care,4763,packs
-2023-04-01,FHH-FEM-003,Fine Lady Panty Liners 30s,Feminine Care,5675,packs
-2023-05-01,FHH-FEM-003,Fine Lady Panty Liners 30s,Feminine Care,5448,packs
-2023-05-01,FHH-FEM-003,Fine Lady Panty Liners 30s,Feminine Care,5313,packs
-2023-06-01,FHH-FEM-003,Fine Lady Panty Liners 30s,Feminine Care,5205,packs
-2023-07-01,FHH-FEM-003,Fine Lady Panty Liners 30s,Feminine Care,5305,packs
-2023-08-01,FHH-FEM-003,Fine Lady Panty Liners 30s,Feminine Care,4954,packs
-2023-09-01,FHH-FEM-003,Fine Lady Panty Liners 30s,Feminine Care,5022,packs
-2023-10-01,FHH-FEM-003,Fine Lady Panty Liners 30s,Feminine Care,5457,packs
-2023-11-01,FHH-FEM-003,Fine Lady Panty Liners 30s,Feminine Care,4968,packs
-2023-12-01,FHH-FEM-003,Fine Lady Panty Liners 30s,Feminine Care,5696,packs
-2024-01-01,FHH-FEM-003,Fine Lady Panty Liners 30s,Feminine Care,5045,packs
-2024-02-01,FHH-FEM-003,Fine Lady Panty Liners 30s,Feminine Care,6341,packs
-2024-03-01,FHH-FEM-003,Fine Lady Panty Liners 30s,Feminine Care,6220,packs
-2024-04-01,FHH-FEM-003,Fine Lady Panty Liners 30s,Feminine Care,6134,packs
-2024-05-01,FHH-FEM-003,Fine Lady Panty Liners 30s,Feminine Care,6502,packs
-2024-06-01,FHH-FEM-003,Fine Lady Panty Liners 30s,Feminine Care,6583,packs
-2024-07-01,FHH-FEM-003,Fine Lady Panty Liners 30s,Feminine Care,6234,packs
-2024-08-01,FHH-FEM-003,Fine Lady Panty Liners 30s,Feminine Care,4932,packs
-2024-09-01,FHH-FEM-003,Fine Lady Panty Liners 30s,Feminine Care,5367,packs
-2024-10-01,FHH-FEM-003,Fine Lady Panty Liners 30s,Feminine Care,5697,packs
-2024-11-01,FHH-FEM-003,Fine Lady Panty Liners 30s,Feminine Care,6027,packs
-2023-01-01,FHH-FEM-004,Fine Lady Ultra Thin Pads 22s,Feminine Care,4061,packs
-2023-01-01,FHH-FEM-004,Fine Lady Ultra Thin Pads 22s,Feminine Care,3685,packs
-2023-03-01,FHH-FEM-004,Fine Lady Ultra Thin Pads 22s,Feminine Care,4064,packs
-2023-04-01,FHH-FEM-004,Fine Lady Ultra Thin Pads 22s,Feminine Care,3774,packs
-2023-05-01,FHH-FEM-004,Fine Lady Ultra Thin Pads 22s,Feminine Care,3833,packs
-2023-05-01,FHH-FEM-004,Fine Lady Ultra Thin Pads 22s,Feminine Care,3589,packs
-2023-06-01,FHH-FEM-004,Fine Lady Ultra Thin Pads 22s,Feminine Care,3610,packs
-2023-07-01,FHH-FEM-004,Fine Lady Ultra Thin Pads 22s,Feminine Care,3452,packs
-2023-08-01,FHH-FEM-004,Fine Lady Ultra Thin Pads 22s,Feminine Care,3580,packs
-2023-09-01,FHH-FEM-004,Fine Lady Ultra Thin Pads 22s,Feminine Care,4355,packs
-2023-10-01,FHH-FEM-004,Fine Lady Ultra Thin Pads 22s,Feminine Care,3723,packs
-2023-11-01,FHH-FEM-004,Fine Lady Ultra Thin Pads 22s,Feminine Care,4894,packs
-2023-12-01,FHH-FEM-004,Fine Lady Ultra Thin Pads 22s,Feminine Care,4300,packs
-2024-01-01,FHH-FEM-004,Fine Lady Ultra Thin Pads 22s,Feminine Care,4445,packs
-2024-02-01,FHH-FEM-004,Fine Lady Ultra Thin Pads 22s,Feminine Care,4092,packs
-2024-03-01,FHH-FEM-004,Fine Lady Ultra Thin Pads 22s,Feminine Care,4746,packs
-2024-04-01,FHH-FEM-004,Fine Lady Ultra Thin Pads 22s,Feminine Care,4300,packs
-2024-05-01,FHH-FEM-004,Fine Lady Ultra Thin Pads 22s,Feminine Care,4565,packs
-2024-06-01,FHH-FEM-004,Fine Lady Ultra Thin Pads 22s,Feminine Care,5249,packs
-2024-07-01,FHH-FEM-004,Fine Lady Ultra Thin Pads 22s,Feminine Care,4291,packs
-2024-08-01,FHH-FEM-004,Fine Lady Ultra Thin Pads 22s,Feminine Care,4736,packs
-2024-09-01,FHH-FEM-004,Fine Lady Ultra Thin Pads 22s,Feminine Care,4232,packs
-2024-10-01,FHH-FEM-004,Fine Lady Ultra Thin Pads 22s,Feminine Care,4485,packs
-2024-11-01,FHH-FEM-004,Fine Lady Ultra Thin Pads 22s,Feminine Care,5150,packs
-2023-01-01,FHH-IND-001,Fine Maxi Roll Tissue Industrial (6-Pack),Industrial Hygiene,1624,packs
-2023-01-01,FHH-IND-001,Fine Maxi Roll Tissue Industrial (6-Pack),Industrial Hygiene,1964,packs
-2023-03-01,FHH-IND-001,Fine Maxi Roll Tissue Industrial (6-Pack),Industrial Hygiene,1914,packs
-2023-04-01,FHH-IND-001,Fine Maxi Roll Tissue Industrial (6-Pack),Industrial Hygiene,1770,packs
-2023-05-01,FHH-IND-001,Fine Maxi Roll Tissue Industrial (6-Pack),Industrial Hygiene,2012,packs
-2023-05-01,FHH-IND-001,Fine Maxi Roll Tissue Industrial (6-Pack),Industrial Hygiene,2071,packs
-2023-06-01,FHH-IND-001,Fine Maxi Roll Tissue Industrial (6-Pack),Industrial Hygiene,2023,packs
-2023-07-01,FHH-IND-001,Fine Maxi Roll Tissue Industrial (6-Pack),Industrial Hygiene,1530,packs
-2023-08-01,FHH-IND-001,Fine Maxi Roll Tissue Industrial (6-Pack),Industrial Hygiene,1566,packs
-2023-09-01,FHH-IND-001,Fine Maxi Roll Tissue Industrial (6-Pack),Industrial Hygiene,1908,packs
-2023-10-01,FHH-IND-001,Fine Maxi Roll Tissue Industrial (6-Pack),Industrial Hygiene,1941,packs
-2023-11-01,FHH-IND-001,Fine Maxi Roll Tissue Industrial (6-Pack),Industrial Hygiene,2193,packs
-2023-12-01,FHH-IND-001,Fine Maxi Roll Tissue Industrial (6-Pack),Industrial Hygiene,2316,packs
-2024-01-01,FHH-IND-001,Fine Maxi Roll Tissue Industrial (6-Pack),Industrial Hygiene,1715,packs
-2024-02-01,FHH-IND-001,Fine Maxi Roll Tissue Industrial (6-Pack),Industrial Hygiene,1985,packs
-2024-03-01,FHH-IND-001,Fine Maxi Roll Tissue Industrial (6-Pack),Industrial Hygiene,2133,packs
-2024-04-01,FHH-IND-001,Fine Maxi Roll Tissue Industrial (6-Pack),Industrial Hygiene,2173,packs
-2024-05-01,FHH-IND-001,Fine Maxi Roll Tissue Industrial (6-Pack),Industrial Hygiene,2334,packs
-2024-06-01,FHH-IND-001,Fine Maxi Roll Tissue Industrial (6-Pack),Industrial Hygiene,2298,packs
-2024-07-01,FHH-IND-001,Fine Maxi Roll Tissue Industrial (6-Pack),Industrial Hygiene,2026,packs
-2024-08-01,FHH-IND-001,Fine Maxi Roll Tissue Industrial (6-Pack),Industrial Hygiene,1847,packs
-2024-09-01,FHH-IND-001,Fine Maxi Roll Tissue Industrial (6-Pack),Industrial Hygiene,1884,packs
-2024-10-01,FHH-IND-001,Fine Maxi Roll Tissue Industrial (6-Pack),Industrial Hygiene,2254,packs
-2024-11-01,FHH-IND-001,Fine Maxi Roll Tissue Industrial (6-Pack),Industrial Hygiene,2370,packs
-2023-01-01,FHH-IND-002,Fine C-Fold Hand Towels (200s Pack),Industrial Hygiene,2329,packs
-2023-01-01,FHH-IND-002,Fine C-Fold Hand Towels (200s Pack),Industrial Hygiene,2053,packs
-2023-03-01,FHH-IND-002,Fine C-Fold Hand Towels (200s Pack),Industrial Hygiene,2207,packs
-2023-04-01,FHH-IND-002,Fine C-Fold Hand Towels (200s Pack),Industrial Hygiene,2680,packs
-2023-05-01,FHH-IND-002,Fine C-Fold Hand Towels (200s Pack),Industrial Hygiene,2545,packs
-2023-05-01,FHH-IND-002,Fine C-Fold Hand Towels (200s Pack),Industrial Hygiene,2701,packs
-2023-06-01,FHH-IND-002,Fine C-Fold Hand Towels (200s Pack),Industrial Hygiene,2576,packs
-2023-07-01,FHH-IND-002,Fine C-Fold Hand Towels (200s Pack),Industrial Hygiene,2338,packs
-2023-08-01,FHH-IND-002,Fine C-Fold Hand Towels (200s Pack),Industrial Hygiene,2384,packs
-2023-09-01,FHH-IND-002,Fine C-Fold Hand Towels (200s Pack),Industrial Hygiene,2488,packs
-2023-10-01,FHH-IND-002,Fine C-Fold Hand Towels (200s Pack),Industrial Hygiene,2624,packs
-2023-11-01,FHH-IND-002,Fine C-Fold Hand Towels (200s Pack),Industrial Hygiene,2683,packs
-2023-12-01,FHH-IND-002,Fine C-Fold Hand Towels (200s Pack),Industrial Hygiene,2939,packs
-2024-01-01,FHH-IND-002,Fine C-Fold Hand Towels (200s Pack),Industrial Hygiene,2497,packs
-2024-02-01,FHH-IND-002,Fine C-Fold Hand Towels (200s Pack),Industrial Hygiene,2614,packs
-2024-03-01,FHH-IND-002,Fine C-Fold Hand Towels (200s Pack),Industrial Hygiene,2608,packs
-2024-04-01,FHH-IND-002,Fine C-Fold Hand Towels (200s Pack),Industrial Hygiene,3053,packs
-2024-05-01,FHH-IND-002,Fine C-Fold Hand Towels (200s Pack),Industrial Hygiene,2659,packs
-2024-06-01,FHH-IND-002,Fine C-Fold Hand Towels (200s Pack),Industrial Hygiene,2829,packs
-2024-07-01,FHH-IND-002,Fine C-Fold Hand Towels (200s Pack),Industrial Hygiene,2515,packs
-2024-08-01,FHH-IND-002,Fine C-Fold Hand Towels (200s Pack),Industrial Hygiene,2763,packs
-2024-09-01,FHH-IND-002,Fine C-Fold Hand Towels (200s Pack),Industrial Hygiene,2943,packs
-2024-10-01,FHH-IND-002,Fine C-Fold Hand Towels (200s Pack),Industrial Hygiene,3146,packs
-2024-11-01,FHH-IND-002,Fine C-Fold Hand Towels (200s Pack),Industrial Hygiene,2739,packs
-2023-01-01,FHH-IND-003,Fine Industrial Cleaning Wipes 50s,Industrial Hygiene,1552,packs
-2023-01-01,FHH-IND-003,Fine Industrial Cleaning Wipes 50s,Industrial Hygiene,1633,packs
-2023-03-01,FHH-IND-003,Fine Industrial Cleaning Wipes 50s,Industrial Hygiene,1621,packs
-2023-04-01,FHH-IND-003,Fine Industrial Cleaning Wipes 50s,Industrial Hygiene,1788,packs
-2023-05-01,FHH-IND-003,Fine Industrial Cleaning Wipes 50s,Industrial Hygiene,1631,packs
-2023-05-01,FHH-IND-003,Fine Industrial Cleaning Wipes 50s,Industrial Hygiene,1900,packs
-2023-06-01,FHH-IND-003,Fine Industrial Cleaning Wipes 50s,Industrial Hygiene,2028,packs
-2023-07-01,FHH-IND-003,Fine Industrial Cleaning Wipes 50s,Industrial Hygiene,1510,packs
-2023-08-01,FHH-IND-003,Fine Industrial Cleaning Wipes 50s,Industrial Hygiene,1425,packs
-2023-09-01,FHH-IND-003,Fine Industrial Cleaning Wipes 50s,Industrial Hygiene,1931,packs
-2023-10-01,FHH-IND-003,Fine Industrial Cleaning Wipes 50s,Industrial Hygiene,1955,packs
-2023-11-01,FHH-IND-003,Fine Industrial Cleaning Wipes 50s,Industrial Hygiene,1780,packs
-2023-12-01,FHH-IND-003,Fine Industrial Cleaning Wipes 50s,Industrial Hygiene,1961,packs
-2024-01-01,FHH-IND-003,Fine Industrial Cleaning Wipes 50s,Industrial Hygiene,1668,packs
-2024-02-01,FHH-IND-003,Fine Industrial Cleaning Wipes 50s,Industrial Hygiene,1528,packs
-2024-03-01,FHH-IND-003,Fine Industrial Cleaning Wipes 50s,Industrial Hygiene,1675,packs
-2024-04-01,FHH-IND-003,Fine Industrial Cleaning Wipes 50s,Industrial Hygiene,1701,packs
-2024-05-01,FHH-IND-003,Fine Industrial Cleaning Wipes 50s,Industrial Hygiene,1792,packs
-2024-06-01,FHH-IND-003,Fine Industrial Cleaning Wipes 50s,Industrial Hygiene,1909,packs
-2024-07-01,FHH-IND-003,Fine Industrial Cleaning Wipes 50s,Industrial Hygiene,1770,packs
-2024-08-01,FHH-IND-003,Fine Industrial Cleaning Wipes 50s,Industrial Hygiene,1856,packs
-2024-09-01,FHH-IND-003,Fine Industrial Cleaning Wipes 50s,Industrial Hygiene,1777,packs
-2024-10-01,FHH-IND-003,Fine Industrial Cleaning Wipes 50s,Industrial Hygiene,2090,packs
-2024-11-01,FHH-IND-003,Fine Industrial Cleaning Wipes 50s,Industrial Hygiene,2037,packs
-2023-01-01,FHH-COT-001,Fine Cotton Pads 100s,Cotton Products,3671,packs
-2023-01-01,FHH-COT-001,Fine Cotton Pads 100s,Cotton Products,3897,packs
-2023-03-01,FHH-COT-001,Fine Cotton Pads 100s,Cotton Products,3481,packs
-2023-04-01,FHH-COT-001,Fine Cotton Pads 100s,Cotton Products,4034,packs
-2023-05-01,FHH-COT-001,Fine Cotton Pads 100s,Cotton Products,4097,packs
-2023-05-01,FHH-COT-001,Fine Cotton Pads 100s,Cotton Products,4216,packs
-2023-06-01,FHH-COT-001,Fine Cotton Pads 100s,Cotton Products,4282,packs
-2023-07-01,FHH-COT-001,Fine Cotton Pads 100s,Cotton Products,5024,packs
-2023-08-01,FHH-COT-001,Fine Cotton Pads 100s,Cotton Products,3887,packs
-2023-09-01,FHH-COT-001,Fine Cotton Pads 100s,Cotton Products,3747,packs
-2023-10-01,FHH-COT-001,Fine Cotton Pads 100s,Cotton Products,3656,packs
-2023-11-01,FHH-COT-001,Fine Cotton Pads 100s,Cotton Products,3651,packs
-2023-12-01,FHH-COT-001,Fine Cotton Pads 100s,Cotton Products,3637,packs
-2024-01-01,FHH-COT-001,Fine Cotton Pads 100s,Cotton Products,4534,packs
-2024-02-01,FHH-COT-001,Fine Cotton Pads 100s,Cotton Products,4624,packs
-2024-03-01,FHH-COT-001,Fine Cotton Pads 100s,Cotton Products,4097,packs
-2024-04-01,FHH-COT-001,Fine Cotton Pads 100s,Cotton Products,4100,packs
-2024-05-01,FHH-COT-001,Fine Cotton Pads 100s,Cotton Products,4706,packs
-2024-06-01,FHH-COT-001,Fine Cotton Pads 100s,Cotton Products,4471,packs
-2024-07-01,FHH-COT-001,Fine Cotton Pads 100s,Cotton Products,4929,packs
-2024-08-01,FHH-COT-001,Fine Cotton Pads 100s,Cotton Products,4649,packs
-2024-09-01,FHH-COT-001,Fine Cotton Pads 100s,Cotton Products,3840,packs
-2024-10-01,FHH-COT-001,Fine Cotton Pads 100s,Cotton Products,4826,packs
-2024-11-01,FHH-COT-001,Fine Cotton Pads 100s,Cotton Products,4876,packs
-2023-01-01,FHH-COT-002,Fine Cotton Buds 200s,Cotton Products,3874,packs
-2023-01-01,FHH-COT-002,Fine Cotton Buds 200s,Cotton Products,3960,packs
-2023-03-01,FHH-COT-002,Fine Cotton Buds 200s,Cotton Products,4324,packs
-2023-04-01,FHH-COT-002,Fine Cotton Buds 200s,Cotton Products,4442,packs
-2023-05-01,FHH-COT-002,Fine Cotton Buds 200s,Cotton Products,4704,packs
-2023-05-01,FHH-COT-002,Fine Cotton Buds 200s,Cotton Products,5204,packs
-2023-06-01,FHH-COT-002,Fine Cotton Buds 200s,Cotton Products,4561,packs
-2023-07-01,FHH-COT-002,Fine Cotton Buds 200s,Cotton Products,4345,packs
-2023-08-01,FHH-COT-002,Fine Cotton Buds 200s,Cotton Products,4027,packs
-2023-09-01,FHH-COT-002,Fine Cotton Buds 200s,Cotton Products,4073,packs
-2023-10-01,FHH-COT-002,Fine Cotton Buds 200s,Cotton Products,4241,packs
-2023-11-01,FHH-COT-002,Fine Cotton Buds 200s,Cotton Products,4829,packs
-2023-12-01,FHH-COT-002,Fine Cotton Buds 200s,Cotton Products,4061,packs
-2024-01-01,FHH-COT-002,Fine Cotton Buds 200s,Cotton Products,4658,packs
-2024-02-01,FHH-COT-002,Fine Cotton Buds 200s,Cotton Products,4584,packs
-2024-03-01,FHH-COT-002,Fine Cotton Buds 200s,Cotton Products,5197,packs
-2024-04-01,FHH-COT-002,Fine Cotton Buds 200s,Cotton Products,5836,packs
-2024-05-01,FHH-COT-002,Fine Cotton Buds 200s,Cotton Products,4799,packs
-2024-06-01,FHH-COT-002,Fine Cotton Buds 200s,Cotton Products,4968,packs
-2024-07-01,FHH-COT-002,Fine Cotton Buds 200s,Cotton Products,5619,packs
-2024-08-01,FHH-COT-002,Fine Cotton Buds 200s,Cotton Products,5332,packs
-2024-09-01,FHH-COT-002,Fine Cotton Buds 200s,Cotton Products,5543,packs
-2024-10-01,FHH-COT-002,Fine Cotton Buds 200s,Cotton Products,4968,packs
-2024-11-01,FHH-COT-002,Fine Cotton Buds 200s,Cotton Products,4576,packs
+2023-06-01,FHH-TIS-001,Fine Facial Tissues 200s (Box),Tissues,3687,boxes
+2023-07-01,FHH-TIS-001,Fine Facial Tissues 200s (Box),Tissues,4342,boxes
+2023-08-01,FHH-TIS-001,Fine Facial Tissues 200s (Box),Tissues,4333,boxes
+2023-09-01,FHH-TIS-001,Fine Facial Tissues 200s (Box),Tissues,4565,boxes
+2023-10-01,FHH-TIS-001,Fine Facial Tissues 200s (Box),Tissues,4739,boxes
+2023-11-01,FHH-TIS-001,Fine Facial Tissues 200s (Box),Tissues,4805,boxes
+2023-12-01,FHH-TIS-001,Fine Facial Tissues 200s (Box),Tissues,5449,boxes
+2024-01-01,FHH-TIS-001,Fine Facial Tissues 200s (Box),Tissues,5993,boxes
+2024-02-01,FHH-TIS-001,Fine Facial Tissues 200s (Box),Tissues,4795,boxes
+2024-03-01,FHH-TIS-001,Fine Facial Tissues 200s (Box),Tissues,4282,boxes
+2024-04-01,FHH-TIS-001,Fine Facial Tissues 200s (Box),Tissues,4305,boxes
+2024-05-01,FHH-TIS-001,Fine Facial Tissues 200s (Box),Tissues,3936,boxes
+2024-06-01,FHH-TIS-001,Fine Facial Tissues 200s (Box),Tissues,4306,boxes
+2024-07-01,FHH-TIS-001,Fine Facial Tissues 200s (Box),Tissues,3996,boxes
+2024-08-01,FHH-TIS-001,Fine Facial Tissues 200s (Box),Tissues,4046,boxes
+2024-09-01,FHH-TIS-001,Fine Facial Tissues 200s (Box),Tissues,5918,boxes
+2024-10-01,FHH-TIS-001,Fine Facial Tissues 200s (Box),Tissues,4979,boxes
+2024-11-01,FHH-TIS-001,Fine Facial Tissues 200s (Box),Tissues,5600,boxes
+2024-12-01,FHH-TIS-001,Fine Facial Tissues 200s (Box),Tissues,5595,boxes
+2023-01-01,FHH-TIS-002,Fine Toilet Rolls 10-Pack,Tissues,6934,packs
+2023-02-01,FHH-TIS-002,Fine Toilet Rolls 10-Pack,Tissues,7045,packs
+2023-03-01,FHH-TIS-002,Fine Toilet Rolls 10-Pack,Tissues,5566,packs
+2023-04-01,FHH-TIS-002,Fine Toilet Rolls 10-Pack,Tissues,5732,packs
+2023-05-01,FHH-TIS-002,Fine Toilet Rolls 10-Pack,Tissues,5035,packs
+2023-06-01,FHH-TIS-002,Fine Toilet Rolls 10-Pack,Tissues,5067,packs
+2023-07-01,FHH-TIS-002,Fine Toilet Rolls 10-Pack,Tissues,5068,packs
+2023-08-01,FHH-TIS-002,Fine Toilet Rolls 10-Pack,Tissues,6474,packs
+2023-09-01,FHH-TIS-002,Fine Toilet Rolls 10-Pack,Tissues,6543,packs
+2023-10-01,FHH-TIS-002,Fine Toilet Rolls 10-Pack,Tissues,5741,packs
+2023-11-01,FHH-TIS-002,Fine Toilet Rolls 10-Pack,Tissues,7345,packs
+2023-12-01,FHH-TIS-002,Fine Toilet Rolls 10-Pack,Tissues,7053,packs
+2024-01-01,FHH-TIS-002,Fine Toilet Rolls 10-Pack,Tissues,8255,packs
+2024-02-01,FHH-TIS-002,Fine Toilet Rolls 10-Pack,Tissues,6592,packs
+2024-03-01,FHH-TIS-002,Fine Toilet Rolls 10-Pack,Tissues,6132,packs
+2024-04-01,FHH-TIS-002,Fine Toilet Rolls 10-Pack,Tissues,6324,packs
+2024-05-01,FHH-TIS-002,Fine Toilet Rolls 10-Pack,Tissues,6265,packs
+2024-06-01,FHH-TIS-002,Fine Toilet Rolls 10-Pack,Tissues,5881,packs
+2024-07-01,FHH-TIS-002,Fine Toilet Rolls 10-Pack,Tissues,5895,packs
+2024-08-01,FHH-TIS-002,Fine Toilet Rolls 10-Pack,Tissues,6148,packs
+2024-09-01,FHH-TIS-002,Fine Toilet Rolls 10-Pack,Tissues,6450,packs
+2024-10-01,FHH-TIS-002,Fine Toilet Rolls 10-Pack,Tissues,6600,packs
+2024-11-01,FHH-TIS-002,Fine Toilet Rolls 10-Pack,Tissues,7409,packs
+2024-12-01,FHH-TIS-002,Fine Toilet Rolls 10-Pack,Tissues,9458,packs
+2023-01-01,FHH-TIS-003,Fine Kitchen Towels 2-Roll,Tissues,3981,packs
+2023-02-01,FHH-TIS-003,Fine Kitchen Towels 2-Roll,Tissues,3205,packs
+2023-03-01,FHH-TIS-003,Fine Kitchen Towels 2-Roll,Tissues,3361,packs
+2023-04-01,FHH-TIS-003,Fine Kitchen Towels 2-Roll,Tissues,2882,packs
+2023-05-01,FHH-TIS-003,Fine Kitchen Towels 2-Roll,Tissues,2674,packs
+2023-06-01,FHH-TIS-003,Fine Kitchen Towels 2-Roll,Tissues,2909,packs
+2023-07-01,FHH-TIS-003,Fine Kitchen Towels 2-Roll,Tissues,3080,packs
+2023-08-01,FHH-TIS-003,Fine Kitchen Towels 2-Roll,Tissues,3238,packs
+2023-09-01,FHH-TIS-003,Fine Kitchen Towels 2-Roll,Tissues,3265,packs
+2023-10-01,FHH-TIS-003,Fine Kitchen Towels 2-Roll,Tissues,3269,packs
+2023-11-01,FHH-TIS-003,Fine Kitchen Towels 2-Roll,Tissues,3781,packs
+2023-12-01,FHH-TIS-003,Fine Kitchen Towels 2-Roll,Tissues,4503,packs
+2024-01-01,FHH-TIS-003,Fine Kitchen Towels 2-Roll,Tissues,4173,packs
+2024-02-01,FHH-TIS-003,Fine Kitchen Towels 2-Roll,Tissues,4116,packs
+2024-03-01,FHH-TIS-003,Fine Kitchen Towels 2-Roll,Tissues,3342,packs
+2024-04-01,FHH-TIS-003,Fine Kitchen Towels 2-Roll,Tissues,3009,packs
+2024-05-01,FHH-TIS-003,Fine Kitchen Towels 2-Roll,Tissues,3367,packs
+2024-06-01,FHH-TIS-003,Fine Kitchen Towels 2-Roll,Tissues,3437,packs
+2024-07-01,FHH-TIS-003,Fine Kitchen Towels 2-Roll,Tissues,3162,packs
+2024-08-01,FHH-TIS-003,Fine Kitchen Towels 2-Roll,Tissues,3637,packs
+2024-09-01,FHH-TIS-003,Fine Kitchen Towels 2-Roll,Tissues,4023,packs
+2024-10-01,FHH-TIS-003,Fine Kitchen Towels 2-Roll,Tissues,3550,packs
+2024-11-01,FHH-TIS-003,Fine Kitchen Towels 2-Roll,Tissues,4230,packs
+2024-12-01,FHH-TIS-003,Fine Kitchen Towels 2-Roll,Tissues,5234,packs
+2023-01-01,FHH-TIS-004,Fine Maxi Roll Tissue,Tissues,3240,rolls
+2023-02-01,FHH-TIS-004,Fine Maxi Roll Tissue,Tissues,3522,rolls
+2023-03-01,FHH-TIS-004,Fine Maxi Roll Tissue,Tissues,2172,rolls
+2023-04-01,FHH-TIS-004,Fine Maxi Roll Tissue,Tissues,2658,rolls
+2023-05-01,FHH-TIS-004,Fine Maxi Roll Tissue,Tissues,2387,rolls
+2023-06-01,FHH-TIS-004,Fine Maxi Roll Tissue,Tissues,2270,rolls
+2023-07-01,FHH-TIS-004,Fine Maxi Roll Tissue,Tissues,2404,rolls
+2023-08-01,FHH-TIS-004,Fine Maxi Roll Tissue,Tissues,2125,rolls
+2023-09-01,FHH-TIS-004,Fine Maxi Roll Tissue,Tissues,2884,rolls
+2023-10-01,FHH-TIS-004,Fine Maxi Roll Tissue,Tissues,2892,rolls
+2023-11-01,FHH-TIS-004,Fine Maxi Roll Tissue,Tissues,3454,rolls
+2023-12-01,FHH-TIS-004,Fine Maxi Roll Tissue,Tissues,3358,rolls
+2024-01-01,FHH-TIS-004,Fine Maxi Roll Tissue,Tissues,3404,rolls
+2024-02-01,FHH-TIS-004,Fine Maxi Roll Tissue,Tissues,3364,rolls
+2024-03-01,FHH-TIS-004,Fine Maxi Roll Tissue,Tissues,3301,rolls
+2024-04-01,FHH-TIS-004,Fine Maxi Roll Tissue,Tissues,2864,rolls
+2024-05-01,FHH-TIS-004,Fine Maxi Roll Tissue,Tissues,2539,rolls
+2024-06-01,FHH-TIS-004,Fine Maxi Roll Tissue,Tissues,2707,rolls
+2024-07-01,FHH-TIS-004,Fine Maxi Roll Tissue,Tissues,2688,rolls
+2024-08-01,FHH-TIS-004,Fine Maxi Roll Tissue,Tissues,3042,rolls
+2024-09-01,FHH-TIS-004,Fine Maxi Roll Tissue,Tissues,3095,rolls
+2024-10-01,FHH-TIS-004,Fine Maxi Roll Tissue,Tissues,3057,rolls
+2024-11-01,FHH-TIS-004,Fine Maxi Roll Tissue,Tissues,3340,rolls
+2024-12-01,FHH-TIS-004,Fine Maxi Roll Tissue,Tissues,3451,rolls
+2023-01-01,FHH-TIS-005,Fine Sterilized Cotton Tissue,Tissues,2303,boxes
+2023-02-01,FHH-TIS-005,Fine Sterilized Cotton Tissue,Tissues,2212,boxes
+2023-03-01,FHH-TIS-005,Fine Sterilized Cotton Tissue,Tissues,1903,boxes
+2023-04-01,FHH-TIS-005,Fine Sterilized Cotton Tissue,Tissues,1694,boxes
+2023-05-01,FHH-TIS-005,Fine Sterilized Cotton Tissue,Tissues,1455,boxes
+2023-06-01,FHH-TIS-005,Fine Sterilized Cotton Tissue,Tissues,1556,boxes
+2023-07-01,FHH-TIS-005,Fine Sterilized Cotton Tissue,Tissues,1607,boxes
+2023-08-01,FHH-TIS-005,Fine Sterilized Cotton Tissue,Tissues,1637,boxes
+2023-09-01,FHH-TIS-005,Fine Sterilized Cotton Tissue,Tissues,2006,boxes
+2023-10-01,FHH-TIS-005,Fine Sterilized Cotton Tissue,Tissues,2009,boxes
+2023-11-01,FHH-TIS-005,Fine Sterilized Cotton Tissue,Tissues,2461,boxes
+2023-12-01,FHH-TIS-005,Fine Sterilized Cotton Tissue,Tissues,2459,boxes
+2024-01-01,FHH-TIS-005,Fine Sterilized Cotton Tissue,Tissues,2571,boxes
+2024-02-01,FHH-TIS-005,Fine Sterilized Cotton Tissue,Tissues,2411,boxes
+2024-03-01,FHH-TIS-005,Fine Sterilized Cotton Tissue,Tissues,1802,boxes
+2024-04-01,FHH-TIS-005,Fine Sterilized Cotton Tissue,Tissues,1928,boxes
+2024-05-01,FHH-TIS-005,Fine Sterilized Cotton Tissue,Tissues,1844,boxes
+2024-06-01,FHH-TIS-005,Fine Sterilized Cotton Tissue,Tissues,2155,boxes
+2024-07-01,FHH-TIS-005,Fine Sterilized Cotton Tissue,Tissues,1818,boxes
+2024-08-01,FHH-TIS-005,Fine Sterilized Cotton Tissue,Tissues,2002,boxes
+2024-09-01,FHH-TIS-005,Fine Sterilized Cotton Tissue,Tissues,2264,boxes
+2024-10-01,FHH-TIS-005,Fine Sterilized Cotton Tissue,Tissues,1970,boxes
+2024-11-01,FHH-TIS-005,Fine Sterilized Cotton Tissue,Tissues,2605,boxes
+2024-12-01,FHH-TIS-005,Fine Sterilized Cotton Tissue,Tissues,2869,boxes
+2023-01-01,FHH-TIS-006,Fine Bamboo Toilet Rolls 10-Pack,Tissues,2791,packs
+2023-02-01,FHH-TIS-006,Fine Bamboo Toilet Rolls 10-Pack,Tissues,2344,packs
+2023-03-01,FHH-TIS-006,Fine Bamboo Toilet Rolls 10-Pack,Tissues,2468,packs
+2023-04-01,FHH-TIS-006,Fine Bamboo Toilet Rolls 10-Pack,Tissues,1788,packs
+2023-05-01,FHH-TIS-006,Fine Bamboo Toilet Rolls 10-Pack,Tissues,2005,packs
+2023-06-01,FHH-TIS-006,Fine Bamboo Toilet Rolls 10-Pack,Tissues,2208,packs
+2023-07-01,FHH-TIS-006,Fine Bamboo Toilet Rolls 10-Pack,Tissues,1775,packs
+2023-08-01,FHH-TIS-006,Fine Bamboo Toilet Rolls 10-Pack,Tissues,1949,packs
+2023-09-01,FHH-TIS-006,Fine Bamboo Toilet Rolls 10-Pack,Tissues,2390,packs
+2023-10-01,FHH-TIS-006,Fine Bamboo Toilet Rolls 10-Pack,Tissues,2179,packs
+2023-11-01,FHH-TIS-006,Fine Bamboo Toilet Rolls 10-Pack,Tissues,2185,packs
+2023-12-01,FHH-TIS-006,Fine Bamboo Toilet Rolls 10-Pack,Tissues,2845,packs
+2024-01-01,FHH-TIS-006,Fine Bamboo Toilet Rolls 10-Pack,Tissues,2690,packs
+2024-02-01,FHH-TIS-006,Fine Bamboo Toilet Rolls 10-Pack,Tissues,2938,packs
+2024-03-01,FHH-TIS-006,Fine Bamboo Toilet Rolls 10-Pack,Tissues,2301,packs
+2024-04-01,FHH-TIS-006,Fine Bamboo Toilet Rolls 10-Pack,Tissues,2533,packs
+2024-05-01,FHH-TIS-006,Fine Bamboo Toilet Rolls 10-Pack,Tissues,2007,packs
+2024-06-01,FHH-TIS-006,Fine Bamboo Toilet Rolls 10-Pack,Tissues,2046,packs
+2024-07-01,FHH-TIS-006,Fine Bamboo Toilet Rolls 10-Pack,Tissues,2294,packs
+2024-08-01,FHH-TIS-006,Fine Bamboo Toilet Rolls 10-Pack,Tissues,2056,packs
+2024-09-01,FHH-TIS-006,Fine Bamboo Toilet Rolls 10-Pack,Tissues,2696,packs
+2024-10-01,FHH-TIS-006,Fine Bamboo Toilet Rolls 10-Pack,Tissues,2800,packs
+2024-11-01,FHH-TIS-006,Fine Bamboo Toilet Rolls 10-Pack,Tissues,2427,packs
+2024-12-01,FHH-TIS-006,Fine Bamboo Toilet Rolls 10-Pack,Tissues,3204,packs
+2023-01-01,FHH-WIP-001,Fine Baby Wipes 80s,Wet Wipes,5696,packs
+2023-02-01,FHH-WIP-001,Fine Baby Wipes 80s,Wet Wipes,6080,packs
+2023-03-01,FHH-WIP-001,Fine Baby Wipes 80s,Wet Wipes,6186,packs
+2023-04-01,FHH-WIP-001,Fine Baby Wipes 80s,Wet Wipes,6440,packs
+2023-05-01,FHH-WIP-001,Fine Baby Wipes 80s,Wet Wipes,7199,packs
+2023-06-01,FHH-WIP-001,Fine Baby Wipes 80s,Wet Wipes,8066,packs
+2023-07-01,FHH-WIP-001,Fine Baby Wipes 80s,Wet Wipes,8385,packs
+2023-08-01,FHH-WIP-001,Fine Baby Wipes 80s,Wet Wipes,8346,packs
+2023-09-01,FHH-WIP-001,Fine Baby Wipes 80s,Wet Wipes,6319,packs
+2023-10-01,FHH-WIP-001,Fine Baby Wipes 80s,Wet Wipes,6179,packs
+2023-11-01,FHH-WIP-001,Fine Baby Wipes 80s,Wet Wipes,5901,packs
+2023-12-01,FHH-WIP-001,Fine Baby Wipes 80s,Wet Wipes,5332,packs
+2024-01-01,FHH-WIP-001,Fine Baby Wipes 80s,Wet Wipes,7182,packs
+2024-02-01,FHH-WIP-001,Fine Baby Wipes 80s,Wet Wipes,6650,packs
+2024-03-01,FHH-WIP-001,Fine Baby Wipes 80s,Wet Wipes,6951,packs
+2024-04-01,FHH-WIP-001,Fine Baby Wipes 80s,Wet Wipes,8480,packs
+2024-05-01,FHH-WIP-001,Fine Baby Wipes 80s,Wet Wipes,7126,packs
+2024-06-01,FHH-WIP-001,Fine Baby Wipes 80s,Wet Wipes,9363,packs
+2024-07-01,FHH-WIP-001,Fine Baby Wipes 80s,Wet Wipes,10040,packs
+2024-08-01,FHH-WIP-001,Fine Baby Wipes 80s,Wet Wipes,8477,packs
+2024-09-01,FHH-WIP-001,Fine Baby Wipes 80s,Wet Wipes,8040,packs
+2024-10-01,FHH-WIP-001,Fine Baby Wipes 80s,Wet Wipes,6997,packs
+2024-11-01,FHH-WIP-001,Fine Baby Wipes 80s,Wet Wipes,6858,packs
+2024-12-01,FHH-WIP-001,Fine Baby Wipes 80s,Wet Wipes,7268,packs
+2023-01-01,FHH-WIP-002,Fine Flushable Wipes 40s,Wet Wipes,2470,packs
+2023-02-01,FHH-WIP-002,Fine Flushable Wipes 40s,Wet Wipes,2428,packs
+2023-03-01,FHH-WIP-002,Fine Flushable Wipes 40s,Wet Wipes,2879,packs
+2023-04-01,FHH-WIP-002,Fine Flushable Wipes 40s,Wet Wipes,3039,packs
+2023-05-01,FHH-WIP-002,Fine Flushable Wipes 40s,Wet Wipes,3101,packs
+2023-06-01,FHH-WIP-002,Fine Flushable Wipes 40s,Wet Wipes,3655,packs
+2023-07-01,FHH-WIP-002,Fine Flushable Wipes 40s,Wet Wipes,3794,packs
+2023-08-01,FHH-WIP-002,Fine Flushable Wipes 40s,Wet Wipes,3910,packs
+2023-09-01,FHH-WIP-002,Fine Flushable Wipes 40s,Wet Wipes,3021,packs
+2023-10-01,FHH-WIP-002,Fine Flushable Wipes 40s,Wet Wipes,3058,packs
+2023-11-01,FHH-WIP-002,Fine Flushable Wipes 40s,Wet Wipes,2548,packs
+2023-12-01,FHH-WIP-002,Fine Flushable Wipes 40s,Wet Wipes,3110,packs
+2024-01-01,FHH-WIP-002,Fine Flushable Wipes 40s,Wet Wipes,2963,packs
+2024-02-01,FHH-WIP-002,Fine Flushable Wipes 40s,Wet Wipes,2695,packs
+2024-03-01,FHH-WIP-002,Fine Flushable Wipes 40s,Wet Wipes,3172,packs
+2024-04-01,FHH-WIP-002,Fine Flushable Wipes 40s,Wet Wipes,3779,packs
+2024-05-01,FHH-WIP-002,Fine Flushable Wipes 40s,Wet Wipes,3428,packs
+2024-06-01,FHH-WIP-002,Fine Flushable Wipes 40s,Wet Wipes,4205,packs
+2024-07-01,FHH-WIP-002,Fine Flushable Wipes 40s,Wet Wipes,4306,packs
+2024-08-01,FHH-WIP-002,Fine Flushable Wipes 40s,Wet Wipes,4073,packs
+2024-09-01,FHH-WIP-002,Fine Flushable Wipes 40s,Wet Wipes,3142,packs
+2024-10-01,FHH-WIP-002,Fine Flushable Wipes 40s,Wet Wipes,2688,packs
+2024-11-01,FHH-WIP-002,Fine Flushable Wipes 40s,Wet Wipes,2802,packs
+2024-12-01,FHH-WIP-002,Fine Flushable Wipes 40s,Wet Wipes,3045,packs
+2023-01-01,FHH-WIP-003,Fine Antibacterial Wipes 72s,Wet Wipes,3112,packs
+2023-02-01,FHH-WIP-003,Fine Antibacterial Wipes 72s,Wet Wipes,2825,packs
+2023-03-01,FHH-WIP-003,Fine Antibacterial Wipes 72s,Wet Wipes,3817,packs
+2023-04-01,FHH-WIP-003,Fine Antibacterial Wipes 72s,Wet Wipes,4070,packs
+2023-05-01,FHH-WIP-003,Fine Antibacterial Wipes 72s,Wet Wipes,3521,packs
+2023-06-01,FHH-WIP-003,Fine Antibacterial Wipes 72s,Wet Wipes,4373,packs
+2023-07-01,FHH-WIP-003,Fine Antibacterial Wipes 72s,Wet Wipes,4529,packs
+2023-08-01,FHH-WIP-003,Fine Antibacterial Wipes 72s,Wet Wipes,4046,packs
+2023-09-01,FHH-WIP-003,Fine Antibacterial Wipes 72s,Wet Wipes,3770,packs
+2023-10-01,FHH-WIP-003,Fine Antibacterial Wipes 72s,Wet Wipes,3476,packs
+2023-11-01,FHH-WIP-003,Fine Antibacterial Wipes 72s,Wet Wipes,3435,packs
+2023-12-01,FHH-WIP-003,Fine Antibacterial Wipes 72s,Wet Wipes,3363,packs
+2024-01-01,FHH-WIP-003,Fine Antibacterial Wipes 72s,Wet Wipes,3049,packs
+2024-02-01,FHH-WIP-003,Fine Antibacterial Wipes 72s,Wet Wipes,3250,packs
+2024-03-01,FHH-WIP-003,Fine Antibacterial Wipes 72s,Wet Wipes,4387,packs
+2024-04-01,FHH-WIP-003,Fine Antibacterial Wipes 72s,Wet Wipes,4599,packs
+2024-05-01,FHH-WIP-003,Fine Antibacterial Wipes 72s,Wet Wipes,4413,packs
+2024-06-01,FHH-WIP-003,Fine Antibacterial Wipes 72s,Wet Wipes,6319,packs
+2024-07-01,FHH-WIP-003,Fine Antibacterial Wipes 72s,Wet Wipes,5268,packs
+2024-08-01,FHH-WIP-003,Fine Antibacterial Wipes 72s,Wet Wipes,5427,packs
+2024-09-01,FHH-WIP-003,Fine Antibacterial Wipes 72s,Wet Wipes,4406,packs
+2024-10-01,FHH-WIP-003,Fine Antibacterial Wipes 72s,Wet Wipes,3908,packs
+2024-11-01,FHH-WIP-003,Fine Antibacterial Wipes 72s,Wet Wipes,3440,packs
+2024-12-01,FHH-WIP-003,Fine Antibacterial Wipes 72s,Wet Wipes,3670,packs
+2023-01-01,FHH-WIP-004,Fine Facial Cleansing Wipes 25s,Wet Wipes,1857,packs
+2023-02-01,FHH-WIP-004,Fine Facial Cleansing Wipes 25s,Wet Wipes,1992,packs
+2023-03-01,FHH-WIP-004,Fine Facial Cleansing Wipes 25s,Wet Wipes,2341,packs
+2023-04-01,FHH-WIP-004,Fine Facial Cleansing Wipes 25s,Wet Wipes,2572,packs
+2023-05-01,FHH-WIP-004,Fine Facial Cleansing Wipes 25s,Wet Wipes,2906,packs
+2023-06-01,FHH-WIP-004,Fine Facial Cleansing Wipes 25s,Wet Wipes,2378,packs
+2023-07-01,FHH-WIP-004,Fine Facial Cleansing Wipes 25s,Wet Wipes,3077,packs
+2023-08-01,FHH-WIP-004,Fine Facial Cleansing Wipes 25s,Wet Wipes,2509,packs
+2023-09-01,FHH-WIP-004,Fine Facial Cleansing Wipes 25s,Wet Wipes,2282,packs
+2023-10-01,FHH-WIP-004,Fine Facial Cleansing Wipes 25s,Wet Wipes,2340,packs
+2023-11-01,FHH-WIP-004,Fine Facial Cleansing Wipes 25s,Wet Wipes,2056,packs
+2023-12-01,FHH-WIP-004,Fine Facial Cleansing Wipes 25s,Wet Wipes,1833,packs
+2024-01-01,FHH-WIP-004,Fine Facial Cleansing Wipes 25s,Wet Wipes,2090,packs
+2024-02-01,FHH-WIP-004,Fine Facial Cleansing Wipes 25s,Wet Wipes,2397,packs
+2024-03-01,FHH-WIP-004,Fine Facial Cleansing Wipes 25s,Wet Wipes,2567,packs
+2024-04-01,FHH-WIP-004,Fine Facial Cleansing Wipes 25s,Wet Wipes,2908,packs
+2024-05-01,FHH-WIP-004,Fine Facial Cleansing Wipes 25s,Wet Wipes,2752,packs
+2024-06-01,FHH-WIP-004,Fine Facial Cleansing Wipes 25s,Wet Wipes,2962,packs
+2024-07-01,FHH-WIP-004,Fine Facial Cleansing Wipes 25s,Wet Wipes,3819,packs
+2024-08-01,FHH-WIP-004,Fine Facial Cleansing Wipes 25s,Wet Wipes,3382,packs
+2024-09-01,FHH-WIP-004,Fine Facial Cleansing Wipes 25s,Wet Wipes,2219,packs
+2024-10-01,FHH-WIP-004,Fine Facial Cleansing Wipes 25s,Wet Wipes,2439,packs
+2024-11-01,FHH-WIP-004,Fine Facial Cleansing Wipes 25s,Wet Wipes,2162,packs
+2024-12-01,FHH-WIP-004,Fine Facial Cleansing Wipes 25s,Wet Wipes,2392,packs
+2023-01-01,FHH-WIP-005,Fine Hand & Surface Wipes 100s,Wet Wipes,1601,packs
+2023-02-01,FHH-WIP-005,Fine Hand & Surface Wipes 100s,Wet Wipes,1737,packs
+2023-03-01,FHH-WIP-005,Fine Hand & Surface Wipes 100s,Wet Wipes,2188,packs
+2023-04-01,FHH-WIP-005,Fine Hand & Surface Wipes 100s,Wet Wipes,2359,packs
+2023-05-01,FHH-WIP-005,Fine Hand & Surface Wipes 100s,Wet Wipes,1914,packs
+2023-06-01,FHH-WIP-005,Fine Hand & Surface Wipes 100s,Wet Wipes,2349,packs
+2023-07-01,FHH-WIP-005,Fine Hand & Surface Wipes 100s,Wet Wipes,2423,packs
+2023-08-01,FHH-WIP-005,Fine Hand & Surface Wipes 100s,Wet Wipes,2358,packs
+2023-09-01,FHH-WIP-005,Fine Hand & Surface Wipes 100s,Wet Wipes,2337,packs
+2023-10-01,FHH-WIP-005,Fine Hand & Surface Wipes 100s,Wet Wipes,1919,packs
+2023-11-01,FHH-WIP-005,Fine Hand & Surface Wipes 100s,Wet Wipes,1588,packs
+2023-12-01,FHH-WIP-005,Fine Hand & Surface Wipes 100s,Wet Wipes,1860,packs
+2024-01-01,FHH-WIP-005,Fine Hand & Surface Wipes 100s,Wet Wipes,2240,packs
+2024-02-01,FHH-WIP-005,Fine Hand & Surface Wipes 100s,Wet Wipes,2125,packs
+2024-03-01,FHH-WIP-005,Fine Hand & Surface Wipes 100s,Wet Wipes,2068,packs
+2024-04-01,FHH-WIP-005,Fine Hand & Surface Wipes 100s,Wet Wipes,2373,packs
+2024-05-01,FHH-WIP-005,Fine Hand & Surface Wipes 100s,Wet Wipes,2608,packs
+2024-06-01,FHH-WIP-005,Fine Hand & Surface Wipes 100s,Wet Wipes,2546,packs
+2024-07-01,FHH-WIP-005,Fine Hand & Surface Wipes 100s,Wet Wipes,2915,packs
+2024-08-01,FHH-WIP-005,Fine Hand & Surface Wipes 100s,Wet Wipes,2952,packs
+2024-09-01,FHH-WIP-005,Fine Hand & Surface Wipes 100s,Wet Wipes,2117,packs
+2024-10-01,FHH-WIP-005,Fine Hand & Surface Wipes 100s,Wet Wipes,2065,packs
+2024-11-01,FHH-WIP-005,Fine Hand & Surface Wipes 100s,Wet Wipes,1460,packs
+2024-12-01,FHH-WIP-005,Fine Hand & Surface Wipes 100s,Wet Wipes,1775,packs
+2023-01-01,FHH-DIA-001,Fine Baby Diapers Size 3 (46s),Diapers,3648,packs
+2023-02-01,FHH-DIA-001,Fine Baby Diapers Size 3 (46s),Diapers,3329,packs
+2023-03-01,FHH-DIA-001,Fine Baby Diapers Size 3 (46s),Diapers,4541,packs
+2023-04-01,FHH-DIA-001,Fine Baby Diapers Size 3 (46s),Diapers,3670,packs
+2023-05-01,FHH-DIA-001,Fine Baby Diapers Size 3 (46s),Diapers,3900,packs
+2023-06-01,FHH-DIA-001,Fine Baby Diapers Size 3 (46s),Diapers,3981,packs
+2023-07-01,FHH-DIA-001,Fine Baby Diapers Size 3 (46s),Diapers,4322,packs
+2023-08-01,FHH-DIA-001,Fine Baby Diapers Size 3 (46s),Diapers,3441,packs
+2023-09-01,FHH-DIA-001,Fine Baby Diapers Size 3 (46s),Diapers,4392,packs
+2023-10-01,FHH-DIA-001,Fine Baby Diapers Size 3 (46s),Diapers,3995,packs
+2023-11-01,FHH-DIA-001,Fine Baby Diapers Size 3 (46s),Diapers,3545,packs
+2023-12-01,FHH-DIA-001,Fine Baby Diapers Size 3 (46s),Diapers,3962,packs
+2024-01-01,FHH-DIA-001,Fine Baby Diapers Size 3 (46s),Diapers,4237,packs
+2024-02-01,FHH-DIA-001,Fine Baby Diapers Size 3 (46s),Diapers,3941,packs
+2024-03-01,FHH-DIA-001,Fine Baby Diapers Size 3 (46s),Diapers,4520,packs
+2024-04-01,FHH-DIA-001,Fine Baby Diapers Size 3 (46s),Diapers,4494,packs
+2024-05-01,FHH-DIA-001,Fine Baby Diapers Size 3 (46s),Diapers,4563,packs
+2024-06-01,FHH-DIA-001,Fine Baby Diapers Size 3 (46s),Diapers,4639,packs
+2024-07-01,FHH-DIA-001,Fine Baby Diapers Size 3 (46s),Diapers,4881,packs
+2024-08-01,FHH-DIA-001,Fine Baby Diapers Size 3 (46s),Diapers,3914,packs
+2024-09-01,FHH-DIA-001,Fine Baby Diapers Size 3 (46s),Diapers,5253,packs
+2024-10-01,FHH-DIA-001,Fine Baby Diapers Size 3 (46s),Diapers,3761,packs
+2024-11-01,FHH-DIA-001,Fine Baby Diapers Size 3 (46s),Diapers,4242,packs
+2024-12-01,FHH-DIA-001,Fine Baby Diapers Size 3 (46s),Diapers,4464,packs
+2023-01-01,FHH-DIA-002,Fine Baby Diapers Size 4 (40s),Diapers,4108,packs
+2023-02-01,FHH-DIA-002,Fine Baby Diapers Size 4 (40s),Diapers,3791,packs
+2023-03-01,FHH-DIA-002,Fine Baby Diapers Size 4 (40s),Diapers,4261,packs
+2023-04-01,FHH-DIA-002,Fine Baby Diapers Size 4 (40s),Diapers,4295,packs
+2023-05-01,FHH-DIA-002,Fine Baby Diapers Size 4 (40s),Diapers,4156,packs
+2023-06-01,FHH-DIA-002,Fine Baby Diapers Size 4 (40s),Diapers,4540,packs
+2023-07-01,FHH-DIA-002,Fine Baby Diapers Size 4 (40s),Diapers,4301,packs
+2023-08-01,FHH-DIA-002,Fine Baby Diapers Size 4 (40s),Diapers,3963,packs
+2023-09-01,FHH-DIA-002,Fine Baby Diapers Size 4 (40s),Diapers,4647,packs
+2023-10-01,FHH-DIA-002,Fine Baby Diapers Size 4 (40s),Diapers,4413,packs
+2023-11-01,FHH-DIA-002,Fine Baby Diapers Size 4 (40s),Diapers,4421,packs
+2023-12-01,FHH-DIA-002,Fine Baby Diapers Size 4 (40s),Diapers,4330,packs
+2024-01-01,FHH-DIA-002,Fine Baby Diapers Size 4 (40s),Diapers,4201,packs
+2024-02-01,FHH-DIA-002,Fine Baby Diapers Size 4 (40s),Diapers,4267,packs
+2024-03-01,FHH-DIA-002,Fine Baby Diapers Size 4 (40s),Diapers,5140,packs
+2024-04-01,FHH-DIA-002,Fine Baby Diapers Size 4 (40s),Diapers,5247,packs
+2024-05-01,FHH-DIA-002,Fine Baby Diapers Size 4 (40s),Diapers,4870,packs
+2024-06-01,FHH-DIA-002,Fine Baby Diapers Size 4 (40s),Diapers,4798,packs
+2024-07-01,FHH-DIA-002,Fine Baby Diapers Size 4 (40s),Diapers,5151,packs
+2024-08-01,FHH-DIA-002,Fine Baby Diapers Size 4 (40s),Diapers,4465,packs
+2024-09-01,FHH-DIA-002,Fine Baby Diapers Size 4 (40s),Diapers,5054,packs
+2024-10-01,FHH-DIA-002,Fine Baby Diapers Size 4 (40s),Diapers,4731,packs
+2024-11-01,FHH-DIA-002,Fine Baby Diapers Size 4 (40s),Diapers,4553,packs
+2024-12-01,FHH-DIA-002,Fine Baby Diapers Size 4 (40s),Diapers,5004,packs
+2023-01-01,FHH-DIA-003,Fine Baby Diapers Size 5 (34s),Diapers,3656,packs
+2023-02-01,FHH-DIA-003,Fine Baby Diapers Size 5 (34s),Diapers,3628,packs
+2023-03-01,FHH-DIA-003,Fine Baby Diapers Size 5 (34s),Diapers,4085,packs
+2023-04-01,FHH-DIA-003,Fine Baby Diapers Size 5 (34s),Diapers,3824,packs
+2023-05-01,FHH-DIA-003,Fine Baby Diapers Size 5 (34s),Diapers,3927,packs
+2023-06-01,FHH-DIA-003,Fine Baby Diapers Size 5 (34s),Diapers,3539,packs
+2023-07-01,FHH-DIA-003,Fine Baby Diapers Size 5 (34s),Diapers,3662,packs
+2023-08-01,FHH-DIA-003,Fine Baby Diapers Size 5 (34s),Diapers,3544,packs
+2023-09-01,FHH-DIA-003,Fine Baby Diapers Size 5 (34s),Diapers,3729,packs
+2023-10-01,FHH-DIA-003,Fine Baby Diapers Size 5 (34s),Diapers,3852,packs
+2023-11-01,FHH-DIA-003,Fine Baby Diapers Size 5 (34s),Diapers,3312,packs
+2023-12-01,FHH-DIA-003,Fine Baby Diapers Size 5 (34s),Diapers,4108,packs
+2024-01-01,FHH-DIA-003,Fine Baby Diapers Size 5 (34s),Diapers,3532,packs
+2024-02-01,FHH-DIA-003,Fine Baby Diapers Size 5 (34s),Diapers,3443,packs
+2024-03-01,FHH-DIA-003,Fine Baby Diapers Size 5 (34s),Diapers,4524,packs
+2024-04-01,FHH-DIA-003,Fine Baby Diapers Size 5 (34s),Diapers,4541,packs
+2024-05-01,FHH-DIA-003,Fine Baby Diapers Size 5 (34s),Diapers,4372,packs
+2024-06-01,FHH-DIA-003,Fine Baby Diapers Size 5 (34s),Diapers,4261,packs
+2024-07-01,FHH-DIA-003,Fine Baby Diapers Size 5 (34s),Diapers,3986,packs
+2024-08-01,FHH-DIA-003,Fine Baby Diapers Size 5 (34s),Diapers,3714,packs
+2024-09-01,FHH-DIA-003,Fine Baby Diapers Size 5 (34s),Diapers,4158,packs
+2024-10-01,FHH-DIA-003,Fine Baby Diapers Size 5 (34s),Diapers,3883,packs
+2024-11-01,FHH-DIA-003,Fine Baby Diapers Size 5 (34s),Diapers,4264,packs
+2024-12-01,FHH-DIA-003,Fine Baby Diapers Size 5 (34s),Diapers,3880,packs
+2023-01-01,FHH-DIA-004,Fine Baby Diapers Newborn (56s),Diapers,2196,packs
+2023-02-01,FHH-DIA-004,Fine Baby Diapers Newborn (56s),Diapers,2275,packs
+2023-03-01,FHH-DIA-004,Fine Baby Diapers Newborn (56s),Diapers,2620,packs
+2023-04-01,FHH-DIA-004,Fine Baby Diapers Newborn (56s),Diapers,2499,packs
+2023-05-01,FHH-DIA-004,Fine Baby Diapers Newborn (56s),Diapers,2385,packs
+2023-06-01,FHH-DIA-004,Fine Baby Diapers Newborn (56s),Diapers,2537,packs
+2023-07-01,FHH-DIA-004,Fine Baby Diapers Newborn (56s),Diapers,2495,packs
+2023-08-01,FHH-DIA-004,Fine Baby Diapers Newborn (56s),Diapers,2356,packs
+2023-09-01,FHH-DIA-004,Fine Baby Diapers Newborn (56s),Diapers,2442,packs
+2023-10-01,FHH-DIA-004,Fine Baby Diapers Newborn (56s),Diapers,2568,packs
+2023-11-01,FHH-DIA-004,Fine Baby Diapers Newborn (56s),Diapers,2148,packs
+2023-12-01,FHH-DIA-004,Fine Baby Diapers Newborn (56s),Diapers,2141,packs
+2024-01-01,FHH-DIA-004,Fine Baby Diapers Newborn (56s),Diapers,2482,packs
+2024-02-01,FHH-DIA-004,Fine Baby Diapers Newborn (56s),Diapers,2570,packs
+2024-03-01,FHH-DIA-004,Fine Baby Diapers Newborn (56s),Diapers,2909,packs
+2024-04-01,FHH-DIA-004,Fine Baby Diapers Newborn (56s),Diapers,3274,packs
+2024-05-01,FHH-DIA-004,Fine Baby Diapers Newborn (56s),Diapers,3051,packs
+2024-06-01,FHH-DIA-004,Fine Baby Diapers Newborn (56s),Diapers,2746,packs
+2024-07-01,FHH-DIA-004,Fine Baby Diapers Newborn (56s),Diapers,2731,packs
+2024-08-01,FHH-DIA-004,Fine Baby Diapers Newborn (56s),Diapers,2523,packs
+2024-09-01,FHH-DIA-004,Fine Baby Diapers Newborn (56s),Diapers,2830,packs
+2024-10-01,FHH-DIA-004,Fine Baby Diapers Newborn (56s),Diapers,2750,packs
+2024-11-01,FHH-DIA-004,Fine Baby Diapers Newborn (56s),Diapers,2782,packs
+2024-12-01,FHH-DIA-004,Fine Baby Diapers Newborn (56s),Diapers,2514,packs
+2023-01-01,FHH-DIA-005,Fine Baby Pants Size 4 (44s),Diapers,2960,packs
+2023-02-01,FHH-DIA-005,Fine Baby Pants Size 4 (44s),Diapers,3168,packs
+2023-03-01,FHH-DIA-005,Fine Baby Pants Size 4 (44s),Diapers,3038,packs
+2023-04-01,FHH-DIA-005,Fine Baby Pants Size 4 (44s),Diapers,3264,packs
+2023-05-01,FHH-DIA-005,Fine Baby Pants Size 4 (44s),Diapers,3255,packs
+2023-06-01,FHH-DIA-005,Fine Baby Pants Size 4 (44s),Diapers,2910,packs
+2023-07-01,FHH-DIA-005,Fine Baby Pants Size 4 (44s),Diapers,3011,packs
+2023-08-01,FHH-DIA-005,Fine Baby Pants Size 4 (44s),Diapers,2970,packs
+2023-09-01,FHH-DIA-005,Fine Baby Pants Size 4 (44s),Diapers,3090,packs
+2023-10-01,FHH-DIA-005,Fine Baby Pants Size 4 (44s),Diapers,2858,packs
+2023-11-01,FHH-DIA-005,Fine Baby Pants Size 4 (44s),Diapers,2942,packs
+2023-12-01,FHH-DIA-005,Fine Baby Pants Size 4 (44s),Diapers,3032,packs
+2024-01-01,FHH-DIA-005,Fine Baby Pants Size 4 (44s),Diapers,3552,packs
+2024-02-01,FHH-DIA-005,Fine Baby Pants Size 4 (44s),Diapers,3402,packs
+2024-03-01,FHH-DIA-005,Fine Baby Pants Size 4 (44s),Diapers,4021,packs
+2024-04-01,FHH-DIA-005,Fine Baby Pants Size 4 (44s),Diapers,3321,packs
+2024-05-01,FHH-DIA-005,Fine Baby Pants Size 4 (44s),Diapers,3691,packs
+2024-06-01,FHH-DIA-005,Fine Baby Pants Size 4 (44s),Diapers,3411,packs
+2024-07-01,FHH-DIA-005,Fine Baby Pants Size 4 (44s),Diapers,3885,packs
+2024-08-01,FHH-DIA-005,Fine Baby Pants Size 4 (44s),Diapers,3101,packs
+2024-09-01,FHH-DIA-005,Fine Baby Pants Size 4 (44s),Diapers,3195,packs
+2024-10-01,FHH-DIA-005,Fine Baby Pants Size 4 (44s),Diapers,3238,packs
+2024-11-01,FHH-DIA-005,Fine Baby Pants Size 4 (44s),Diapers,2720,packs
+2024-12-01,FHH-DIA-005,Fine Baby Pants Size 4 (44s),Diapers,3116,packs
+2023-01-01,FHH-DIA-006,Fine Baby Pants Size 5 (38s),Diapers,2393,packs
+2023-02-01,FHH-DIA-006,Fine Baby Pants Size 5 (38s),Diapers,2560,packs
+2023-03-01,FHH-DIA-006,Fine Baby Pants Size 5 (38s),Diapers,2823,packs
+2023-04-01,FHH-DIA-006,Fine Baby Pants Size 5 (38s),Diapers,3261,packs
+2023-05-01,FHH-DIA-006,Fine Baby Pants Size 5 (38s),Diapers,2976,packs
+2023-06-01,FHH-DIA-006,Fine Baby Pants Size 5 (38s),Diapers,2571,packs
+2023-07-01,FHH-DIA-006,Fine Baby Pants Size 5 (38s),Diapers,2461,packs
+2023-08-01,FHH-DIA-006,Fine Baby Pants Size 5 (38s),Diapers,2765,packs
+2023-09-01,FHH-DIA-006,Fine Baby Pants Size 5 (38s),Diapers,2459,packs
+2023-10-01,FHH-DIA-006,Fine Baby Pants Size 5 (38s),Diapers,3131,packs
+2023-11-01,FHH-DIA-006,Fine Baby Pants Size 5 (38s),Diapers,2881,packs
+2023-12-01,FHH-DIA-006,Fine Baby Pants Size 5 (38s),Diapers,2516,packs
+2024-01-01,FHH-DIA-006,Fine Baby Pants Size 5 (38s),Diapers,2462,packs
+2024-02-01,FHH-DIA-006,Fine Baby Pants Size 5 (38s),Diapers,3139,packs
+2024-03-01,FHH-DIA-006,Fine Baby Pants Size 5 (38s),Diapers,3047,packs
+2024-04-01,FHH-DIA-006,Fine Baby Pants Size 5 (38s),Diapers,3487,packs
+2024-05-01,FHH-DIA-006,Fine Baby Pants Size 5 (38s),Diapers,2699,packs
+2024-06-01,FHH-DIA-006,Fine Baby Pants Size 5 (38s),Diapers,2869,packs
+2024-07-01,FHH-DIA-006,Fine Baby Pants Size 5 (38s),Diapers,2965,packs
+2024-08-01,FHH-DIA-006,Fine Baby Pants Size 5 (38s),Diapers,2983,packs
+2024-09-01,FHH-DIA-006,Fine Baby Pants Size 5 (38s),Diapers,2960,packs
+2024-10-01,FHH-DIA-006,Fine Baby Pants Size 5 (38s),Diapers,3201,packs
+2024-11-01,FHH-DIA-006,Fine Baby Pants Size 5 (38s),Diapers,2687,packs
+2024-12-01,FHH-DIA-006,Fine Baby Pants Size 5 (38s),Diapers,2883,packs
+2023-01-01,FHH-NAP-001,Fine Napkins 150s (Pack),Napkins,3261,packs
+2023-02-01,FHH-NAP-001,Fine Napkins 150s (Pack),Napkins,3374,packs
+2023-03-01,FHH-NAP-001,Fine Napkins 150s (Pack),Napkins,4341,packs
+2023-04-01,FHH-NAP-001,Fine Napkins 150s (Pack),Napkins,3906,packs
+2023-05-01,FHH-NAP-001,Fine Napkins 150s (Pack),Napkins,3173,packs
+2023-06-01,FHH-NAP-001,Fine Napkins 150s (Pack),Napkins,3619,packs
+2023-07-01,FHH-NAP-001,Fine Napkins 150s (Pack),Napkins,3275,packs
+2023-08-01,FHH-NAP-001,Fine Napkins 150s (Pack),Napkins,3009,packs
+2023-09-01,FHH-NAP-001,Fine Napkins 150s (Pack),Napkins,3923,packs
+2023-10-01,FHH-NAP-001,Fine Napkins 150s (Pack),Napkins,3711,packs
+2023-11-01,FHH-NAP-001,Fine Napkins 150s (Pack),Napkins,4229,packs
+2023-12-01,FHH-NAP-001,Fine Napkins 150s (Pack),Napkins,4252,packs
+2024-01-01,FHH-NAP-001,Fine Napkins 150s (Pack),Napkins,4213,packs
+2024-02-01,FHH-NAP-001,Fine Napkins 150s (Pack),Napkins,4137,packs
+2024-03-01,FHH-NAP-001,Fine Napkins 150s (Pack),Napkins,4505,packs
+2024-04-01,FHH-NAP-001,Fine Napkins 150s (Pack),Napkins,5175,packs
+2024-05-01,FHH-NAP-001,Fine Napkins 150s (Pack),Napkins,4254,packs
+2024-06-01,FHH-NAP-001,Fine Napkins 150s (Pack),Napkins,4073,packs
+2024-07-01,FHH-NAP-001,Fine Napkins 150s (Pack),Napkins,3290,packs
+2024-08-01,FHH-NAP-001,Fine Napkins 150s (Pack),Napkins,3772,packs
+2024-09-01,FHH-NAP-001,Fine Napkins 150s (Pack),Napkins,4228,packs
+2024-10-01,FHH-NAP-001,Fine Napkins 150s (Pack),Napkins,3527,packs
+2024-11-01,FHH-NAP-001,Fine Napkins 150s (Pack),Napkins,3905,packs
+2024-12-01,FHH-NAP-001,Fine Napkins 150s (Pack),Napkins,3949,packs
+2023-01-01,FHH-NAP-002,Fine Dinner Napkins 50s (Pack),Napkins,1952,packs
+2023-02-01,FHH-NAP-002,Fine Dinner Napkins 50s (Pack),Napkins,2116,packs
+2023-03-01,FHH-NAP-002,Fine Dinner Napkins 50s (Pack),Napkins,2841,packs
+2023-04-01,FHH-NAP-002,Fine Dinner Napkins 50s (Pack),Napkins,2666,packs
+2023-05-01,FHH-NAP-002,Fine Dinner Napkins 50s (Pack),Napkins,2525,packs
+2023-06-01,FHH-NAP-002,Fine Dinner Napkins 50s (Pack),Napkins,1804,packs
+2023-07-01,FHH-NAP-002,Fine Dinner Napkins 50s (Pack),Napkins,1702,packs
+2023-08-01,FHH-NAP-002,Fine Dinner Napkins 50s (Pack),Napkins,1968,packs
+2023-09-01,FHH-NAP-002,Fine Dinner Napkins 50s (Pack),Napkins,2222,packs
+2023-10-01,FHH-NAP-002,Fine Dinner Napkins 50s (Pack),Napkins,2265,packs
+2023-11-01,FHH-NAP-002,Fine Dinner Napkins 50s (Pack),Napkins,1992,packs
+2023-12-01,FHH-NAP-002,Fine Dinner Napkins 50s (Pack),Napkins,2593,packs
+2024-01-01,FHH-NAP-002,Fine Dinner Napkins 50s (Pack),Napkins,2001,packs
+2024-02-01,FHH-NAP-002,Fine Dinner Napkins 50s (Pack),Napkins,2361,packs
+2024-03-01,FHH-NAP-002,Fine Dinner Napkins 50s (Pack),Napkins,2922,packs
+2024-04-01,FHH-NAP-002,Fine Dinner Napkins 50s (Pack),Napkins,2743,packs
+2024-05-01,FHH-NAP-002,Fine Dinner Napkins 50s (Pack),Napkins,2396,packs
+2024-06-01,FHH-NAP-002,Fine Dinner Napkins 50s (Pack),Napkins,2075,packs
+2024-07-01,FHH-NAP-002,Fine Dinner Napkins 50s (Pack),Napkins,2191,packs
+2024-08-01,FHH-NAP-002,Fine Dinner Napkins 50s (Pack),Napkins,2377,packs
+2024-09-01,FHH-NAP-002,Fine Dinner Napkins 50s (Pack),Napkins,2218,packs
+2024-10-01,FHH-NAP-002,Fine Dinner Napkins 50s (Pack),Napkins,2638,packs
+2024-11-01,FHH-NAP-002,Fine Dinner Napkins 50s (Pack),Napkins,2551,packs
+2024-12-01,FHH-NAP-002,Fine Dinner Napkins 50s (Pack),Napkins,2729,packs
+2023-01-01,FHH-NAP-003,Fine Cocktail Napkins 100s,Napkins,1506,packs
+2023-02-01,FHH-NAP-003,Fine Cocktail Napkins 100s,Napkins,1398,packs
+2023-03-01,FHH-NAP-003,Fine Cocktail Napkins 100s,Napkins,1847,packs
+2023-04-01,FHH-NAP-003,Fine Cocktail Napkins 100s,Napkins,1826,packs
+2023-05-01,FHH-NAP-003,Fine Cocktail Napkins 100s,Napkins,1969,packs
+2023-06-01,FHH-NAP-003,Fine Cocktail Napkins 100s,Napkins,1549,packs
+2023-07-01,FHH-NAP-003,Fine Cocktail Napkins 100s,Napkins,1417,packs
+2023-08-01,FHH-NAP-003,Fine Cocktail Napkins 100s,Napkins,1532,packs
+2023-09-01,FHH-NAP-003,Fine Cocktail Napkins 100s,Napkins,1627,packs
+2023-10-01,FHH-NAP-003,Fine Cocktail Napkins 100s,Napkins,1699,packs
+2023-11-01,FHH-NAP-003,Fine Cocktail Napkins 100s,Napkins,1908,packs
+2023-12-01,FHH-NAP-003,Fine Cocktail Napkins 100s,Napkins,2111,packs
+2024-01-01,FHH-NAP-003,Fine Cocktail Napkins 100s,Napkins,1630,packs
+2024-02-01,FHH-NAP-003,Fine Cocktail Napkins 100s,Napkins,1628,packs
+2024-03-01,FHH-NAP-003,Fine Cocktail Napkins 100s,Napkins,2115,packs
+2024-04-01,FHH-NAP-003,Fine Cocktail Napkins 100s,Napkins,1843,packs
+2024-05-01,FHH-NAP-003,Fine Cocktail Napkins 100s,Napkins,1673,packs
+2024-06-01,FHH-NAP-003,Fine Cocktail Napkins 100s,Napkins,1916,packs
+2024-07-01,FHH-NAP-003,Fine Cocktail Napkins 100s,Napkins,1898,packs
+2024-08-01,FHH-NAP-003,Fine Cocktail Napkins 100s,Napkins,1649,packs
+2024-09-01,FHH-NAP-003,Fine Cocktail Napkins 100s,Napkins,1919,packs
+2024-10-01,FHH-NAP-003,Fine Cocktail Napkins 100s,Napkins,1980,packs
+2024-11-01,FHH-NAP-003,Fine Cocktail Napkins 100s,Napkins,2529,packs
+2024-12-01,FHH-NAP-003,Fine Cocktail Napkins 100s,Napkins,2419,packs
+2023-01-01,FHH-FEM-001,Fine Feminine Pads Regular 10s,Feminine Care,4750,packs
+2023-02-01,FHH-FEM-001,Fine Feminine Pads Regular 10s,Feminine Care,4447,packs
+2023-03-01,FHH-FEM-001,Fine Feminine Pads Regular 10s,Feminine Care,4211,packs
+2023-04-01,FHH-FEM-001,Fine Feminine Pads Regular 10s,Feminine Care,4926,packs
+2023-05-01,FHH-FEM-001,Fine Feminine Pads Regular 10s,Feminine Care,4569,packs
+2023-06-01,FHH-FEM-001,Fine Feminine Pads Regular 10s,Feminine Care,4324,packs
+2023-07-01,FHH-FEM-001,Fine Feminine Pads Regular 10s,Feminine Care,4642,packs
+2023-08-01,FHH-FEM-001,Fine Feminine Pads Regular 10s,Feminine Care,4486,packs
+2023-09-01,FHH-FEM-001,Fine Feminine Pads Regular 10s,Feminine Care,5593,packs
+2023-10-01,FHH-FEM-001,Fine Feminine Pads Regular 10s,Feminine Care,5292,packs
+2023-11-01,FHH-FEM-001,Fine Feminine Pads Regular 10s,Feminine Care,4956,packs
+2023-12-01,FHH-FEM-001,Fine Feminine Pads Regular 10s,Feminine Care,5565,packs
+2024-01-01,FHH-FEM-001,Fine Feminine Pads Regular 10s,Feminine Care,5409,packs
+2024-02-01,FHH-FEM-001,Fine Feminine Pads Regular 10s,Feminine Care,5020,packs
+2024-03-01,FHH-FEM-001,Fine Feminine Pads Regular 10s,Feminine Care,6066,packs
+2024-04-01,FHH-FEM-001,Fine Feminine Pads Regular 10s,Feminine Care,5657,packs
+2024-05-01,FHH-FEM-001,Fine Feminine Pads Regular 10s,Feminine Care,4988,packs
+2024-06-01,FHH-FEM-001,Fine Feminine Pads Regular 10s,Feminine Care,5372,packs
+2024-07-01,FHH-FEM-001,Fine Feminine Pads Regular 10s,Feminine Care,5088,packs
+2024-08-01,FHH-FEM-001,Fine Feminine Pads Regular 10s,Feminine Care,4880,packs
+2024-09-01,FHH-FEM-001,Fine Feminine Pads Regular 10s,Feminine Care,5911,packs
+2024-10-01,FHH-FEM-001,Fine Feminine Pads Regular 10s,Feminine Care,6363,packs
+2024-11-01,FHH-FEM-001,Fine Feminine Pads Regular 10s,Feminine Care,4916,packs
+2024-12-01,FHH-FEM-001,Fine Feminine Pads Regular 10s,Feminine Care,5802,packs
+2023-01-01,FHH-FEM-002,Fine Feminine Pads Overnight 8s,Feminine Care,3033,packs
+2023-02-01,FHH-FEM-002,Fine Feminine Pads Overnight 8s,Feminine Care,3085,packs
+2023-03-01,FHH-FEM-002,Fine Feminine Pads Overnight 8s,Feminine Care,3068,packs
+2023-04-01,FHH-FEM-002,Fine Feminine Pads Overnight 8s,Feminine Care,3008,packs
+2023-05-01,FHH-FEM-002,Fine Feminine Pads Overnight 8s,Feminine Care,3255,packs
+2023-06-01,FHH-FEM-002,Fine Feminine Pads Overnight 8s,Feminine Care,3037,packs
+2023-07-01,FHH-FEM-002,Fine Feminine Pads Overnight 8s,Feminine Care,3334,packs
+2023-08-01,FHH-FEM-002,Fine Feminine Pads Overnight 8s,Feminine Care,3261,packs
+2023-09-01,FHH-FEM-002,Fine Feminine Pads Overnight 8s,Feminine Care,3222,packs
+2023-10-01,FHH-FEM-002,Fine Feminine Pads Overnight 8s,Feminine Care,3056,packs
+2023-11-01,FHH-FEM-002,Fine Feminine Pads Overnight 8s,Feminine Care,3154,packs
+2023-12-01,FHH-FEM-002,Fine Feminine Pads Overnight 8s,Feminine Care,3517,packs
+2024-01-01,FHH-FEM-002,Fine Feminine Pads Overnight 8s,Feminine Care,3727,packs
+2024-02-01,FHH-FEM-002,Fine Feminine Pads Overnight 8s,Feminine Care,3313,packs
+2024-03-01,FHH-FEM-002,Fine Feminine Pads Overnight 8s,Feminine Care,3633,packs
+2024-04-01,FHH-FEM-002,Fine Feminine Pads Overnight 8s,Feminine Care,3833,packs
+2024-05-01,FHH-FEM-002,Fine Feminine Pads Overnight 8s,Feminine Care,3142,packs
+2024-06-01,FHH-FEM-002,Fine Feminine Pads Overnight 8s,Feminine Care,3795,packs
+2024-07-01,FHH-FEM-002,Fine Feminine Pads Overnight 8s,Feminine Care,3454,packs
+2024-08-01,FHH-FEM-002,Fine Feminine Pads Overnight 8s,Feminine Care,3825,packs
+2024-09-01,FHH-FEM-002,Fine Feminine Pads Overnight 8s,Feminine Care,3445,packs
+2024-10-01,FHH-FEM-002,Fine Feminine Pads Overnight 8s,Feminine Care,3148,packs
+2024-11-01,FHH-FEM-002,Fine Feminine Pads Overnight 8s,Feminine Care,3210,packs
+2024-12-01,FHH-FEM-002,Fine Feminine Pads Overnight 8s,Feminine Care,3715,packs
+2023-01-01,FHH-FEM-003,Fine Panty Liners 30s,Feminine Care,2756,packs
+2023-02-01,FHH-FEM-003,Fine Panty Liners 30s,Feminine Care,2513,packs
+2023-03-01,FHH-FEM-003,Fine Panty Liners 30s,Feminine Care,2856,packs
+2023-04-01,FHH-FEM-003,Fine Panty Liners 30s,Feminine Care,2364,packs
+2023-05-01,FHH-FEM-003,Fine Panty Liners 30s,Feminine Care,2721,packs
+2023-06-01,FHH-FEM-003,Fine Panty Liners 30s,Feminine Care,2479,packs
+2023-07-01,FHH-FEM-003,Fine Panty Liners 30s,Feminine Care,2610,packs
+2023-08-01,FHH-FEM-003,Fine Panty Liners 30s,Feminine Care,2773,packs
+2023-09-01,FHH-FEM-003,Fine Panty Liners 30s,Feminine Care,2581,packs
+2023-10-01,FHH-FEM-003,Fine Panty Liners 30s,Feminine Care,2695,packs
+2023-11-01,FHH-FEM-003,Fine Panty Liners 30s,Feminine Care,3014,packs
+2023-12-01,FHH-FEM-003,Fine Panty Liners 30s,Feminine Care,2669,packs
+2024-01-01,FHH-FEM-003,Fine Panty Liners 30s,Feminine Care,3226,packs
+2024-02-01,FHH-FEM-003,Fine Panty Liners 30s,Feminine Care,2758,packs
+2024-03-01,FHH-FEM-003,Fine Panty Liners 30s,Feminine Care,3170,packs
+2024-04-01,FHH-FEM-003,Fine Panty Liners 30s,Feminine Care,3402,packs
+2024-05-01,FHH-FEM-003,Fine Panty Liners 30s,Feminine Care,2454,packs
+2024-06-01,FHH-FEM-003,Fine Panty Liners 30s,Feminine Care,2873,packs
+2024-07-01,FHH-FEM-003,Fine Panty Liners 30s,Feminine Care,3220,packs
+2024-08-01,FHH-FEM-003,Fine Panty Liners 30s,Feminine Care,3036,packs
+2024-09-01,FHH-FEM-003,Fine Panty Liners 30s,Feminine Care,3187,packs
+2024-10-01,FHH-FEM-003,Fine Panty Liners 30s,Feminine Care,2954,packs
+2024-11-01,FHH-FEM-003,Fine Panty Liners 30s,Feminine Care,3135,packs
+2024-12-01,FHH-FEM-003,Fine Panty Liners 30s,Feminine Care,3084,packs
+2023-01-01,FHH-FEM-004,Fine Ultra-Thin Pads Wings 10s,Feminine Care,3936,packs
+2023-02-01,FHH-FEM-004,Fine Ultra-Thin Pads Wings 10s,Feminine Care,3685,packs
+2023-03-01,FHH-FEM-004,Fine Ultra-Thin Pads Wings 10s,Feminine Care,3721,packs
+2023-04-01,FHH-FEM-004,Fine Ultra-Thin Pads Wings 10s,Feminine Care,3516,packs
+2023-05-01,FHH-FEM-004,Fine Ultra-Thin Pads Wings 10s,Feminine Care,3505,packs
+2023-06-01,FHH-FEM-004,Fine Ultra-Thin Pads Wings 10s,Feminine Care,3533,packs
+2023-07-01,FHH-FEM-004,Fine Ultra-Thin Pads Wings 10s,Feminine Care,3787,packs
+2023-08-01,FHH-FEM-004,Fine Ultra-Thin Pads Wings 10s,Feminine Care,3559,packs
+2023-09-01,FHH-FEM-004,Fine Ultra-Thin Pads Wings 10s,Feminine Care,3781,packs
+2023-10-01,FHH-FEM-004,Fine Ultra-Thin Pads Wings 10s,Feminine Care,4323,packs
+2023-11-01,FHH-FEM-004,Fine Ultra-Thin Pads Wings 10s,Feminine Care,3979,packs
+2023-12-01,FHH-FEM-004,Fine Ultra-Thin Pads Wings 10s,Feminine Care,3634,packs
+2024-01-01,FHH-FEM-004,Fine Ultra-Thin Pads Wings 10s,Feminine Care,4419,packs
+2024-02-01,FHH-FEM-004,Fine Ultra-Thin Pads Wings 10s,Feminine Care,3911,packs
+2024-03-01,FHH-FEM-004,Fine Ultra-Thin Pads Wings 10s,Feminine Care,3394,packs
+2024-04-01,FHH-FEM-004,Fine Ultra-Thin Pads Wings 10s,Feminine Care,3739,packs
+2024-05-01,FHH-FEM-004,Fine Ultra-Thin Pads Wings 10s,Feminine Care,3469,packs
+2024-06-01,FHH-FEM-004,Fine Ultra-Thin Pads Wings 10s,Feminine Care,3976,packs
+2024-07-01,FHH-FEM-004,Fine Ultra-Thin Pads Wings 10s,Feminine Care,4110,packs
+2024-08-01,FHH-FEM-004,Fine Ultra-Thin Pads Wings 10s,Feminine Care,4668,packs
+2024-09-01,FHH-FEM-004,Fine Ultra-Thin Pads Wings 10s,Feminine Care,4235,packs
+2024-10-01,FHH-FEM-004,Fine Ultra-Thin Pads Wings 10s,Feminine Care,4067,packs
+2024-11-01,FHH-FEM-004,Fine Ultra-Thin Pads Wings 10s,Feminine Care,4427,packs
+2024-12-01,FHH-FEM-004,Fine Ultra-Thin Pads Wings 10s,Feminine Care,3427,packs
+2023-01-01,FHH-HYG-001,Fine Hand Sanitizer Gel 500ml,Hand Hygiene,3790,bottles
+2023-02-01,FHH-HYG-001,Fine Hand Sanitizer Gel 500ml,Hand Hygiene,3797,bottles
+2023-03-01,FHH-HYG-001,Fine Hand Sanitizer Gel 500ml,Hand Hygiene,3026,bottles
+2023-04-01,FHH-HYG-001,Fine Hand Sanitizer Gel 500ml,Hand Hygiene,3588,bottles
+2023-05-01,FHH-HYG-001,Fine Hand Sanitizer Gel 500ml,Hand Hygiene,3226,bottles
+2023-06-01,FHH-HYG-001,Fine Hand Sanitizer Gel 500ml,Hand Hygiene,2894,bottles
+2023-07-01,FHH-HYG-001,Fine Hand Sanitizer Gel 500ml,Hand Hygiene,2989,bottles
+2023-08-01,FHH-HYG-001,Fine Hand Sanitizer Gel 500ml,Hand Hygiene,3373,bottles
+2023-09-01,FHH-HYG-001,Fine Hand Sanitizer Gel 500ml,Hand Hygiene,3228,bottles
+2023-10-01,FHH-HYG-001,Fine Hand Sanitizer Gel 500ml,Hand Hygiene,3419,bottles
+2023-11-01,FHH-HYG-001,Fine Hand Sanitizer Gel 500ml,Hand Hygiene,3394,bottles
+2023-12-01,FHH-HYG-001,Fine Hand Sanitizer Gel 500ml,Hand Hygiene,3594,bottles
+2024-01-01,FHH-HYG-001,Fine Hand Sanitizer Gel 500ml,Hand Hygiene,4443,bottles
+2024-02-01,FHH-HYG-001,Fine Hand Sanitizer Gel 500ml,Hand Hygiene,3730,bottles
+2024-03-01,FHH-HYG-001,Fine Hand Sanitizer Gel 500ml,Hand Hygiene,3863,bottles
+2024-04-01,FHH-HYG-001,Fine Hand Sanitizer Gel 500ml,Hand Hygiene,3537,bottles
+2024-05-01,FHH-HYG-001,Fine Hand Sanitizer Gel 500ml,Hand Hygiene,3647,bottles
+2024-06-01,FHH-HYG-001,Fine Hand Sanitizer Gel 500ml,Hand Hygiene,3436,bottles
+2024-07-01,FHH-HYG-001,Fine Hand Sanitizer Gel 500ml,Hand Hygiene,3444,bottles
+2024-08-01,FHH-HYG-001,Fine Hand Sanitizer Gel 500ml,Hand Hygiene,3059,bottles
+2024-09-01,FHH-HYG-001,Fine Hand Sanitizer Gel 500ml,Hand Hygiene,3477,bottles
+2024-10-01,FHH-HYG-001,Fine Hand Sanitizer Gel 500ml,Hand Hygiene,3450,bottles
+2024-11-01,FHH-HYG-001,Fine Hand Sanitizer Gel 500ml,Hand Hygiene,3793,bottles
+2024-12-01,FHH-HYG-001,Fine Hand Sanitizer Gel 500ml,Hand Hygiene,4432,bottles
+2023-01-01,FHH-HYG-002,Fine Foaming Hand Wash 400ml,Hand Hygiene,3054,bottles
+2023-02-01,FHH-HYG-002,Fine Foaming Hand Wash 400ml,Hand Hygiene,2564,bottles
+2023-03-01,FHH-HYG-002,Fine Foaming Hand Wash 400ml,Hand Hygiene,2842,bottles
+2023-04-01,FHH-HYG-002,Fine Foaming Hand Wash 400ml,Hand Hygiene,2821,bottles
+2023-05-01,FHH-HYG-002,Fine Foaming Hand Wash 400ml,Hand Hygiene,2512,bottles
+2023-06-01,FHH-HYG-002,Fine Foaming Hand Wash 400ml,Hand Hygiene,2666,bottles
+2023-07-01,FHH-HYG-002,Fine Foaming Hand Wash 400ml,Hand Hygiene,2066,bottles
+2023-08-01,FHH-HYG-002,Fine Foaming Hand Wash 400ml,Hand Hygiene,1990,bottles
+2023-09-01,FHH-HYG-002,Fine Foaming Hand Wash 400ml,Hand Hygiene,2113,bottles
+2023-10-01,FHH-HYG-002,Fine Foaming Hand Wash 400ml,Hand Hygiene,2906,bottles
+2023-11-01,FHH-HYG-002,Fine Foaming Hand Wash 400ml,Hand Hygiene,2870,bottles
+2023-12-01,FHH-HYG-002,Fine Foaming Hand Wash 400ml,Hand Hygiene,2972,bottles
+2024-01-01,FHH-HYG-002,Fine Foaming Hand Wash 400ml,Hand Hygiene,3297,bottles
+2024-02-01,FHH-HYG-002,Fine Foaming Hand Wash 400ml,Hand Hygiene,2821,bottles
+2024-03-01,FHH-HYG-002,Fine Foaming Hand Wash 400ml,Hand Hygiene,3556,bottles
+2024-04-01,FHH-HYG-002,Fine Foaming Hand Wash 400ml,Hand Hygiene,2877,bottles
+2024-05-01,FHH-HYG-002,Fine Foaming Hand Wash 400ml,Hand Hygiene,2743,bottles
+2024-06-01,FHH-HYG-002,Fine Foaming Hand Wash 400ml,Hand Hygiene,2742,bottles
+2024-07-01,FHH-HYG-002,Fine Foaming Hand Wash 400ml,Hand Hygiene,2557,bottles
+2024-08-01,FHH-HYG-002,Fine Foaming Hand Wash 400ml,Hand Hygiene,2513,bottles
+2024-09-01,FHH-HYG-002,Fine Foaming Hand Wash 400ml,Hand Hygiene,2577,bottles
+2024-10-01,FHH-HYG-002,Fine Foaming Hand Wash 400ml,Hand Hygiene,3007,bottles
+2024-11-01,FHH-HYG-002,Fine Foaming Hand Wash 400ml,Hand Hygiene,3503,bottles
+2024-12-01,FHH-HYG-002,Fine Foaming Hand Wash 400ml,Hand Hygiene,3689,bottles
+2023-01-01,FHH-HYG-003,Fine Hand Sanitizer Spray 100ml,Hand Hygiene,3788,bottles
+2023-02-01,FHH-HYG-003,Fine Hand Sanitizer Spray 100ml,Hand Hygiene,3098,bottles
+2023-03-01,FHH-HYG-003,Fine Hand Sanitizer Spray 100ml,Hand Hygiene,2855,bottles
+2023-04-01,FHH-HYG-003,Fine Hand Sanitizer Spray 100ml,Hand Hygiene,2939,bottles
+2023-05-01,FHH-HYG-003,Fine Hand Sanitizer Spray 100ml,Hand Hygiene,2849,bottles
+2023-06-01,FHH-HYG-003,Fine Hand Sanitizer Spray 100ml,Hand Hygiene,2941,bottles
+2023-07-01,FHH-HYG-003,Fine Hand Sanitizer Spray 100ml,Hand Hygiene,2222,bottles
+2023-08-01,FHH-HYG-003,Fine Hand Sanitizer Spray 100ml,Hand Hygiene,2894,bottles
+2023-09-01,FHH-HYG-003,Fine Hand Sanitizer Spray 100ml,Hand Hygiene,2838,bottles
+2023-10-01,FHH-HYG-003,Fine Hand Sanitizer Spray 100ml,Hand Hygiene,2924,bottles
+2023-11-01,FHH-HYG-003,Fine Hand Sanitizer Spray 100ml,Hand Hygiene,2924,bottles
+2023-12-01,FHH-HYG-003,Fine Hand Sanitizer Spray 100ml,Hand Hygiene,3022,bottles
+2024-01-01,FHH-HYG-003,Fine Hand Sanitizer Spray 100ml,Hand Hygiene,4011,bottles
+2024-02-01,FHH-HYG-003,Fine Hand Sanitizer Spray 100ml,Hand Hygiene,3638,bottles
+2024-03-01,FHH-HYG-003,Fine Hand Sanitizer Spray 100ml,Hand Hygiene,3112,bottles
+2024-04-01,FHH-HYG-003,Fine Hand Sanitizer Spray 100ml,Hand Hygiene,2977,bottles
+2024-05-01,FHH-HYG-003,Fine Hand Sanitizer Spray 100ml,Hand Hygiene,3088,bottles
+2024-06-01,FHH-HYG-003,Fine Hand Sanitizer Spray 100ml,Hand Hygiene,3427,bottles
+2024-07-01,FHH-HYG-003,Fine Hand Sanitizer Spray 100ml,Hand Hygiene,2813,bottles
+2024-08-01,FHH-HYG-003,Fine Hand Sanitizer Spray 100ml,Hand Hygiene,2534,bottles
+2024-09-01,FHH-HYG-003,Fine Hand Sanitizer Spray 100ml,Hand Hygiene,3147,bottles
+2024-10-01,FHH-HYG-003,Fine Hand Sanitizer Spray 100ml,Hand Hygiene,3307,bottles
+2024-11-01,FHH-HYG-003,Fine Hand Sanitizer Spray 100ml,Hand Hygiene,2785,bottles
+2024-12-01,FHH-HYG-003,Fine Hand Sanitizer Spray 100ml,Hand Hygiene,3869,bottles
+2023-01-01,FHH-PRO-001,Fine Industrial Roll Towels 6-Pack,Professional,1374,packs
+2023-02-01,FHH-PRO-001,Fine Industrial Roll Towels 6-Pack,Professional,1482,packs
+2023-03-01,FHH-PRO-001,Fine Industrial Roll Towels 6-Pack,Professional,1698,packs
+2023-04-01,FHH-PRO-001,Fine Industrial Roll Towels 6-Pack,Professional,1618,packs
+2023-05-01,FHH-PRO-001,Fine Industrial Roll Towels 6-Pack,Professional,1388,packs
+2023-06-01,FHH-PRO-001,Fine Industrial Roll Towels 6-Pack,Professional,1232,packs
+2023-07-01,FHH-PRO-001,Fine Industrial Roll Towels 6-Pack,Professional,1549,packs
+2023-08-01,FHH-PRO-001,Fine Industrial Roll Towels 6-Pack,Professional,1295,packs
+2023-09-01,FHH-PRO-001,Fine Industrial Roll Towels 6-Pack,Professional,1510,packs
+2023-10-01,FHH-PRO-001,Fine Industrial Roll Towels 6-Pack,Professional,1511,packs
+2023-11-01,FHH-PRO-001,Fine Industrial Roll Towels 6-Pack,Professional,1469,packs
+2023-12-01,FHH-PRO-001,Fine Industrial Roll Towels 6-Pack,Professional,1434,packs
+2024-01-01,FHH-PRO-001,Fine Industrial Roll Towels 6-Pack,Professional,1496,packs
+2024-02-01,FHH-PRO-001,Fine Industrial Roll Towels 6-Pack,Professional,1503,packs
+2024-03-01,FHH-PRO-001,Fine Industrial Roll Towels 6-Pack,Professional,1651,packs
+2024-04-01,FHH-PRO-001,Fine Industrial Roll Towels 6-Pack,Professional,1588,packs
+2024-05-01,FHH-PRO-001,Fine Industrial Roll Towels 6-Pack,Professional,1496,packs
+2024-06-01,FHH-PRO-001,Fine Industrial Roll Towels 6-Pack,Professional,1524,packs
+2024-07-01,FHH-PRO-001,Fine Industrial Roll Towels 6-Pack,Professional,1407,packs
+2024-08-01,FHH-PRO-001,Fine Industrial Roll Towels 6-Pack,Professional,1613,packs
+2024-09-01,FHH-PRO-001,Fine Industrial Roll Towels 6-Pack,Professional,1328,packs
+2024-10-01,FHH-PRO-001,Fine Industrial Roll Towels 6-Pack,Professional,1838,packs
+2024-11-01,FHH-PRO-001,Fine Industrial Roll Towels 6-Pack,Professional,1775,packs
+2024-12-01,FHH-PRO-001,Fine Industrial Roll Towels 6-Pack,Professional,1350,packs
+2023-01-01,FHH-PRO-002,Fine Dispensable Napkins 500s,Professional,1069,boxes
+2023-02-01,FHH-PRO-002,Fine Dispensable Napkins 500s,Professional,1070,boxes
+2023-03-01,FHH-PRO-002,Fine Dispensable Napkins 500s,Professional,1031,boxes
+2023-04-01,FHH-PRO-002,Fine Dispensable Napkins 500s,Professional,1093,boxes
+2023-05-01,FHH-PRO-002,Fine Dispensable Napkins 500s,Professional,1015,boxes
+2023-06-01,FHH-PRO-002,Fine Dispensable Napkins 500s,Professional,1211,boxes
+2023-07-01,FHH-PRO-002,Fine Dispensable Napkins 500s,Professional,1085,boxes
+2023-08-01,FHH-PRO-002,Fine Dispensable Napkins 500s,Professional,1116,boxes
+2023-09-01,FHH-PRO-002,Fine Dispensable Napkins 500s,Professional,1254,boxes
+2023-10-01,FHH-PRO-002,Fine Dispensable Napkins 500s,Professional,1082,boxes
+2023-11-01,FHH-PRO-002,Fine Dispensable Napkins 500s,Professional,1088,boxes
+2023-12-01,FHH-PRO-002,Fine Dispensable Napkins 500s,Professional,1184,boxes
+2024-01-01,FHH-PRO-002,Fine Dispensable Napkins 500s,Professional,1111,boxes
+2024-02-01,FHH-PRO-002,Fine Dispensable Napkins 500s,Professional,1306,boxes
+2024-03-01,FHH-PRO-002,Fine Dispensable Napkins 500s,Professional,1276,boxes
+2024-04-01,FHH-PRO-002,Fine Dispensable Napkins 500s,Professional,1266,boxes
+2024-05-01,FHH-PRO-002,Fine Dispensable Napkins 500s,Professional,1317,boxes
+2024-06-01,FHH-PRO-002,Fine Dispensable Napkins 500s,Professional,1230,boxes
+2024-07-01,FHH-PRO-002,Fine Dispensable Napkins 500s,Professional,1096,boxes
+2024-08-01,FHH-PRO-002,Fine Dispensable Napkins 500s,Professional,1236,boxes
+2024-09-01,FHH-PRO-002,Fine Dispensable Napkins 500s,Professional,1209,boxes
+2024-10-01,FHH-PRO-002,Fine Dispensable Napkins 500s,Professional,1393,boxes
+2024-11-01,FHH-PRO-002,Fine Dispensable Napkins 500s,Professional,1328,boxes
+2024-12-01,FHH-PRO-002,Fine Dispensable Napkins 500s,Professional,1240,boxes
+2023-01-01,FHH-PRO-003,Fine Z-Fold Hand Towels 200s,Professional,1333,packs
+2023-02-01,FHH-PRO-003,Fine Z-Fold Hand Towels 200s,Professional,1173,packs
+2023-03-01,FHH-PRO-003,Fine Z-Fold Hand Towels 200s,Professional,1475,packs
+2023-04-01,FHH-PRO-003,Fine Z-Fold Hand Towels 200s,Professional,1358,packs
+2023-05-01,FHH-PRO-003,Fine Z-Fold Hand Towels 200s,Professional,1262,packs
+2023-06-01,FHH-PRO-003,Fine Z-Fold Hand Towels 200s,Professional,1360,packs
+2023-07-01,FHH-PRO-003,Fine Z-Fold Hand Towels 200s,Professional,1126,packs
+2023-08-01,FHH-PRO-003,Fine Z-Fold Hand Towels 200s,Professional,1062,packs
+2023-09-01,FHH-PRO-003,Fine Z-Fold Hand Towels 200s,Professional,1226,packs
+2023-10-01,FHH-PRO-003,Fine Z-Fold Hand Towels 200s,Professional,1474,packs
+2023-11-01,FHH-PRO-003,Fine Z-Fold Hand Towels 200s,Professional,1205,packs
+2023-12-01,FHH-PRO-003,Fine Z-Fold Hand Towels 200s,Professional,1536,packs
+2024-01-01,FHH-PRO-003,Fine Z-Fold Hand Towels 200s,Professional,1213,packs
+2024-02-01,FHH-PRO-003,Fine Z-Fold Hand Towels 200s,Professional,1658,packs
+2024-03-01,FHH-PRO-003,Fine Z-Fold Hand Towels 200s,Professional,1563,packs
+2024-04-01,FHH-PRO-003,Fine Z-Fold Hand Towels 200s,Professional,1530,packs
+2024-05-01,FHH-PRO-003,Fine Z-Fold Hand Towels 200s,Professional,1409,packs
+2024-06-01,FHH-PRO-003,Fine Z-Fold Hand Towels 200s,Professional,1448,packs
+2024-07-01,FHH-PRO-003,Fine Z-Fold Hand Towels 200s,Professional,1329,packs
+2024-08-01,FHH-PRO-003,Fine Z-Fold Hand Towels 200s,Professional,1455,packs
+2024-09-01,FHH-PRO-003,Fine Z-Fold Hand Towels 200s,Professional,1579,packs
+2024-10-01,FHH-PRO-003,Fine Z-Fold Hand Towels 200s,Professional,1588,packs
+2024-11-01,FHH-PRO-003,Fine Z-Fold Hand Towels 200s,Professional,1455,packs
+2024-12-01,FHH-PRO-003,Fine Z-Fold Hand Towels 200s,Professional,1496,packs
+2023-01-01,FHH-PRO-004,Fine Jumbo Toilet Rolls 12-Pack,Professional,973,packs
+2023-02-01,FHH-PRO-004,Fine Jumbo Toilet Rolls 12-Pack,Professional,822,packs
+2023-03-01,FHH-PRO-004,Fine Jumbo Toilet Rolls 12-Pack,Professional,895,packs
+2023-04-01,FHH-PRO-004,Fine Jumbo Toilet Rolls 12-Pack,Professional,1067,packs
+2023-05-01,FHH-PRO-004,Fine Jumbo Toilet Rolls 12-Pack,Professional,975,packs
+2023-06-01,FHH-PRO-004,Fine Jumbo Toilet Rolls 12-Pack,Professional,904,packs
+2023-07-01,FHH-PRO-004,Fine Jumbo Toilet Rolls 12-Pack,Professional,873,packs
+2023-08-01,FHH-PRO-004,Fine Jumbo Toilet Rolls 12-Pack,Professional,899,packs
+2023-09-01,FHH-PRO-004,Fine Jumbo Toilet Rolls 12-Pack,Professional,979,packs
+2023-10-01,FHH-PRO-004,Fine Jumbo Toilet Rolls 12-Pack,Professional,963,packs
+2023-11-01,FHH-PRO-004,Fine Jumbo Toilet Rolls 12-Pack,Professional,997,packs
+2023-12-01,FHH-PRO-004,Fine Jumbo Toilet Rolls 12-Pack,Professional,907,packs
+2024-01-01,FHH-PRO-004,Fine Jumbo Toilet Rolls 12-Pack,Professional,1098,packs
+2024-02-01,FHH-PRO-004,Fine Jumbo Toilet Rolls 12-Pack,Professional,921,packs
+2024-03-01,FHH-PRO-004,Fine Jumbo Toilet Rolls 12-Pack,Professional,1216,packs
+2024-04-01,FHH-PRO-004,Fine Jumbo Toilet Rolls 12-Pack,Professional,1169,packs
+2024-05-01,FHH-PRO-004,Fine Jumbo Toilet Rolls 12-Pack,Professional,1098,packs
+2024-06-01,FHH-PRO-004,Fine Jumbo Toilet Rolls 12-Pack,Professional,1106,packs
+2024-07-01,FHH-PRO-004,Fine Jumbo Toilet Rolls 12-Pack,Professional,1104,packs
+2024-08-01,FHH-PRO-004,Fine Jumbo Toilet Rolls 12-Pack,Professional,1056,packs
+2024-09-01,FHH-PRO-004,Fine Jumbo Toilet Rolls 12-Pack,Professional,975,packs
+2024-10-01,FHH-PRO-004,Fine Jumbo Toilet Rolls 12-Pack,Professional,1029,packs
+2024-11-01,FHH-PRO-004,Fine Jumbo Toilet Rolls 12-Pack,Professional,1040,packs
+2024-12-01,FHH-PRO-004,Fine Jumbo Toilet Rolls 12-Pack,Professional,1101,packs
+2023-01-01,FHH-COT-001,Fine Pure Cotton Balls 100s,Cotton,2405,packs
+2023-02-01,FHH-COT-001,Fine Pure Cotton Balls 100s,Cotton,2079,packs
+2023-03-01,FHH-COT-001,Fine Pure Cotton Balls 100s,Cotton,2360,packs
+2023-04-01,FHH-COT-001,Fine Pure Cotton Balls 100s,Cotton,2087,packs
+2023-05-01,FHH-COT-001,Fine Pure Cotton Balls 100s,Cotton,2077,packs
+2023-06-01,FHH-COT-001,Fine Pure Cotton Balls 100s,Cotton,1885,packs
+2023-07-01,FHH-COT-001,Fine Pure Cotton Balls 100s,Cotton,1974,packs
+2023-08-01,FHH-COT-001,Fine Pure Cotton Balls 100s,Cotton,1967,packs
+2023-09-01,FHH-COT-001,Fine Pure Cotton Balls 100s,Cotton,2082,packs
+2023-10-01,FHH-COT-001,Fine Pure Cotton Balls 100s,Cotton,2457,packs
+2023-11-01,FHH-COT-001,Fine Pure Cotton Balls 100s,Cotton,2142,packs
+2023-12-01,FHH-COT-001,Fine Pure Cotton Balls 100s,Cotton,2899,packs
+2024-01-01,FHH-COT-001,Fine Pure Cotton Balls 100s,Cotton,2689,packs
+2024-02-01,FHH-COT-001,Fine Pure Cotton Balls 100s,Cotton,2507,packs
+2024-03-01,FHH-COT-001,Fine Pure Cotton Balls 100s,Cotton,2423,packs
+2024-04-01,FHH-COT-001,Fine Pure Cotton Balls 100s,Cotton,2625,packs
+2024-05-01,FHH-COT-001,Fine Pure Cotton Balls 100s,Cotton,2330,packs
+2024-06-01,FHH-COT-001,Fine Pure Cotton Balls 100s,Cotton,2398,packs
+2024-07-01,FHH-COT-001,Fine Pure Cotton Balls 100s,Cotton,2870,packs
+2024-08-01,FHH-COT-001,Fine Pure Cotton Balls 100s,Cotton,2446,packs
+2024-09-01,FHH-COT-001,Fine Pure Cotton Balls 100s,Cotton,2754,packs
+2024-10-01,FHH-COT-001,Fine Pure Cotton Balls 100s,Cotton,2387,packs
+2024-11-01,FHH-COT-001,Fine Pure Cotton Balls 100s,Cotton,2580,packs
+2024-12-01,FHH-COT-001,Fine Pure Cotton Balls 100s,Cotton,3050,packs
+2023-01-01,FHH-COT-002,Fine Cotton Buds 200s,Cotton,2892,packs
+2023-02-01,FHH-COT-002,Fine Cotton Buds 200s,Cotton,3331,packs
+2023-03-01,FHH-COT-002,Fine Cotton Buds 200s,Cotton,3238,packs
+2023-04-01,FHH-COT-002,Fine Cotton Buds 200s,Cotton,2797,packs
+2023-05-01,FHH-COT-002,Fine Cotton Buds 200s,Cotton,3025,packs
+2023-06-01,FHH-COT-002,Fine Cotton Buds 200s,Cotton,3018,packs
+2023-07-01,FHH-COT-002,Fine Cotton Buds 200s,Cotton,2949,packs
+2023-08-01,FHH-COT-002,Fine Cotton Buds 200s,Cotton,2542,packs
+2023-09-01,FHH-COT-002,Fine Cotton Buds 200s,Cotton,2804,packs
+2023-10-01,FHH-COT-002,Fine Cotton Buds 200s,Cotton,2927,packs
+2023-11-01,FHH-COT-002,Fine Cotton Buds 200s,Cotton,3038,packs
+2023-12-01,FHH-COT-002,Fine Cotton Buds 200s,Cotton,3313,packs
+2024-01-01,FHH-COT-002,Fine Cotton Buds 200s,Cotton,3458,packs
+2024-02-01,FHH-COT-002,Fine Cotton Buds 200s,Cotton,2909,packs
+2024-03-01,FHH-COT-002,Fine Cotton Buds 200s,Cotton,3535,packs
+2024-04-01,FHH-COT-002,Fine Cotton Buds 200s,Cotton,3437,packs
+2024-05-01,FHH-COT-002,Fine Cotton Buds 200s,Cotton,3365,packs
+2024-06-01,FHH-COT-002,Fine Cotton Buds 200s,Cotton,3402,packs
+2024-07-01,FHH-COT-002,Fine Cotton Buds 200s,Cotton,3350,packs
+2024-08-01,FHH-COT-002,Fine Cotton Buds 200s,Cotton,3368,packs
+2024-09-01,FHH-COT-002,Fine Cotton Buds 200s,Cotton,3306,packs
+2024-10-01,FHH-COT-002,Fine Cotton Buds 200s,Cotton,2891,packs
+2024-11-01,FHH-COT-002,Fine Cotton Buds 200s,Cotton,3528,packs
+2024-12-01,FHH-COT-002,Fine Cotton Buds 200s,Cotton,3580,packs
+2023-01-01,FHH-COT-003,Fine Cotton Pads Round 80s,Cotton,2038,packs
+2023-02-01,FHH-COT-003,Fine Cotton Pads Round 80s,Cotton,1711,packs
+2023-03-01,FHH-COT-003,Fine Cotton Pads Round 80s,Cotton,1834,packs
+2023-04-01,FHH-COT-003,Fine Cotton Pads Round 80s,Cotton,2080,packs
+2023-05-01,FHH-COT-003,Fine Cotton Pads Round 80s,Cotton,1880,packs
+2023-06-01,FHH-COT-003,Fine Cotton Pads Round 80s,Cotton,1935,packs
+2023-07-01,FHH-COT-003,Fine Cotton Pads Round 80s,Cotton,1845,packs
+2023-08-01,FHH-COT-003,Fine Cotton Pads Round 80s,Cotton,1909,packs
+2023-09-01,FHH-COT-003,Fine Cotton Pads Round 80s,Cotton,2097,packs
+2023-10-01,FHH-COT-003,Fine Cotton Pads Round 80s,Cotton,1876,packs
+2023-11-01,FHH-COT-003,Fine Cotton Pads Round 80s,Cotton,2017,packs
+2023-12-01,FHH-COT-003,Fine Cotton Pads Round 80s,Cotton,1991,packs
+2024-01-01,FHH-COT-003,Fine Cotton Pads Round 80s,Cotton,2156,packs
+2024-02-01,FHH-COT-003,Fine Cotton Pads Round 80s,Cotton,2081,packs
+2024-03-01,FHH-COT-003,Fine Cotton Pads Round 80s,Cotton,2287,packs
+2024-04-01,FHH-COT-003,Fine Cotton Pads Round 80s,Cotton,2064,packs
+2024-05-01,FHH-COT-003,Fine Cotton Pads Round 80s,Cotton,2322,packs
+2024-06-01,FHH-COT-003,Fine Cotton Pads Round 80s,Cotton,1904,packs
+2024-07-01,FHH-COT-003,Fine Cotton Pads Round 80s,Cotton,2026,packs
+2024-08-01,FHH-COT-003,Fine Cotton Pads Round 80s,Cotton,2053,packs
+2024-09-01,FHH-COT-003,Fine Cotton Pads Round 80s,Cotton,2430,packs
+2024-10-01,FHH-COT-003,Fine Cotton Pads Round 80s,Cotton,2219,packs
+2024-11-01,FHH-COT-003,Fine Cotton Pads Round 80s,Cotton,2419,packs
+2024-12-01,FHH-COT-003,Fine Cotton Pads Round 80s,Cotton,2033,packs
+2023-01-01,FHH-SPC-001,Fine Sterilized Gauze Roll 5m,Specialty,1348,rolls
+2023-02-01,FHH-SPC-001,Fine Sterilized Gauze Roll 5m,Specialty,1354,rolls
+2023-03-01,FHH-SPC-001,Fine Sterilized Gauze Roll 5m,Specialty,1337,rolls
+2023-04-01,FHH-SPC-001,Fine Sterilized Gauze Roll 5m,Specialty,1381,rolls
+2023-05-01,FHH-SPC-001,Fine Sterilized Gauze Roll 5m,Specialty,1165,rolls
+2023-06-01,FHH-SPC-001,Fine Sterilized Gauze Roll 5m,Specialty,1289,rolls
+2023-07-01,FHH-SPC-001,Fine Sterilized Gauze Roll 5m,Specialty,1304,rolls
+2023-08-01,FHH-SPC-001,Fine Sterilized Gauze Roll 5m,Specialty,1073,rolls
+2023-09-01,FHH-SPC-001,Fine Sterilized Gauze Roll 5m,Specialty,1188,rolls
+2023-10-01,FHH-SPC-001,Fine Sterilized Gauze Roll 5m,Specialty,1448,rolls
+2023-11-01,FHH-SPC-001,Fine Sterilized Gauze Roll 5m,Specialty,1536,rolls
+2023-12-01,FHH-SPC-001,Fine Sterilized Gauze Roll 5m,Specialty,1370,rolls
+2024-01-01,FHH-SPC-001,Fine Sterilized Gauze Roll 5m,Specialty,1428,rolls
+2024-02-01,FHH-SPC-001,Fine Sterilized Gauze Roll 5m,Specialty,1383,rolls
+2024-03-01,FHH-SPC-001,Fine Sterilized Gauze Roll 5m,Specialty,1327,rolls
+2024-04-01,FHH-SPC-001,Fine Sterilized Gauze Roll 5m,Specialty,1319,rolls
+2024-05-01,FHH-SPC-001,Fine Sterilized Gauze Roll 5m,Specialty,1250,rolls
+2024-06-01,FHH-SPC-001,Fine Sterilized Gauze Roll 5m,Specialty,1216,rolls
+2024-07-01,FHH-SPC-001,Fine Sterilized Gauze Roll 5m,Specialty,1227,rolls
+2024-08-01,FHH-SPC-001,Fine Sterilized Gauze Roll 5m,Specialty,1257,rolls
+2024-09-01,FHH-SPC-001,Fine Sterilized Gauze Roll 5m,Specialty,1546,rolls
+2024-10-01,FHH-SPC-001,Fine Sterilized Gauze Roll 5m,Specialty,1333,rolls
+2024-11-01,FHH-SPC-001,Fine Sterilized Gauze Roll 5m,Specialty,1642,rolls
+2024-12-01,FHH-SPC-001,Fine Sterilized Gauze Roll 5m,Specialty,1568,rolls
+2023-01-01,FHH-SPC-002,Fine Surgical Face Masks 50s,Specialty,1643,boxes
+2023-02-01,FHH-SPC-002,Fine Surgical Face Masks 50s,Specialty,1665,boxes
+2023-03-01,FHH-SPC-002,Fine Surgical Face Masks 50s,Specialty,1511,boxes
+2023-04-01,FHH-SPC-002,Fine Surgical Face Masks 50s,Specialty,1639,boxes
+2023-05-01,FHH-SPC-002,Fine Surgical Face Masks 50s,Specialty,1540,boxes
+2023-06-01,FHH-SPC-002,Fine Surgical Face Masks 50s,Specialty,1505,boxes
+2023-07-01,FHH-SPC-002,Fine Surgical Face Masks 50s,Specialty,1408,boxes
+2023-08-01,FHH-SPC-002,Fine Surgical Face Masks 50s,Specialty,1652,boxes
+2023-09-01,FHH-SPC-002,Fine Surgical Face Masks 50s,Specialty,1461,boxes
+2023-10-01,FHH-SPC-002,Fine Surgical Face Masks 50s,Specialty,1553,boxes
+2023-11-01,FHH-SPC-002,Fine Surgical Face Masks 50s,Specialty,1620,boxes
+2023-12-01,FHH-SPC-002,Fine Surgical Face Masks 50s,Specialty,1708,boxes
+2024-01-01,FHH-SPC-002,Fine Surgical Face Masks 50s,Specialty,1753,boxes
+2024-02-01,FHH-SPC-002,Fine Surgical Face Masks 50s,Specialty,1937,boxes
+2024-03-01,FHH-SPC-002,Fine Surgical Face Masks 50s,Specialty,2070,boxes
+2024-04-01,FHH-SPC-002,Fine Surgical Face Masks 50s,Specialty,1698,boxes
+2024-05-01,FHH-SPC-002,Fine Surgical Face Masks 50s,Specialty,1586,boxes
+2024-06-01,FHH-SPC-002,Fine Surgical Face Masks 50s,Specialty,1680,boxes
+2024-07-01,FHH-SPC-002,Fine Surgical Face Masks 50s,Specialty,1471,boxes
+2024-08-01,FHH-SPC-002,Fine Surgical Face Masks 50s,Specialty,1621,boxes
+2024-09-01,FHH-SPC-002,Fine Surgical Face Masks 50s,Specialty,1747,boxes
+2024-10-01,FHH-SPC-002,Fine Surgical Face Masks 50s,Specialty,1591,boxes
+2024-11-01,FHH-SPC-002,Fine Surgical Face Masks 50s,Specialty,2138,boxes
+2024-12-01,FHH-SPC-002,Fine Surgical Face Masks 50s,Specialty,2281,boxes
+2023-01-01,FHH-SPC-003,Fine Disposable Gloves 100s,Specialty,1150,boxes
+2023-02-01,FHH-SPC-003,Fine Disposable Gloves 100s,Specialty,1122,boxes
+2023-03-01,FHH-SPC-003,Fine Disposable Gloves 100s,Specialty,1245,boxes
+2023-04-01,FHH-SPC-003,Fine Disposable Gloves 100s,Specialty,1197,boxes
+2023-05-01,FHH-SPC-003,Fine Disposable Gloves 100s,Specialty,1173,boxes
+2023-06-01,FHH-SPC-003,Fine Disposable Gloves 100s,Specialty,1233,boxes
+2023-07-01,FHH-SPC-003,Fine Disposable Gloves 100s,Specialty,995,boxes
+2023-08-01,FHH-SPC-003,Fine Disposable Gloves 100s,Specialty,948,boxes
+2023-09-01,FHH-SPC-003,Fine Disposable Gloves 100s,Specialty,1004,boxes
+2023-10-01,FHH-SPC-003,Fine Disposable Gloves 100s,Specialty,1120,boxes
+2023-11-01,FHH-SPC-003,Fine Disposable Gloves 100s,Specialty,1247,boxes
+2023-12-01,FHH-SPC-003,Fine Disposable Gloves 100s,Specialty,1499,boxes
+2024-01-01,FHH-SPC-003,Fine Disposable Gloves 100s,Specialty,1299,boxes
+2024-02-01,FHH-SPC-003,Fine Disposable Gloves 100s,Specialty,1320,boxes
+2024-03-01,FHH-SPC-003,Fine Disposable Gloves 100s,Specialty,1361,boxes
+2024-04-01,FHH-SPC-003,Fine Disposable Gloves 100s,Specialty,1429,boxes
+2024-05-01,FHH-SPC-003,Fine Disposable Gloves 100s,Specialty,1498,boxes
+2024-06-01,FHH-SPC-003,Fine Disposable Gloves 100s,Specialty,1137,boxes
+2024-07-01,FHH-SPC-003,Fine Disposable Gloves 100s,Specialty,1084,boxes
+2024-08-01,FHH-SPC-003,Fine Disposable Gloves 100s,Specialty,1226,boxes
+2024-09-01,FHH-SPC-003,Fine Disposable Gloves 100s,Specialty,1330,boxes
+2024-10-01,FHH-SPC-003,Fine Disposable Gloves 100s,Specialty,1524,boxes
+2024-11-01,FHH-SPC-003,Fine Disposable Gloves 100s,Specialty,1460,boxes
+2024-12-01,FHH-SPC-003,Fine Disposable Gloves 100s,Specialty,1421,boxes
