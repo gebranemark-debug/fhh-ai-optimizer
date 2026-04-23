@@ -1,0 +1,9 @@
+sku,name,category,base_demand,unit,current_stock,reorder_point,max_stock,lead_time_days,cost_per_unit
+FHH-TIS-001,Fine Facial Tissues 200s (Box),Tissues,4200,boxes,3100,3000,12000,14,1.2
+FHH-TIS-002,Fine Toilet Rolls 10-Pack,Tissues,5800,packs,8200,4000,16000,14,2.8
+FHH-TIS-003,Fine Kitchen Towels 2-Roll,Tissues,3100,packs,1200,2500,9000,12,1.95
+FHH-WIP-001,Fine Baby Wipes 80s,Wet Wipes,6200,packs,9800,4500,18000,16,2.1
+FHH-WIP-002,Fine Flushable Wipes 40s,Wet Wipes,2800,packs,980,2000,8000,16,1.75
+FHH-DIA-001,Fine Baby Diapers Size 3 (46s),Diapers,3800,packs,4100,2800,11000,21,8.5
+FHH-DIA-002,Fine Baby Diapers Size 4 (40s),Diapers,4100,packs,5300,3000,12000,21,9.2
+FHH-NAP-001,Fine Napkins 150s (Pack),Napkins,3400,packs,6100,2500,10000,10,0.95
