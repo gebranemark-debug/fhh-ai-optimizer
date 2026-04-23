@@ -1,9 +1,38 @@
 sku,name,category,base_demand,unit,current_stock,reorder_point,max_stock,lead_time_days,cost_per_unit
-FHH-TIS-001,Fine Facial Tissues 200s (Box),Tissues,4200,boxes,3100,3000,12000,14,1.2
-FHH-TIS-002,Fine Toilet Rolls 10-Pack,Tissues,5800,packs,8200,4000,16000,14,2.8
-FHH-TIS-003,Fine Kitchen Towels 2-Roll,Tissues,3100,packs,1200,2500,9000,12,1.95
-FHH-WIP-001,Fine Baby Wipes 80s,Wet Wipes,6200,packs,9800,4500,18000,16,2.1
-FHH-WIP-002,Fine Flushable Wipes 40s,Wet Wipes,2800,packs,980,2000,8000,16,1.75
-FHH-DIA-001,Fine Baby Diapers Size 3 (46s),Diapers,3800,packs,4100,2800,11000,21,8.5
-FHH-DIA-002,Fine Baby Diapers Size 4 (40s),Diapers,4100,packs,5300,3000,12000,21,9.2
-FHH-NAP-001,Fine Napkins 150s (Pack),Napkins,3400,packs,6100,2500,10000,10,0.95
+FHH-TIS-001,Fine Facial Tissues 200s (Box),Tissues,4200,boxes,5000,3200,12000,14,1.2
+FHH-TIS-002,Fine Travel Pocket Tissues 10s (Pack),Tissues,3800,packs,1800,2800,11000,12,0.65
+FHH-TIS-003,Fine Soft Box Tissues 150s,Tissues,3500,boxes,9900,2500,11500,12,0.95
+FHH-TIS-004,Fine Ultra Soft Facial Tissues 100s,Tissues,2900,boxes,4500,2100,9000,14,1.05
+FHH-TIS-005,Fine Jumbo Tissue Box 200s,Tissues,2100,boxes,2000,2500,7000,14,1.3
+FHH-TOI-001,Fine Toilet Rolls 10-Pack,Toilet Paper,5800,packs,9000,4200,16000,14,2.8
+FHH-TOI-002,Fine Toilet Rolls 4-Pack,Toilet Paper,4200,packs,5500,3200,13000,14,1.2
+FHH-TOI-003,Fine Ultra Soft Toilet Rolls 10-Pack,Toilet Paper,3600,packs,2600,3500,11000,10,3.5
+FHH-TOI-004,Fine Compact Toilet Rolls 48-Pack,Toilet Paper,2800,packs,10500,2000,12000,12,8.2
+FHH-KIT-001,Fine Kitchen Towels 2-Roll Pack,Kitchen Towels,3100,packs,1000,2400,9000,12,1.95
+FHH-KIT-002,Fine Kitchen Towels 4-Roll Pack,Kitchen Towels,2400,packs,4500,1900,8000,12,3.6
+FHH-KIT-003,Fine Mega Kitchen Roll,Kitchen Towels,1900,rolls,3200,1500,6500,10,2.4
+FHH-NAP-001,Fine Napkins 150s (Pack),Napkins,3400,packs,6000,2600,10000,10,0.95
+FHH-NAP-002,Fine Dinner Napkins 100s,Napkins,2800,packs,2200,2800,9000,10,0.75
+FHH-NAP-003,Fine Cocktail Napkins 50s,Napkins,2200,packs,8000,1600,9000,10,0.55
+FHH-WIP-001,Fine Baby Wipes 80s,Baby Wipes,6200,packs,10000,4800,18000,16,2.1
+FHH-WIP-002,Fine Baby Wipes 120s,Baby Wipes,4800,packs,4500,5500,15000,16,2.85
+FHH-WIP-003,Fine Baby Extra Sensitive Wipes 80s,Baby Wipes,3200,packs,1200,2500,10000,16,2.5
+FHH-DIA-001,Fine Baby Diapers Size 1 (0-5 kg / 36s),Baby Diapers,2200,packs,4500,1700,7500,21,6.8
+FHH-DIA-002,Fine Baby Diapers Size 2 (3-6 kg / 40s),Baby Diapers,2800,packs,5500,2100,9000,21,7.4
+FHH-DIA-003,Fine Baby Diapers Size 3 (4-9 kg / 46s),Baby Diapers,3800,packs,6000,3000,11000,21,8.5
+FHH-DIA-004,Fine Baby Diapers Size 4 (7-14 kg / 40s),Baby Diapers,4100,packs,7000,3200,12000,21,9.2
+FHH-DIA-005,Fine Baby Diapers Size 5 (11-16 kg / 36s),Baby Diapers,3200,packs,1500,2500,10000,21,9.8
+FHH-AWP-001,Fine Flushable Wipes 40s,Adult Wipes,2800,packs,800,2100,8000,16,1.75
+FHH-AWP-002,Fine Antibacterial Wipes 80s,Adult Wipes,2400,packs,4200,1900,8000,14,2.2
+FHH-SAN-001,Fine Hand Sanitizer 500ml,Hand Sanitizers,3600,bottles,5500,2800,11000,14,3.2
+FHH-SAN-002,Fine Hand Sanitizer 250ml,Hand Sanitizers,4200,bottles,3700,4500,13000,14,1.9
+FHH-SAN-003,Fine Antibacterial Hand Wash 400ml,Hand Sanitizers,3100,bottles,11200,2200,12500,12,2.5
+FHH-FEM-001,Fine Lady Maxi Pads Regular 20s,Feminine Care,4800,packs,8500,3700,15000,18,1.8
+FHH-FEM-002,Fine Lady Maxi Pads Night 16s,Feminine Care,3600,packs,1500,2700,11000,18,2.1
+FHH-FEM-003,Fine Lady Panty Liners 30s,Feminine Care,5200,packs,10000,4000,16000,18,1.4
+FHH-FEM-004,Fine Lady Ultra Thin Pads 22s,Feminine Care,3900,packs,4200,5000,12000,18,2.3
+FHH-IND-001,Fine Maxi Roll Tissue Industrial (6-Pack),Industrial Hygiene,1800,packs,3500,1400,6000,21,12.5
+FHH-IND-002,Fine C-Fold Hand Towels (200s Pack),Industrial Hygiene,2400,packs,2900,3500,8000,21,7.8
+FHH-IND-003,Fine Industrial Cleaning Wipes 50s,Industrial Hygiene,1600,packs,600,1300,5500,21,5.6
+FHH-COT-001,Fine Cotton Pads 100s,Cotton Products,3800,packs,6500,3000,12000,14,1.6
+FHH-COT-002,Fine Cotton Buds 200s,Cotton Products,4200,packs,10800,3200,12500,14,1.1
