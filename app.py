@@ -30,6 +30,7 @@ st.markdown("""
     h3 { color: #0f3460; }
     .alert-red    { background: #fff0f0; border-left: 4px solid #e53935; padding: 12px 16px; border-radius: 4px; margin: 6px 0; }
     .alert-orange { background: #fffde7; border-left: 4px solid #fdd835; padding: 12px 16px; border-radius: 4px; margin: 6px 0; }
+    .alert-yellow { background: #fffde7; border-left: 4px solid #fdd835; padding: 12px 16px; border-radius: 4px; margin: 6px 0; }
     .alert-green  { background: #f0fff4; border-left: 4px solid #43a047; padding: 12px 16px; border-radius: 4px; margin: 6px 0; }
     .card { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); margin-bottom: 16px; }
     .badge-red    { background:#e53935; color:white; padding:3px 10px; border-radius:12px; font-size:12px; font-weight:600; }
@@ -58,40 +59,40 @@ def forecast_product(sku, months_ahead=4):
     data = sales_df[sales_df["sku"] == sku].copy()
     data = data.sort_values("date")
     data["month"] = data["date"].dt.month
-    data["year"]  = data["date"].dt.year
 
-    # Monthly seasonal index
+    # Monthly seasonal index — convert to dict (pandas 2.x safe)
     seasonal_avg = data.groupby("month")["units_sold"].mean()
-    overall_avg  = data["units_sold"].mean()
-    seasonal_idx = seasonal_avg / overall_avg
+    overall_avg  = float(data["units_sold"].mean())
+    seasonal_idx = (seasonal_avg / overall_avg).to_dict()
 
-    # Linear trend
-    data["t"] = range(len(data))
+    # Linear trend using numpy arrays directly
+    t = np.arange(len(data))
     if len(data) > 2:
-        coeffs = np.polyfit(data["t"], data["units_sold"], 1)
-        trend_slope = coeffs[0]
+        coeffs = np.polyfit(t, data["units_sold"].values, 1)
+        trend_slope = float(coeffs[0])
     else:
-        trend_slope = 0
+        trend_slope = 0.0
 
-    last_t    = data["t"].max()
-    last_date = data["date"].max()
-    last_val  = data["units_sold"].iloc[-3:].mean()
+    last_date = data["date"].iloc[-1]
+    last_val  = float(data["units_sold"].iloc[-3:].mean())
 
     forecasts = []
     for i in range(1, months_ahead + 1):
-        future_date  = last_date + pd.DateOffset(months=i)
-        future_month = future_date.month
-        base         = last_val + trend_slope * i
-        s_idx        = seasonal_idx.get(future_month, 1.0)
-        predicted    = max(int(base * s_idx), 0)
-        # Confidence interval ±12%
-        lower = int(predicted * 0.88)
-        upper = int(predicted * 1.12)
+        # Build future date safely without DateOffset arithmetic
+        future_month = ((last_date.month - 1 + i) % 12) + 1
+        future_year  = last_date.year + ((last_date.month - 1 + i) // 12)
+        future_date  = pd.Timestamp(year=future_year, month=future_month, day=1)
+
+        base      = last_val + trend_slope * i
+        s_idx     = seasonal_idx.get(future_month, 1.0)
+        predicted = max(int(base * s_idx), 0)
+        lower     = int(predicted * 0.88)
+        upper     = int(predicted * 1.12)
         forecasts.append({
-            "date":      future_date,
-            "forecast":  predicted,
-            "lower":     lower,
-            "upper":     upper,
+            "date":     future_date,
+            "forecast": predicted,
+            "lower":    lower,
+            "upper":    upper,
         })
     return pd.DataFrame(forecasts)
 
@@ -155,7 +156,7 @@ with st.sidebar:
     st.image("https://upload.wikimedia.org/wikipedia/commons/thumb/5/56/Fine_Hygienic_Holding_logo.svg/320px-Fine_Hygienic_Holding_logo.svg.png", width=180)
     st.markdown("---")
     st.markdown("### Navigation")
-    page = st.radio("", ["📊 Dashboard", "📈 Demand Forecast", "📦 Order Recommendations", "🚨 Alerts"], label_visibility="collapsed")
+    page = st.radio("Navigation", ["📊 Dashboard", "📈 Demand Forecast", "📦 Order Recommendations", "🚨 Alerts"], label_visibility="collapsed")
     st.markdown("---")
     st.markdown("### Filters")
     categories   = ["All"] + list(products_df["category"].unique())
@@ -245,7 +246,7 @@ if page == "📊 Dashboard":
     fig.update_layout(height=380, plot_bgcolor="white", paper_bgcolor="white",
                       legend=dict(orientation="h", y=1.12),
                       xaxis=dict(tickangle=-25), yaxis_title="Units")
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width='stretch')
 
 # ─────────────────────────────────────────────
 # PAGE 2: DEMAND FORECAST
@@ -297,10 +298,24 @@ elif page == "📈 Demand Forecast":
             marker=dict(size=10, symbol="diamond")
         ))
 
-        # Vertical divider
+        # Vertical divider — add_vline broken in Plotly 6, use add_shape instead
         last_hist = hist_data["date"].max()
-        fig.add_vline(x=last_hist, line_dash="dash", line_color="gray",
-                      annotation_text="Forecast Start", annotation_position="top right")
+        fig.add_shape(
+            type="line",
+            x0=str(last_hist), x1=str(last_hist),
+            y0=0, y1=1,
+            xref="x", yref="paper",
+            line=dict(dash="dash", color="gray", width=1.5)
+        )
+        fig.add_annotation(
+            x=str(last_hist), y=1,
+            xref="x", yref="paper",
+            text="Forecast Start",
+            showarrow=False,
+            xanchor="left",
+            font=dict(size=11, color="gray"),
+            bgcolor="white"
+        )
 
         fig.update_layout(
             height=420, plot_bgcolor="white", paper_bgcolor="white",
@@ -308,7 +323,7 @@ elif page == "📈 Demand Forecast":
             legend=dict(orientation="h", y=1.12),
             hovermode="x unified"
         )
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, width='stretch')
 
         # Forecast table
         st.markdown("#### Monthly Forecast Breakdown")
@@ -317,7 +332,7 @@ elif page == "📈 Demand Forecast":
         fc_display["Forecast"]  = fc_display["forecast"].apply(lambda x: f"{x:,}")
         fc_display["Low Est."]  = fc_display["lower"].apply(lambda x: f"{x:,}")
         fc_display["High Est."] = fc_display["upper"].apply(lambda x: f"{x:,}")
-        st.dataframe(fc_display[["Month", "Low Est.", "Forecast", "High Est."]], use_container_width=True, hide_index=True)
+        st.dataframe(fc_display[["Month", "Low Est.", "Forecast", "High Est."]], width='stretch', hide_index=True)
 
         # Seasonal insight
         st.markdown("#### Seasonal Pattern")
@@ -330,7 +345,7 @@ elif page == "📈 Demand Forecast":
                       color="units_sold", color_continuous_scale="Blues",
                       labels={"units_sold": "Avg Units Sold", "month_name": "Month"})
         fig2.update_layout(height=280, plot_bgcolor="white", paper_bgcolor="white", showlegend=False)
-        st.plotly_chart(fig2, use_container_width=True)
+        st.plotly_chart(fig2, width='stretch')
 
 # ─────────────────────────────────────────────
 # PAGE 3: ORDER RECOMMENDATIONS
@@ -364,7 +379,7 @@ elif page == "📦 Order Recommendations":
         })
 
     df_orders = pd.DataFrame(rows)
-    st.dataframe(df_orders, use_container_width=True, hide_index=True)
+    st.dataframe(df_orders, width='stretch', hide_index=True)
 
     # Total cost summary
     total_cost = sum(
@@ -392,7 +407,7 @@ elif page == "📦 Order Recommendations":
                      labels={"Cost": "Estimated Cost (USD)"})
         fig.update_layout(height=320, plot_bgcolor="white", paper_bgcolor="white",
                           xaxis=dict(tickangle=-20), showlegend=False)
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, width='stretch')
 
 # ─────────────────────────────────────────────
 # PAGE 4: ALERTS
@@ -458,4 +473,4 @@ elif page == "🚨 Alerts":
     fig.update_layout(height=340, paper_bgcolor="white",
                       annotations=[dict(text=f"{len(filtered_results)}<br>Products", x=0.5, y=0.5,
                                         font_size=16, showarrow=False)])
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width='stretch')
