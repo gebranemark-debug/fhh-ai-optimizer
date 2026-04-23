@@ -1,0 +1,38 @@
+sku,name,category,base_demand,unit,current_stock,reorder_point,max_stock,lead_time_days,cost_per_unit
+FHH-TIS-001,Fine Facial Tissues 200s (Box),Tissues,4200,boxes,3100,3000,12000,14,1.2
+FHH-TIS-002,Fine Toilet Rolls 10-Pack,Tissues,5800,packs,8200,4000,16000,14,2.8
+FHH-TIS-003,Fine Kitchen Towels 2-Roll,Tissues,3100,packs,1200,2500,9000,12,1.95
+FHH-TIS-004,Fine Maxi Roll Tissue,Tissues,2600,rolls,4100,2000,8000,12,0.85
+FHH-TIS-005,Fine Sterilized Cotton Tissue,Tissues,1800,boxes,2900,1500,6000,10,1.5
+FHH-TIS-006,Fine Bamboo Toilet Rolls 10-Pack,Tissues,2100,packs,980,1800,7000,14,3.2
+FHH-WIP-001,Fine Baby Wipes 80s,Wet Wipes,6200,packs,9800,4500,18000,16,2.1
+FHH-WIP-002,Fine Flushable Wipes 40s,Wet Wipes,2800,packs,980,2000,8000,16,1.75
+FHH-WIP-003,Fine Antibacterial Wipes 72s,Wet Wipes,3400,packs,5100,2500,10000,14,2.4
+FHH-WIP-004,Fine Facial Cleansing Wipes 25s,Wet Wipes,2200,packs,3300,1800,7000,14,1.9
+FHH-WIP-005,Fine Hand & Surface Wipes 100s,Wet Wipes,1900,packs,700,1500,6000,16,3.1
+FHH-DIA-001,Fine Baby Diapers Size 3 (46s),Diapers,3800,packs,4100,2800,11000,21,8.5
+FHH-DIA-002,Fine Baby Diapers Size 4 (40s),Diapers,4100,packs,5300,3000,12000,21,9.2
+FHH-DIA-003,Fine Baby Diapers Size 5 (34s),Diapers,3500,packs,6200,2500,10000,21,9.8
+FHH-DIA-004,Fine Baby Diapers Newborn (56s),Diapers,2400,packs,1100,2000,8000,21,7.9
+FHH-DIA-005,Fine Baby Pants Size 4 (44s),Diapers,2900,packs,3800,2200,9000,21,10.5
+FHH-DIA-006,Fine Baby Pants Size 5 (38s),Diapers,2600,packs,4500,2000,8500,21,11.2
+FHH-NAP-001,Fine Napkins 150s (Pack),Napkins,3400,packs,6100,2500,10000,10,0.95
+FHH-NAP-002,Fine Dinner Napkins 50s (Pack),Napkins,2100,packs,3200,1500,7000,10,1.3
+FHH-NAP-003,Fine Cocktail Napkins 100s,Napkins,1600,packs,2800,1200,5500,10,0.8
+FHH-FEM-001,Fine Feminine Pads Regular 10s,Feminine Care,4800,packs,7200,3500,14000,18,1.6
+FHH-FEM-002,Fine Feminine Pads Overnight 8s,Feminine Care,3200,packs,4800,2500,10000,18,1.8
+FHH-FEM-003,Fine Panty Liners 30s,Feminine Care,2700,packs,900,2200,9000,18,1.2
+FHH-FEM-004,Fine Ultra-Thin Pads Wings 10s,Feminine Care,3600,packs,5400,2800,11000,18,2.1
+FHH-HYG-001,Fine Hand Sanitizer Gel 500ml,Hand Hygiene,3100,bottles,4600,2400,10000,12,2.9
+FHH-HYG-002,Fine Foaming Hand Wash 400ml,Hand Hygiene,2400,bottles,800,2000,8000,12,2.5
+FHH-HYG-003,Fine Hand Sanitizer Spray 100ml,Hand Hygiene,2800,bottles,5200,2200,9000,10,1.8
+FHH-PRO-001,Fine Industrial Roll Towels 6-Pack,Professional,1400,packs,2100,1100,5000,14,5.5
+FHH-PRO-002,Fine Dispensable Napkins 500s,Professional,1100,boxes,1700,900,4000,14,4.2
+FHH-PRO-003,Fine Z-Fold Hand Towels 200s,Professional,1300,packs,400,1000,4500,14,3.8
+FHH-PRO-004,Fine Jumbo Toilet Rolls 12-Pack,Professional,950,packs,1400,750,3500,14,6.9
+FHH-COT-001,Fine Pure Cotton Balls 100s,Cotton,2200,packs,3300,1700,7500,10,1.1
+FHH-COT-002,Fine Cotton Buds 200s,Cotton,2900,packs,4400,2200,9000,10,0.9
+FHH-COT-003,Fine Cotton Pads Round 80s,Cotton,1900,packs,600,1500,6500,10,1.3
+FHH-SPC-001,Fine Sterilized Gauze Roll 5m,Specialty,1200,rolls,1800,900,4200,16,2.2
+FHH-SPC-002,Fine Surgical Face Masks 50s,Specialty,1500,boxes,2200,1200,5000,16,4.5
+FHH-SPC-003,Fine Disposable Gloves 100s,Specialty,1100,boxes,350,900,4000,16,5.8
