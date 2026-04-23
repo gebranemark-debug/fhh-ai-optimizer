@@ -30,6 +30,7 @@ st.markdown("""
     h3 { color: #0f3460; }
     .alert-red    { background: #fff0f0; border-left: 4px solid #e53935; padding: 12px 16px; border-radius: 4px; margin: 6px 0; }
     .alert-orange { background: #fffde7; border-left: 4px solid #fdd835; padding: 12px 16px; border-radius: 4px; margin: 6px 0; }
+    .alert-yellow { background: #fffde7; border-left: 4px solid #fdd835; padding: 12px 16px; border-radius: 4px; margin: 6px 0; }
     .alert-green  { background: #f0fff4; border-left: 4px solid #43a047; padding: 12px 16px; border-radius: 4px; margin: 6px 0; }
     .card { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); margin-bottom: 16px; }
     .badge-red    { background:#e53935; color:white; padding:3px 10px; border-radius:12px; font-size:12px; font-weight:600; }
@@ -433,7 +434,7 @@ elif page == "🚨 Alerts":
             </div>""", unsafe_allow_html=True)
 
     if warnings_:
-        st.markdown("#### 🟠 Warning — Action Needed Soon")
+        st.markdown("#### 🟡 Warning — Action Needed Soon")
         for sku, res in warnings_:
             p      = res["product"]
             status = res["status"]
@@ -441,7 +442,7 @@ elif page == "🚨 Alerts":
                    if status["status"] == "OVERSTOCK"
                    else f"Stock below reorder point of {int(p['reorder_point']):,} {p['unit']}. Place order this week.")
             st.markdown(f"""
-            <div class="alert-orange">
+            <div class="alert-yellow">
                 <strong>{p['name']}</strong> — {status['status']}<br>
                 {msg}
             </div>""", unsafe_allow_html=True)
