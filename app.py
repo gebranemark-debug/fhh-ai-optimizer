@@ -45,8 +45,8 @@ st.markdown("""
 # ─────────────────────────────────────────────
 @st.cache_data
 def load_data():
-    sales = pd.read_csv("fhh_sales_history.csv", parse_dates=["date"])
-    products = pd.read_csv("fhh_products.csv")
+    sales = pd.read_csv("data/fhh_sales_history.csv", parse_dates=["date"])
+    products = pd.read_csv("data/fhh_products.csv")
     return sales, products
 
 sales_df, products_df = load_data()
