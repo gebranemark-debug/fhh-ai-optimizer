@@ -25,13 +25,20 @@ from sqlalchemy.orm import (
 )
 
 
-DEFAULT_DB_URL = "postgresql+psycopg2://postgres:postgres@localhost:5432/fhh"
-
-
 # --- Engine & session -------------------------------------------------------
 
 def get_database_url() -> str:
-    return os.environ.get("DATABASE_URL", DEFAULT_DB_URL)
+    """Read the Postgres connection string from the env. No hardcoded fallback —
+    if ``DATABASE_URL`` isn't set, the caller should set it (see ``.env.example``)
+    before constructing the engine."""
+    url = os.environ.get("DATABASE_URL")
+    if not url:
+        raise RuntimeError(
+            "DATABASE_URL is not set. Copy .env.example to .env and fill in your "
+            "Supabase connection string, then `export DATABASE_URL=...` (or use a "
+            "loader like python-dotenv) before running this module."
+        )
+    return url
 
 
 _engine = None

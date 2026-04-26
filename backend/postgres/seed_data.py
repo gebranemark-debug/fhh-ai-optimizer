@@ -32,8 +32,6 @@ HISTORY_DAYS = 180
 
 SCHEMA_PATH = Path(__file__).parent / "schema.sql"
 
-DEFAULT_DB_URL = "postgresql+psycopg2://postgres:postgres@localhost:5432/fhh"
-
 
 # --- Constants pulled verbatim from the API contract ------------------------
 
@@ -369,7 +367,12 @@ def _chunked(rows: Iterable[dict], size: int = 1000):
 
 
 def main() -> None:
-    db_url = os.environ.get("DATABASE_URL", DEFAULT_DB_URL)
+    db_url = os.environ.get("DATABASE_URL")
+    if not db_url:
+        raise SystemExit(
+            "[seed] DATABASE_URL is not set. Export it before running, e.g.\n"
+            "  export DATABASE_URL='postgresql://postgres:PASSWORD@db.<ref>.supabase.co:5432/postgres'"
+        )
     print(f"[seed] connecting to {db_url.rsplit('@', 1)[-1]}")
     engine = create_engine(db_url, future=True)
 
