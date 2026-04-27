@@ -84,6 +84,32 @@ during which the corresponding bearing's vibration ramps from ~3.0 mm/s
 toward ~7.6 mm/s. The ETL labels every hour inside the 72-hour window
 that *precedes* a failure as `target_failure_within_72h = 1`.
 
+## Two execution modes
+
+| Mode | When to use | DB writes | Sensor data lives in |
+|---|---|---|---|
+| **Default (DB)** | Production-style integration. Sensor history is queryable from any client and the FastAPI layer can read it directly. | yes — to `sensor_readings` + `sensor_failure_events` | TimescaleDB (or plain Postgres if the extension isn't available) |
+| **`--in-memory`** | Demo / development workflow. Use when DB inserts are too slow (Supabase Session Pooler caps INSERT throughput around a few hundred rows/sec, which makes 1.66M rows take hours). The relational layer (`production_runs`, `maintenance_logs`) is still read from Postgres. | none for sensor data; ETL still reads PG | a pandas DataFrame, kept only for the duration of the run |
+
+Both modes produce **bit-for-bit identical** raw sensor data (same RNG
+seed, same anchor date, same failure events) and feed the same feature
+engineering, so the resulting `features.parquet` is the same.
+
+### Quickstart — fast in-memory demo
+
+```bash
+git pull origin main
+export DATABASE_URL='<your Supabase Session Pooler URL>'
+pip install -r requirements.txt
+python backend/timescale/etl.py --in-memory --out backend/timescale/features.parquet
+```
+
+This skips TimescaleDB entirely. The simulator runs in-process, the
+hourly aggregation happens in pandas, the joins to `production_runs` /
+`maintenance_logs` still go to Supabase, and a parquet file lands in
+`backend/timescale/features.parquet`. Total runtime: 1–3 minutes on a
+typical Codespace.
+
 ## Setup
 
 ### Prereqs
@@ -91,9 +117,11 @@ that *precedes* a failure as `target_failure_within_72h = 1`.
 - Prompt 1 already loaded (4 machines, 24 components, etc. — referenced
   by foreign-keyed `machine_id` and `component_id` values).
 - `DATABASE_URL` exported in your shell, pointing at the same Supabase
-  database (Session Pooler URL recommended).
+  database (Session Pooler URL recommended). The default mode reads AND
+  writes; the `--in-memory` mode only reads (production_runs,
+  maintenance_logs).
 - `pip install -r requirements.txt` (sqlalchemy, psycopg2-binary, pandas,
-  numpy — all already in the repo's requirements file).
+  numpy, pyarrow — all already in the repo's requirements file).
 
 ### TimescaleDB note (Supabase)
 
@@ -165,6 +193,8 @@ with e.connect() as c:
 
 ### 4. Run the ETL
 
+#### Default mode (reads sensor data from TimescaleDB)
+
 ```bash
 python backend/timescale/etl.py
 ```
@@ -182,6 +212,43 @@ To run on a window:
 
 ```bash
 python backend/timescale/etl.py --start 2026-04-01 --end 2026-04-25
+```
+
+#### `--in-memory` mode (skips TimescaleDB)
+
+For demos / fast iteration, especially when Supabase pooler INSERT
+throughput is the bottleneck:
+
+```bash
+python backend/timescale/etl.py --in-memory --out backend/timescale/features.parquet
+```
+
+What happens:
+1. `sensor_simulator.simulate_to_dataframe()` generates the same
+   deterministic 32-stream dataset (RNG seed `42`, anchor `2026-04-25`)
+   directly into a pandas DataFrame — no DB connection.
+2. Hourly aggregation runs in pandas via `aggregate_hourly_in_memory`,
+   which mirrors the SQL (`date_trunc('hour', timestamp)` + AVG/MIN/MAX/
+   STDDEV_POP) so the downstream feature engineering is bit-for-bit the
+   same.
+3. `production_runs`, `maintenance_logs` are still loaded from Supabase
+   Postgres (this is fast — a few thousand rows).
+4. The full feature pipeline (pivot, vibration trend, days-since-
+   maintenance, failure label) runs identically.
+5. `--out` writes the resulting `features.parquet`.
+
+You can also set the simulator interval per run (default 5 min):
+
+```bash
+python backend/timescale/etl.py --in-memory --interval-seconds 60 --out features.parquet
+```
+
+The standalone simulator also has an `--in-memory` flag for inspecting
+the raw frame without going through the ETL:
+
+```bash
+python backend/timescale/sensor_simulator.py --in-memory --out raw.parquet
+# also writes raw_failure_events.parquet alongside it
 ```
 
 The ETL output has one row per `(machine_id, hour_bucket)`. With 6

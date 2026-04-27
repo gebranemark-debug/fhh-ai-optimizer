@@ -133,6 +133,46 @@ def load_hourly_sensor_aggregates(
     return pd.read_sql(sql, engine, params=params)
 
 
+def aggregate_hourly_in_memory(
+    raw: pd.DataFrame,
+    start: Optional[datetime] = None,
+    end: Optional[datetime] = None,
+) -> pd.DataFrame:
+    """In-memory equivalent of ``load_hourly_sensor_aggregates``.
+
+    Mirrors the SQL exactly: ``date_trunc('hour', timestamp)`` + GROUP BY +
+    AVG/MIN/MAX/STDDEV_POP. Returns a DataFrame with the same columns
+    (hour_bucket, machine_id, sensor_type, avg, min, max, std) so the rest
+    of the ETL — pivot, feature engineering — runs unchanged.
+    """
+    if raw.empty:
+        return pd.DataFrame(columns=["hour_bucket", "machine_id", "sensor_type",
+                                     "avg", "min", "max", "std"])
+
+    df = raw
+    if start is not None:
+        df = df[df["timestamp"] >= pd.Timestamp(start)]
+    if end is not None:
+        df = df[df["timestamp"] < pd.Timestamp(end)]
+
+    df = df.assign(hour_bucket=df["timestamp"].dt.floor("1h"))
+    agg = (
+        df.groupby(["hour_bucket", "machine_id", "sensor_type"], as_index=False)["value"]
+          .agg(
+              avg="mean",
+              min="min",
+              max="max",
+              # Match Postgres STDDEV_POP (population std, ddof=0).
+              std=lambda v: float(v.std(ddof=0)) if len(v) else 0.0,
+          )
+          .sort_values(["hour_bucket", "machine_id", "sensor_type"])
+          .reset_index(drop=True)
+    )
+    # STDDEV_POP returns 0 for single-row groups — make sure NaN doesn't slip through.
+    agg["std"] = agg["std"].fillna(0.0)
+    return agg
+
+
 def load_production_runs(engine: Engine) -> pd.DataFrame:
     return pd.read_sql(
         text("""
@@ -240,6 +280,18 @@ def _add_vibration_trend(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
+def _to_ns_utc(s: pd.Series) -> pd.Series:
+    """Coerce a datetime series to ``datetime64[ns, UTC]``.
+
+    pandas 2.x preserves the resolution of the input (so a date column ends
+    up at second resolution, sensor timestamps at microsecond, etc.), and
+    ``merge_asof`` refuses to join keys with mismatched resolutions. Forcing
+    everything we merge on through this helper keeps the join keys
+    compatible without changing any values.
+    """
+    return pd.to_datetime(s, utc=True).astype("datetime64[ns, UTC]")
+
+
 def _add_days_since_maintenance(df: pd.DataFrame, logs: pd.DataFrame) -> pd.DataFrame:
     """For each (machine_id, hour_bucket), how many days have passed since
     the most recent maintenance log on:
@@ -250,20 +302,22 @@ def _add_days_since_maintenance(df: pd.DataFrame, logs: pd.DataFrame) -> pd.Data
     if df.empty:
         return df
 
-    # Sort once for merge_asof
-    df = df.sort_values("hour_bucket").reset_index(drop=True)
+    # Sort once for merge_asof; normalize the join key resolution.
+    df = df.sort_values("hour_bucket").reset_index(drop=True).copy()
+    df["hour_bucket"] = _to_ns_utc(df["hour_bucket"])
     out = df.copy()
 
     # --- any-component: hours since last maintenance event -----------------
     last_any = (
         logs[["machine_id", "date_performed"]]
-        .rename(columns={"date_performed": "last_any_dt"})
-        .sort_values(["machine_id", "last_any_dt"])
+        .rename(columns={"date_performed": "_last_any"})
+        .copy()
     )
-    last_any["last_any_dt"] = pd.to_datetime(last_any["last_any_dt"], utc=True)
+    last_any["_last_any"] = _to_ns_utc(last_any["_last_any"])
+    last_any = last_any.sort_values(["machine_id", "_last_any"])
     out = pd.merge_asof(
         out.sort_values("hour_bucket"),
-        last_any.rename(columns={"last_any_dt": "_last_any"}).sort_values("_last_any"),
+        last_any.sort_values("_last_any"),
         left_on="hour_bucket", right_on="_last_any", by="machine_id",
         direction="backward",
     )
@@ -277,9 +331,10 @@ def _add_days_since_maintenance(df: pd.DataFrame, logs: pd.DataFrame) -> pd.Data
         comp = (
             logs[logs["component_id"] == component_id][["machine_id", "date_performed"]]
             .rename(columns={"date_performed": f"_last_{component_id}"})
-            .sort_values(["machine_id", f"_last_{component_id}"])
+            .copy()
         )
-        comp[f"_last_{component_id}"] = pd.to_datetime(comp[f"_last_{component_id}"], utc=True)
+        comp[f"_last_{component_id}"] = _to_ns_utc(comp[f"_last_{component_id}"])
+        comp = comp.sort_values(["machine_id", f"_last_{component_id}"])
         out = pd.merge_asof(
             out.sort_values("hour_bucket"),
             comp.sort_values(f"_last_{component_id}"),
@@ -300,9 +355,12 @@ def _add_oee(df: pd.DataFrame, runs: pd.DataFrame) -> pd.DataFrame:
         df["avg_oee_percent"] = np.nan
         return df
 
+    df = df.copy()
+    df["hour_bucket"] = _to_ns_utc(df["hour_bucket"])
+
     runs = runs.copy()
-    runs["start_time"] = pd.to_datetime(runs["start_time"], utc=True)
-    runs["end_time"] = pd.to_datetime(runs["end_time"], utc=True)
+    runs["start_time"] = _to_ns_utc(runs["start_time"])
+    runs["end_time"] = _to_ns_utc(runs["end_time"])
 
     # Use merge_asof on start_time (backward) and then filter rows where the
     # bucket falls inside [start_time, end_time].
@@ -330,7 +388,9 @@ def _add_failure_label(df: pd.DataFrame, events: pd.DataFrame, horizon_hours: in
         return df
 
     events = events.copy()
-    events["failure_time"] = pd.to_datetime(events["failure_time"], utc=True)
+    events["failure_time"] = _to_ns_utc(events["failure_time"])
+    df = df.copy()
+    df["hour_bucket"] = _to_ns_utc(df["hour_bucket"])
     horizon = pd.Timedelta(hours=horizon_hours)
     for _, ev in events.iterrows():
         mask = (
@@ -359,19 +419,47 @@ def build_feature_dataset(
     engine_pg: Optional[Engine] = None,
     start: Optional[datetime] = None,
     end: Optional[datetime] = None,
+    in_memory: bool = False,
+    interval_seconds: int = 300,
 ) -> FeatureSet:
-    """Run the full pipeline and return the ML-ready DataFrame plus stats."""
-    engine_ts = engine_ts or _get_engine("TIMESCALE_DATABASE_URL")
+    """Run the full ETL pipeline and return the ML-ready DataFrame plus stats.
+
+    Two source modes:
+
+    - ``in_memory=False`` (default): reads sensor_readings + sensor_failure_events
+      from TimescaleDB, joins with production_runs + maintenance_logs in
+      PostgreSQL.
+    - ``in_memory=True``: skips TimescaleDB entirely. Calls
+      ``sensor_simulator.simulate_to_dataframe`` to produce raw sensor data
+      (and failure events) deterministically in-memory, aggregates to hourly
+      buckets in pandas, then joins with production_runs + maintenance_logs
+      from PostgreSQL just like the default path.
+    """
     engine_pg = engine_pg or _get_engine("POSTGRES_DATABASE_URL")
 
-    print("[etl]  loading hourly sensor aggregates ...")
-    agg = load_hourly_sensor_aggregates(engine_ts, start=start, end=end)
+    if in_memory:
+        # Local import so etl can be inspected without dragging in the
+        # simulator's deps when running the DB-only path in production.
+        import sensor_simulator
+        print("[etl]  --in-memory: generating sensor data via sensor_simulator")
+        print(f"[etl]  interval={interval_seconds}s  "
+              f"expected raw rows: {sensor_simulator.expected_row_count(interval_seconds):,}")
+        raw, events = sensor_simulator.simulate_to_dataframe(
+            interval_seconds=interval_seconds, seed=42,
+        )
+        print(f"[etl]  raw sensor frame: {len(raw):,} rows")
+        agg = aggregate_hourly_in_memory(raw, start=start, end=end)
+    else:
+        engine_ts = engine_ts or _get_engine("TIMESCALE_DATABASE_URL")
+        print("[etl]  loading hourly sensor aggregates from TimescaleDB ...")
+        agg = load_hourly_sensor_aggregates(engine_ts, start=start, end=end)
+        events = load_failure_events(engine_ts)
+
     print(f"[etl]  hourly aggregates: {len(agg):,} rows")
 
-    print("[etl]  loading production_runs, maintenance_logs, failure_events ...")
+    print("[etl]  loading production_runs, maintenance_logs from PostgreSQL ...")
     runs = load_production_runs(engine_pg)
     logs = load_maintenance_logs(engine_pg)
-    events = load_failure_events(engine_ts)
     print(f"[etl]  runs={len(runs):,}  logs={len(logs):,}  events={len(events):,}")
 
     print("[etl]  pivoting + engineering features ...")
@@ -412,9 +500,22 @@ def main() -> None:
                    help="ISO date/datetime (UTC) — only aggregate readings <  this.")
     p.add_argument("--out", type=str, default=None,
                    help="Optional output path — .parquet or .csv based on extension.")
+    p.add_argument("--in-memory", action="store_true",
+                   help="Skip TimescaleDB. Generate raw sensor data via "
+                        "sensor_simulator.simulate_to_dataframe() and aggregate "
+                        "in pandas. PostgreSQL (production_runs, maintenance_logs) "
+                        "is still read from DATABASE_URL.")
+    p.add_argument("--interval-seconds", type=int, default=300,
+                   help="Sample interval in seconds for --in-memory mode "
+                        "(default 300 = 5 min). Ignored without --in-memory.")
     args = p.parse_args()
 
-    fs = build_feature_dataset(start=_parse_iso(args.start), end=_parse_iso(args.end))
+    fs = build_feature_dataset(
+        start=_parse_iso(args.start),
+        end=_parse_iso(args.end),
+        in_memory=args.in_memory,
+        interval_seconds=args.interval_seconds,
+    )
 
     print("\n[etl]  preview (head 3):")
     pd.set_option("display.max_columns", 80)

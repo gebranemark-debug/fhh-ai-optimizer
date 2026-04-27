@@ -31,8 +31,17 @@ Supabase's Session Pooler without melting it. Override with
 ``--interval-seconds 60`` if you want literal 1-minute density.
 
 Runs:
+    # Default: write to TimescaleDB (Supabase or local).
     python backend/timescale/sensor_simulator.py
     python backend/timescale/sensor_simulator.py --skip-schema
+
+    # In-memory only — never opens a DB connection. Used by the
+    # `etl.py --in-memory` demo path so we can skip the slow DB inserts
+    # entirely. Optional --out drops the raw frame to parquet/csv.
+    python backend/timescale/sensor_simulator.py --in-memory
+    python backend/timescale/sensor_simulator.py --in-memory --out raw.parquet
+
+    # Override interval (default 5 min).
     python backend/timescale/sensor_simulator.py --interval-seconds 60
 """
 
@@ -265,11 +274,18 @@ def _parse_args() -> argparse.Namespace:
     p = argparse.ArgumentParser(description="Generate FHH sensor data for TimescaleDB.")
     p.add_argument("--skip-schema", action="store_true",
                    help="Skip applying schema.sql; truncate data tables instead.")
+    p.add_argument("--in-memory", action="store_true",
+                   help="Generate the dataset in-memory only (no DB writes). "
+                        "Use this when DB inserts are too slow (e.g. Supabase Session "
+                        "Pooler throttling). Combine with --out to save a parquet/csv.")
     p.add_argument("--interval-seconds", type=int, default=DEFAULT_INTERVAL_SECONDS,
                    help=f"Sample interval in seconds (default {DEFAULT_INTERVAL_SECONDS} = 5 min). "
                         "Use 60 for literal 1-minute density (~8.3M rows).")
     p.add_argument("--batch-size", type=int, default=DEFAULT_BATCH_SIZE,
-                   help=f"Rows per commit (default {DEFAULT_BATCH_SIZE}).")
+                   help=f"Rows per commit when writing to DB (default {DEFAULT_BATCH_SIZE}).")
+    p.add_argument("--out", type=str, default=None,
+                   help="Optional output path for --in-memory mode. "
+                        "Suffix .parquet or .csv decides the format.")
     return p.parse_args()
 
 
@@ -279,13 +295,86 @@ def expected_row_count(interval_seconds: int) -> int:
     return samples_per_machine * len(MACHINE_IDS) * len(SENSORS)
 
 
+def simulate_to_dataframe(
+    interval_seconds: int = DEFAULT_INTERVAL_SECONDS,
+    seed: int = 42,
+):
+    """In-memory dataset generation. Returns ``(readings_df, events_df)``.
+
+    Same deterministic output as the DB-insert path — same seed, same anchor,
+    same failure events. ``etl.py --in-memory`` calls this so the whole
+    pipeline can run without ever touching TimescaleDB.
+
+    Returns:
+      readings_df: columns timestamp, machine_id, sensor_type, sensor_location,
+                   value, unit. ~1.66M rows at 5-min default.
+      events_df:   columns matching sensor_failure_events table. 3 rows.
+    """
+    # Local import so this module stays usable without pandas installed when
+    # running the DB-only path.
+    import pandas as pd
+
+    rng = random.Random(seed)
+    failure_events = _build_failure_events()
+
+    readings_df = pd.DataFrame.from_records(
+        gen_sensor_readings(rng, interval_seconds, failure_events),
+        columns=["timestamp", "machine_id", "sensor_type", "sensor_location",
+                 "value", "unit"],
+    )
+    # Ensure tz-aware timestamps survive the DataFrame conversion.
+    readings_df["timestamp"] = pd.to_datetime(readings_df["timestamp"], utc=True)
+
+    events_df = pd.DataFrame([{
+        "event_id": ev.event_id,
+        "machine_id": ev.machine_id,
+        "component_id": ev.component_id,
+        "sensor_type": ev.sensor_type,
+        "degradation_start": pd.Timestamp(ev.degradation_start),
+        "failure_time":      pd.Timestamp(ev.failure_time),
+        "failure_mode": ev.failure_mode,
+        "description": ev.description,
+    } for ev in failure_events])
+
+    return readings_df, events_df
+
+
 def main() -> None:
     args = _parse_args()
+    print(f"[sim]  interval={args.interval_seconds}s  "
+          f"expected sensor_readings rows: {expected_row_count(args.interval_seconds):,}")
+
+    if args.in_memory:
+        # In-memory mode: never opens a DB connection. Useful for the demo
+        # workflow where Supabase pooler insert throughput is the bottleneck.
+        from pathlib import Path
+        print("[sim]  --in-memory: generating dataset as a pandas DataFrame")
+        readings_df, events_df = simulate_to_dataframe(
+            interval_seconds=args.interval_seconds, seed=42,
+        )
+        print(f"[sim]  sensor_readings rows in memory:        {len(readings_df):,}")
+        print(f"[sim]  sensor_failure_events rows in memory:  {len(events_df):,}")
+
+        if args.out:
+            out = Path(args.out)
+            out.parent.mkdir(parents=True, exist_ok=True)
+            if out.suffix.lower() == ".parquet":
+                readings_df.to_parquet(out, index=False)
+            else:
+                readings_df.to_csv(out, index=False)
+            events_path = out.with_name(out.stem + "_failure_events" + out.suffix)
+            if out.suffix.lower() == ".parquet":
+                events_df.to_parquet(events_path, index=False)
+            else:
+                events_df.to_csv(events_path, index=False)
+            print(f"[sim]  wrote sensor_readings → {out}")
+            print(f"[sim]  wrote sensor_failure_events → {events_path}")
+        print("[sim]  OK (in-memory).")
+        return
+
     db_url = os.environ.get("DATABASE_URL", DEFAULT_DB_URL)
     print(f"[sim]  connecting to {db_url.rsplit('@', 1)[-1]}")
-    print(f"[sim]  interval={args.interval_seconds}s  batch_size={args.batch_size}")
-    print(f"[sim]  expected sensor_readings rows: {expected_row_count(args.interval_seconds):,}")
-
+    print(f"[sim]  batch_size={args.batch_size}")
     engine = create_engine(db_url, future=True)
 
     if args.skip_schema:
