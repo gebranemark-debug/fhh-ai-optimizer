@@ -153,7 +153,7 @@ all_results = compute_all()
 # SIDEBAR
 # ─────────────────────────────────────────────
 with st.sidebar:
-    st.image("https://upload.wikimedia.org/wikipedia/commons/thumb/5/56/Fine_Hygienic_Holding_logo.svg/320px-Fine_Hygienic_Holding_logo.svg.png", width=180)
+    st.image("assets/fhh_logo.webp", width=180)
     st.markdown("---")
     st.markdown("### Navigation")
     page = st.radio("Navigation", ["📊 Dashboard", "📈 Demand Forecast", "📦 Order Recommendations", "🚨 Alerts"], label_visibility="collapsed")
