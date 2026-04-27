@@ -11,10 +11,16 @@ Targets the constants and shapes locked in ``docs/API_CONTRACT-2.md`` v1.1:
 
 Run:
     python backend/postgres/seed_data.py
+    python backend/postgres/seed_data.py --skip-schema   # tables already exist
+
+Every INSERT batch and the schema/truncate steps run in their own transaction
+(see BATCH_SIZE) so connections through Supabase's Session Pooler don't sit
+on a long-running transaction long enough to time out.
 """
 
 from __future__ import annotations
 
+import argparse
 import os
 import random
 from dataclasses import dataclass
@@ -29,6 +35,10 @@ from sqlalchemy import create_engine, text
 # example timestamps (April 2026). Reproducible across runs.
 TODAY = date(2026, 4, 25)
 HISTORY_DAYS = 180
+
+# Commit every N rows. Keeps each transaction short enough that Supabase's
+# Session Pooler doesn't drop us mid-load.
+BATCH_SIZE = 1000
 
 SCHEMA_PATH = Path(__file__).parent / "schema.sql"
 
@@ -357,27 +367,79 @@ INSERT_SQL = {
 }
 
 
-def _chunked(rows: Iterable[dict], size: int = 1000):
+def _parse_args() -> argparse.Namespace:
+    p = argparse.ArgumentParser(description="Seed the FHH PostgreSQL layer.")
+    p.add_argument(
+        "--skip-schema",
+        action="store_true",
+        help="Skip applying schema.sql (no DROP/CREATE/enum DDL). Use when "
+             "the schema already exists, e.g. applied via Supabase SQL Editor. "
+             "Existing data is TRUNCATEd first so re-runs stay deterministic.",
+    )
+    p.add_argument(
+        "--batch-size",
+        type=int,
+        default=BATCH_SIZE,
+        help=f"Rows per commit (default {BATCH_SIZE}).",
+    )
+    return p.parse_args()
+
+
+def _truncate_data_tables(engine) -> None:
+    """Clear all data without touching the schema. Single statement, so it
+    flows through Supabase's Session Pooler without trouble."""
+    print("[seed] --skip-schema: truncating existing data (tables stay)")
+    with engine.begin() as conn:
+        conn.exec_driver_sql(
+            "TRUNCATE TABLE quality_scans, alarm_events, maintenance_logs, "
+            "production_runs, components, machines RESTART IDENTITY CASCADE"
+        )
+
+
+def _insert_batched(
+    engine,
+    sql,
+    rows: Iterable[dict],
+    table_name: str,
+    batch_size: int = BATCH_SIZE,
+) -> int:
+    """Insert ``rows`` in chunks of ``batch_size``, opening a fresh transaction
+    per chunk. Each ``engine.begin()`` block does BEGIN..COMMIT, so the pooler
+    never sees a long-running transaction. ``rows`` may be a list or a
+    generator (used for quality_scans which streams ~17k rows)."""
+    inserted = 0
     chunk: list[dict] = []
     for r in rows:
         chunk.append(r)
-        if len(chunk) >= size:
-            yield chunk
+        if len(chunk) >= batch_size:
+            with engine.begin() as conn:
+                conn.execute(sql, chunk)
+            inserted += len(chunk)
+            print(f"  [{table_name:18s}] {inserted:>7d} rows committed")
             chunk = []
     if chunk:
-        yield chunk
+        with engine.begin() as conn:
+            conn.execute(sql, chunk)
+        inserted += len(chunk)
+        print(f"  [{table_name:18s}] {inserted:>7d} rows committed (final)")
+    return inserted
 
 
 def main() -> None:
+    args = _parse_args()
     db_url = os.environ.get("DATABASE_URL", DEFAULT_DB_URL)
     print(f"[seed] connecting to {db_url.rsplit('@', 1)[-1]}")
     engine = create_engine(db_url, future=True)
 
-    print("[seed] applying schema.sql")
-    schema_sql = SCHEMA_PATH.read_text()
-    with engine.begin() as conn:
-        # psycopg2 accepts multiple statements via exec_driver_sql.
-        conn.exec_driver_sql(schema_sql)
+    if args.skip_schema:
+        print("[seed] skipping schema.sql application (tables must already exist)")
+        _truncate_data_tables(engine)
+    else:
+        print("[seed] applying schema.sql")
+        schema_sql = SCHEMA_PATH.read_text()
+        with engine.begin() as conn:
+            # psycopg2 accepts multiple statements via exec_driver_sql.
+            conn.exec_driver_sql(schema_sql)
 
     rng = random.Random(42)
 
@@ -387,33 +449,21 @@ def main() -> None:
     logs = gen_maintenance_logs(rng)
     alarms = gen_alarm_events(rng)
 
-    counts: dict[str, int] = {}
+    bs = args.batch_size
+    counts: dict[str, int] = {
+        "machines":         _insert_batched(engine, INSERT_SQL["machines"],         machines,                           "machines",         bs),
+        "components":       _insert_batched(engine, INSERT_SQL["components"],       components,                         "components",       bs),
+        "production_runs":  _insert_batched(engine, INSERT_SQL["production_runs"],  runs,                               "production_runs",  bs),
+        "maintenance_logs": _insert_batched(engine, INSERT_SQL["maintenance_logs"], logs,                               "maintenance_logs", bs),
+        "alarm_events":     _insert_batched(engine, INSERT_SQL["alarm_events"],     alarms,                             "alarm_events",     bs),
+        "quality_scans":    _insert_batched(engine, INSERT_SQL["quality_scans"],    gen_quality_scans(rng, runs),       "quality_scans",    bs),
+    }
 
+    # Backfill components.last_maintenance_date and hours_since_last_maintenance
+    # from the freshly-inserted maintenance_logs. Single statement → its own
+    # short transaction, pooler-safe.
+    print("[seed] backfilling components.last_maintenance_date")
     with engine.begin() as conn:
-        conn.execute(INSERT_SQL["machines"], machines)
-        counts["machines"] = len(machines)
-
-        conn.execute(INSERT_SQL["components"], components)
-        counts["components"] = len(components)
-
-        for batch in _chunked(runs):
-            conn.execute(INSERT_SQL["production_runs"], batch)
-        counts["production_runs"] = len(runs)
-
-        conn.execute(INSERT_SQL["maintenance_logs"], logs)
-        counts["maintenance_logs"] = len(logs)
-
-        conn.execute(INSERT_SQL["alarm_events"], alarms)
-        counts["alarm_events"] = len(alarms)
-
-        scans_total = 0
-        for batch in _chunked(gen_quality_scans(rng, runs), size=2000):
-            conn.execute(INSERT_SQL["quality_scans"], batch)
-            scans_total += len(batch)
-        counts["quality_scans"] = scans_total
-
-        # Backfill components.last_maintenance_date and hours_since_last_maintenance
-        # from the freshly-inserted maintenance_logs.
         conn.execute(text("""
             UPDATE components c
             SET last_maintenance_date = sub.last_date,
