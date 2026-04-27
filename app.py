@@ -491,8 +491,8 @@ elif page == "🛠️ Predictive Maintenance":
         _sys.path.insert(0, str(_ai_dir))
 
     try:
-        import predict as _predict  # noqa: E402
-        import api as _api          # noqa: E402
+        import predict as _predict  # noqa: E402  # type: ignore[import-not-found]
+        import api as _api          # noqa: E402  # type: ignore[import-not-found]
         _model_ready = True
     except Exception as _e:
         _predict = None
