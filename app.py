@@ -156,7 +156,7 @@ with st.sidebar:
     st.image("https://upload.wikimedia.org/wikipedia/commons/thumb/5/56/Fine_Hygienic_Holding_logo.svg/320px-Fine_Hygienic_Holding_logo.svg.png", width=180)
     st.markdown("---")
     st.markdown("### Navigation")
-    page = st.radio("Navigation", ["📊 Dashboard", "📈 Demand Forecast", "📦 Order Recommendations", "🚨 Alerts"], label_visibility="collapsed")
+    page = st.radio("Navigation", ["📊 Dashboard", "📈 Demand Forecast", "📦 Order Recommendations", "🚨 Alerts", "🛠️ Predictive Maintenance"], label_visibility="collapsed")
     st.markdown("---")
     st.markdown("### Filters")
     categories   = ["All"] + list(products_df["category"].unique())
@@ -474,3 +474,141 @@ elif page == "🚨 Alerts":
                       annotations=[dict(text=f"{len(filtered_results)}<br>Products", x=0.5, y=0.5,
                                         font_size=16, showarrow=False)])
     st.plotly_chart(fig, width='stretch')
+
+# ─────────────────────────────────────────────
+# PREDICTIVE MAINTENANCE PAGE
+# ─────────────────────────────────────────────
+elif page == "🛠️ Predictive Maintenance":
+    st.markdown("## 🛠️ Predictive Maintenance")
+    st.caption("Live model output from `backend/ai_model/` · Threshold tiers locked per build guide v1.1")
+
+    # Lazy import so the rest of the app still works if the model artifacts
+    # aren't trained yet.
+    import sys as _sys
+    from pathlib import Path as _Path
+    _ai_dir = _Path(__file__).parent / "backend" / "ai_model"
+    if str(_ai_dir) not in _sys.path:
+        _sys.path.insert(0, str(_ai_dir))
+
+    try:
+        import predict as _predict  # noqa: E402
+        import api as _api          # noqa: E402
+        _model_ready = True
+    except Exception as _e:
+        _predict = None
+        _api = None
+        _model_ready = False
+        st.error(f"Model artifacts not loaded: {_e}")
+        st.info("Run from the repo root: `python backend/ai_model/train_model.py` "
+                "after `python backend/timescale/etl.py --in-memory --out backend/timescale/features.parquet`.")
+
+    if _model_ready:
+        # Pull data from the API helpers directly — avoids spinning up a server.
+        try:
+            kpis = _api.kpis_overview()
+            machines_payload = _api.list_machines()
+        except Exception as _e:
+            st.error(f"Failed to compute predictions: {_e}")
+            st.stop()
+
+        # ── KPI strip ──────────────────────────────────────────────────────
+        c1, c2, c3, c4 = st.columns(4)
+        c1.metric("Fleet avg OEE", f"{kpis['fleet_avg_oee_percent']}%")
+        c2.metric("Active critical alerts", kpis["active_critical_alerts"])
+        c3.metric("Active warning alerts",  kpis["active_warning_alerts"])
+        c4.metric("Machines running", f"{kpis['machines_running']} / {kpis['machines_total']}")
+
+        st.markdown("---")
+        st.markdown("### Failure probability per machine / component")
+        st.caption("Color-coded by tier: 🔴 90%+ Critical · 🟠 75–89% High · 🟡 50–74% Medium · 🟢 25–49% Low · 🔵 <25% Normal")
+
+        # ── Per-machine, per-component prediction table ────────────────────
+        rows = []
+        for m in machines_payload["machines"]:
+            preds = _api.get_machine_predictions(m["machine_id"])["predictions"]
+            for p in preds:
+                rows.append({
+                    "Machine": m["name"],
+                    "Component": p["component_id"],
+                    "Failure probability (%)": round(p["failure_probability"] * 100.0, 2),
+                    "Tier": p["tier"],
+                    "Predicted window (h)": p.get("predicted_failure_window_hours") or "—",
+                    "Recommended action": p["recommended_action"],
+                })
+        pred_df = pd.DataFrame(rows).sort_values("Failure probability (%)", ascending=False)
+
+        def _row_color(tier: str) -> str:
+            return {
+                "critical": "background-color: #ffebee; color: #b71c1c; font-weight: 600;",
+                "high":     "background-color: #fff3e0; color: #e65100; font-weight: 600;",
+                "medium":   "background-color: #fffde7; color: #f57f17;",
+                "low":      "background-color: #f1f8e9; color: #33691e;",
+                "normal":   "background-color: #e3f2fd; color: #0d47a1;",
+            }.get(tier, "")
+
+        styled = pred_df.style.apply(
+            lambda row: [_row_color(row["Tier"])] * len(row), axis=1,
+        ).format({"Failure probability (%)": "{:.2f}"})
+        st.dataframe(styled, width='stretch', hide_index=True)
+
+        # ── Machine-level summary cards ─────────────────────────────────────
+        st.markdown("### Machine health at a glance")
+        cols = st.columns(len(machines_payload["machines"]))
+        tier_class = {
+            "critical": "alert-red", "warning": "alert-orange",
+            "watch": "alert-yellow", "healthy": "alert-green",
+        }
+        for col, m in zip(cols, machines_payload["machines"]):
+            with col:
+                klass = tier_class.get(m["risk_tier"], "alert-green")
+                st.markdown(
+                    f"""
+                    <div class="{klass}">
+                      <strong>{m['name']}</strong><br>
+                      <span style="font-size: 28px; font-weight: 700;">{m['risk_score']}%</span><br>
+                      <span style="text-transform: uppercase; font-size: 11px;">{m['risk_tier']}</span>
+                    </div>
+                    """,
+                    unsafe_allow_html=True,
+                )
+
+        # ── Sample alert ────────────────────────────────────────────────────
+        st.markdown("---")
+        st.markdown("### Active alerts")
+        alerts = _api.list_alerts()["alerts"]
+        if not alerts:
+            st.success("No active alerts above the watch threshold. ✅")
+        else:
+            for a in alerts:
+                klass = {
+                    "critical": "alert-red",
+                    "warning":  "alert-orange",
+                    "info":     "alert-yellow",
+                }.get(a["severity"], "alert-yellow")
+                st.markdown(
+                    f"""
+                    <div class="{klass}">
+                      <strong>{a['title']}</strong><br>
+                      <span style="font-size: 13px;">{a['description']}</span><br>
+                      <span style="font-size: 12px; color: #555;">
+                        Probability {a['risk_score']}% · Predicted window:
+                        {a['predicted_failure_window_hours'] or '> 7 days'}h ·
+                        Cost if unaddressed: ${a['estimated_cost_if_unaddressed_usd']:,}
+                      </span>
+                    </div>
+                    """,
+                    unsafe_allow_html=True,
+                )
+
+        # ── Anomaly score per machine (Isolation Forest) ───────────────────
+        st.markdown("---")
+        st.markdown("### Anomaly score (sensor-pattern outlier detector)")
+        anomaly_rows = []
+        for m in machines_payload["machines"]:
+            try:
+                score = _predict.detect_anomaly(m["machine_id"])
+            except Exception as _e:
+                score = None
+            anomaly_rows.append({"Machine": m["name"], "Anomaly score (0–100)": score})
+        st.dataframe(pd.DataFrame(anomaly_rows), width='stretch', hide_index=True)
+
