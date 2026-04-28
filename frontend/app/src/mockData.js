@@ -318,3 +318,19 @@ export function getDefaultSensorType(machineId) {
   if (anomalies.length > 0) return anomalies.sort((a, b) => b.anomaly_score - a.anomaly_score)[0].sensor_type;
   return 'yankee_surface_temp';
 }
+// ─── Alerts helpers (Step 4) ────────────────────────────────────────────────
+// Pure: operates on whatever list you pass in (filtered or not). Maps an
+// alert's severity → risk tier bucket per the contract's counts_by_tier shape.
+//   critical severity   → critical
+//   warning  severity   → warning
+//   info     severity   → watch    (info-level alerts are advisory / watchlist)
+// `healthy` is included for shape-completeness; alerts never bucket there.
+export function getAlertCounts(list) {
+  const counts = { critical: 0, warning: 0, watch: 0, healthy: 0 };
+  for (const a of list || []) {
+    if (a.severity === 'critical') counts.critical += 1;
+    else if (a.severity === 'warning') counts.warning += 1;
+    else if (a.severity === 'info') counts.watch += 1;
+  }
+  return counts;
+}
