@@ -1,11 +1,20 @@
-import { COMPONENT_LABELS } from '../mockData.js';
+import { COMPONENT_LABELS, SENSOR_SHORT_LABELS } from '../mockData.js';
 import { RISK_TIER_COLORS } from '../brand/tokens.js';
 
+// 14 sensor cells. Anomalous cells get a colored ring + dot. Click selects.
+// Layout: 2 / 3 / 4 columns by breakpoint. Short, human labels in the cell;
+// full sensor_type contract string shown via the `title` tooltip.
 export default function SensorGrid({ sensors, selected, onSelect, isMaintenance }) {
   return (
     <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-2.5">
       {sensors.map((s) => (
-        <SensorCell key={s.sensor_type} sensor={s} selected={s.sensor_type === selected} onClick={() => onSelect(s.sensor_type)} isMaintenance={isMaintenance} />
+        <SensorCell
+          key={s.sensor_type}
+          sensor={s}
+          selected={s.sensor_type === selected}
+          onClick={() => onSelect(s.sensor_type)}
+          isMaintenance={isMaintenance}
+        />
       ))}
     </div>
   );
@@ -13,15 +22,27 @@ export default function SensorGrid({ sensors, selected, onSelect, isMaintenance 
 
 function SensorCell({ sensor, selected, onClick, isMaintenance }) {
   const anomaly = sensor.is_anomaly && !isMaintenance;
-  const ring = selected ? 'ring-2 ring-navy' : anomaly ? 'ring-1 ring-red-200' : 'ring-1 ring-slate-200';
+  const ring = selected
+    ? 'ring-2 ring-navy'
+    : anomaly
+    ? 'ring-1 ring-red-200'
+    : 'ring-1 ring-slate-200';
   const bg = anomaly ? 'bg-red-50/50' : 'bg-white';
-  const label = labelize(sensor.sensor_type);
+  const shortLabel = SENSOR_SHORT_LABELS[sensor.sensor_type] || labelize(sensor.sensor_type);
 
   return (
-    <button onClick={onClick} className={`text-left rounded-lg p-3 transition-all ${ring} ${bg} hover:shadow-card`}>
+    <button
+      onClick={onClick}
+      title={sensor.sensor_type}
+      className={`text-left rounded-lg p-3 transition-all ${ring} ${bg} hover:shadow-card`}
+    >
       <div className="flex items-center justify-between gap-1.5 mb-1">
-        <div className="text-[10px] uppercase tracking-wider text-slate-400 font-semibold truncate" title={label}>{label}</div>
-        {anomaly && <span className="w-1.5 h-1.5 rounded-full shrink-0 animate-pulse" style={{ backgroundColor: RISK_TIER_COLORS.critical }} />}
+        <div className="text-[10px] uppercase tracking-wider text-slate-400 font-semibold truncate">
+          {shortLabel}
+        </div>
+        {anomaly && (
+          <span className="w-1.5 h-1.5 rounded-full shrink-0 animate-pulse" style={{ backgroundColor: RISK_TIER_COLORS.critical }} />
+        )}
       </div>
       <div className="flex items-baseline gap-1">
         <span className={`font-mono text-lg font-semibold tabular-nums ${anomaly ? 'text-risk-critical' : 'text-navy'}`}>
@@ -47,6 +68,8 @@ function formatVal(v) {
 }
 
 function labelize(sensorType) {
+  // Fallback only — drops the component prefix.
+  // headbox_stock_consistency → "Stock consistency"
   const parts = sensorType.split('_');
   parts.shift();
   const rejoined = parts.join(' ');

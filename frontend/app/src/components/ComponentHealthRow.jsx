@@ -1,8 +1,13 @@
-import { ChevronRight } from 'lucide-react';
-import { COMPONENT_LABELS, COMPONENT_ORDER } from '../mockData.js';
+import { ChevronRight, Star } from 'lucide-react';
+import { COMPONENT_ORDER, COMPONENT_LABELS, COMPONENT_SHORT_LABELS, COMPONENT_CRITICAL } from '../mockData.js';
 import { RISK_TIER_COLORS, TIER_SOFT_BG } from '../brand/tokens.js';
 import { TierPill } from './Pills.jsx';
 
+// 6 cards in production order. Hero number = failure_probability_percent.
+// Joins component health + prediction by component_id.
+// Layout: 2 rows × 3 columns on md+ so each card has room for the full short
+// label (e.g. "ViscoNip" instead of "Vi…"). Full contract name surfaces via
+// title tooltip.
 export default function ComponentHealthRow({ components, predictions, isMaintenance }) {
   const byId = Object.fromEntries(components.map((c) => [c.component_id, c]));
   const predById = Object.fromEntries(predictions.map((p) => [p.component_id, p]));
@@ -10,16 +15,23 @@ export default function ComponentHealthRow({ components, predictions, isMaintena
   return (
     <section>
       <SectionHeader title="Component health" subtitle="Production order · failure probability is the hero metric" />
-      <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-3 relative">
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-3 relative">
         {COMPONENT_ORDER.map((id, idx) => {
           const c = byId[id];
           const p = predById[id];
           if (!c) return null;
+          // Production-flow chevron between cards in the same row only.
+          // With a 3-col grid, the breaks are after index 2 (end of row 1)
+          // and index 5 (last card) — no chevron in those slots.
+          const showChevron = idx !== 2 && idx !== COMPONENT_ORDER.length - 1;
           return (
             <div key={id} className="relative">
               <ComponentCard component={c} prediction={p} isMaintenance={isMaintenance} />
-              {idx < COMPONENT_ORDER.length - 1 && (
-                <ChevronRight className="hidden xl:block absolute -right-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300" strokeWidth={1.5} />
+              {showChevron && (
+                <ChevronRight
+                  className="hidden md:block absolute -right-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300"
+                  strokeWidth={1.5}
+                />
               )}
             </div>
           );
@@ -31,16 +43,37 @@ export default function ComponentHealthRow({ components, predictions, isMaintena
 
 function ComponentCard({ component, prediction, isMaintenance }) {
   const tierColor = RISK_TIER_COLORS[component.tier];
-  const probPct = prediction?.failure_probability != null ? (prediction.failure_probability * 100) : null;
+  const probPct = prediction?.failure_probability != null
+    ? (prediction.failure_probability * 100)
+    : null;
   const display = probPct == null ? '—' : probPct >= 99 ? probPct.toFixed(2) : probPct >= 10 ? probPct.toFixed(1) : probPct.toFixed(2);
   const action = prediction?.recommended_action || '';
   const truncated = action.length > 80 ? action.slice(0, 78) + '…' : action;
+  const fullName = COMPONENT_LABELS[component.component_id];
+  const shortName = COMPONENT_SHORT_LABELS[component.component_id] || fullName;
+  const isCritical = COMPONENT_CRITICAL[component.component_id];
 
   return (
     <div className="bg-white rounded-xl shadow-card overflow-hidden flex flex-col" style={{ borderTop: `2px solid ${tierColor}` }}>
       <div className="px-3.5 pt-3 pb-2.5 flex flex-col gap-2 flex-1">
         <div className="flex items-center justify-between gap-2">
-          <div className="text-xs font-semibold text-navy truncate">{COMPONENT_LABELS[component.component_id]}</div>
+          <div className="flex items-center gap-1.5 min-w-0">
+            <div
+              className="text-xs font-semibold text-navy truncate"
+              title={isCritical ? `${fullName} · critical component ($20K/hr downtime)` : fullName}
+            >
+              {shortName}
+            </div>
+            {isCritical && (
+              <Star
+                className="w-3.5 h-3.5 shrink-0"
+                fill="#D4AF37"
+                stroke="#D4AF37"
+                strokeWidth={1.25}
+                aria-label="Critical component"
+              />
+            )}
+          </div>
           <TierPill tier={component.tier} size="sm" />
         </div>
         <div className="flex items-baseline gap-1" style={{ backgroundColor: TIER_SOFT_BG[component.tier], padding: '6px 8px', borderRadius: 6, marginInline: -2 }}>
@@ -48,7 +81,9 @@ function ComponentCard({ component, prediction, isMaintenance }) {
             {display}
           </span>
           {probPct != null && <span className="font-mono text-xs text-slate-400 ml-0.5">%</span>}
-          <span className="ml-auto text-[9px] uppercase tracking-wider text-slate-400 font-semibold whitespace-nowrap">failure prob.</span>
+          <span className="ml-auto text-[9px] uppercase tracking-wider text-slate-400 font-semibold whitespace-nowrap">
+            failure prob.
+          </span>
         </div>
         <div className="grid grid-cols-2 gap-2 text-[10px]">
           <Cell label="Health" value={isMaintenance ? '—' : `${component.health_score}`} />

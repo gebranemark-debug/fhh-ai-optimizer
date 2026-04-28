@@ -1,4 +1,5 @@
 // Mock data store — shapes match API_CONTRACT.md v1.1 exactly.
+export const COMPONENT_ORDER = ['headbox','visconip','yankee','aircap','softreel','rewinder'];
 export const machines = [
   { machine_id: 'al-nakheel', name: 'Al Nakheel', location: 'Abu Dhabi, UAE', model: 'Valmet Advantage DCT 200TS', installation_date: '2018-06-15', status: 'running', current_speed_mpm: 2150, current_oee_percent: 91.4, risk_score: 87, risk_tier: 'critical', active_alerts_count: 3 },
   { machine_id: 'al-bardi', name: 'Al Bardi', location: 'Tenth of Ramadan, Egypt', model: 'Valmet Advantage DCT 200TS', installation_date: '2019-03-22', status: 'running', current_speed_mpm: 2080, current_oee_percent: 93.6, risk_score: 67, risk_tier: 'warning', active_alerts_count: 2 },
@@ -6,8 +7,54 @@ export const machines = [
   { machine_id: 'al-snobar', name: 'Al Snobar', location: 'Amman, Jordan', model: 'Valmet Advantage DCT 200TS', installation_date: '2021-11-30', status: 'running', current_speed_mpm: 2210, current_oee_percent: 96.1, risk_score: 18, risk_tier: 'healthy', active_alerts_count: 1 },
 ];
 
-export const COMPONENT_ORDER = ['headbox','visconip','yankee','aircap','softreel','rewinder'];
-export const COMPONENT_LABELS = { headbox:'Headbox', visconip:'ViscoNip Press', yankee:'Yankee Dryer', aircap:'AirCap Hood', softreel:'SoftReel', rewinder:'Rewinder' };
+export const COMPONENT_LABELS = {
+  headbox: 'Headbox',
+  visconip: 'ViscoNip Press',
+  yankee: 'Yankee Dryer',
+  aircap: 'AirCap Hood',
+  softreel: 'SoftReel',
+  rewinder: 'Rewinder',
+};
+
+// Short labels used in tight cards. Full names remain in COMPONENT_LABELS
+// and surface via title tooltip.
+export const COMPONENT_SHORT_LABELS = {
+  headbox: 'Headbox',
+  visconip: 'ViscoNip',
+  yankee: 'Yankee',
+  aircap: 'AirCap',
+  softreel: 'SoftReel',
+  rewinder: 'Rewinder',
+};
+
+// is_critical flag from API contract — Yankee is the $20K/hr component.
+export const COMPONENT_CRITICAL = {
+  headbox: false,
+  visconip: false,
+  yankee: true,
+  aircap: false,
+  softreel: false,
+  rewinder: false,
+};
+
+// Short, human-readable labels for sensor cells. Full sensor_type strings
+// remain available via the cell's `title` tooltip and the chart header.
+export const SENSOR_SHORT_LABELS = {
+  headbox_stock_consistency:  'Stock consistency',
+  headbox_jet_velocity:       'Jet velocity',
+  visconip_nip_load:          'Nip load',
+  visconip_felt_moisture:     'Felt moisture',
+  yankee_surface_temp:        'Surface temp',
+  yankee_steam_pressure:      'Steam pressure',
+  yankee_vibration_bearing_3: 'Vibration B3',
+  aircap_inlet_temp:          'Inlet temp',
+  aircap_exhaust_humidity:    'Exhaust humidity',
+  softreel_tension:           'Reel tension',
+  softreel_drive_current:     'Drive current',
+  rewinder_drive_current:     'Drive current',
+  rewinder_dancer_position:   'Dancer position',
+  qcs_basis_weight_cd_stddev: 'Basis weight σ',
+};
 
 export const alerts = [
   { alert_id:'alt-2026-04-25-0017', machine_id:'al-nakheel', component_id:'yankee',   severity:'critical', risk_score:87, title:'Bearing 3 vibration trending toward failure', description:'Bearing 3 vibration RMS rising 0.4 mm/s/day for 11 days. Current reading 5.8 mm/s vs. 2–4 mm/s normal range. Predicted failure window: 24 hours.', predicted_failure_window_hours:24,  recommended_action:'CRITICAL: Stop line immediately. Replace component now.', estimated_cost_if_unaddressed_usd:480000, created_at:'2026-04-25T08:15:00Z', acknowledged:false },
