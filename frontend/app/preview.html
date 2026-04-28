@@ -1,0 +1,338 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>FHH AI Optimizer — Step 2 Preview</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+    <script>
+      tailwind.config = {
+        theme: { extend: {
+          colors: {
+            navy: { DEFAULT: '#0A2540', 800: '#13325A', 900: '#0A2540' },
+            gold: { DEFAULT: '#D4AF37', soft: '#E6C757', deep: '#A8851F' },
+            risk: { healthy: '#10B981', watch: '#F59E0B', warning: '#F97316', critical: '#EF4444' },
+            severity: { info: '#3B82F6', warning: '#F97316', critical: '#EF4444' },
+            canvas: '#F8FAFC',
+          },
+          fontFamily: { sans: ['Inter','system-ui','sans-serif'], mono: ['"JetBrains Mono"','ui-monospace','monospace'] },
+          boxShadow: { card: '0 1px 2px 0 rgb(15 23 42 / 0.04), 0 1px 3px 0 rgb(15 23 42 / 0.06)' },
+        }},
+      };
+    </script>
+    <style>
+      html,body{height:100%;margin:0}body{background:#F8FAFC;color:#0A2540;font-family:Inter,system-ui,sans-serif}
+      .font-mono{font-variant-numeric:tabular-nums}
+      *::-webkit-scrollbar{width:10px;height:10px}*::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:999px;border:2px solid #f8fafc}
+    </style>
+  </head>
+  <body class="font-sans">
+    <div class="h-screen w-screen flex flex-col bg-canvas overflow-hidden">
+      <header class="h-[60px] shrink-0 bg-white border-b border-slate-200 flex items-center px-6 gap-6">
+        <a href="#/" class="flex items-center gap-2">
+          <div class="w-7 h-7 rounded-md bg-navy flex items-center justify-center"><span class="font-mono text-[11px] font-semibold text-gold">FHH</span></div>
+          <div class="leading-tight">
+            <div class="text-[15px] font-semibold text-navy">FHH AI Optimizer</div>
+            <div class="text-[10px] uppercase tracking-[0.14em] text-slate-400 font-medium">Predictive Operations</div>
+          </div>
+        </a>
+        <nav class="flex-1 flex items-center justify-center"><ol id="crumbs" class="flex items-center gap-1.5 text-sm"></ol></nav>
+        <div class="flex items-center gap-3">
+          <div class="hidden md:flex items-center gap-2 text-xs text-slate-500"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span><span>Live</span></div>
+          <div class="w-9 h-9 rounded-full bg-gradient-to-br from-navy to-navy-800 flex items-center justify-center text-white text-xs font-semibold shadow-card">MA</div>
+        </div>
+      </header>
+      <div class="flex-1 flex min-h-0">
+        <aside class="w-[220px] shrink-0 bg-white border-r border-slate-200 flex flex-col">
+          <nav class="flex-1 px-3 py-5">
+            <div class="px-3 pb-2 text-[10px] uppercase tracking-[0.16em] text-slate-400 font-semibold">Workspace</div>
+            <ul id="nav" class="flex flex-col gap-1"></ul>
+          </nav>
+          <div class="px-4 py-4 border-t border-slate-100">
+            <div class="rounded-lg bg-canvas border border-slate-200 p-3">
+              <div class="text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-1">Fleet</div>
+              <div class="font-mono text-sm text-navy">3 / 4 running</div>
+              <div class="text-[11px] text-slate-500 mt-0.5">1 in maintenance</div>
+            </div>
+            <div class="mt-3 px-1 text-[10px] text-slate-400 font-mono">v0.1 · API contract v1.1</div>
+          </div>
+        </aside>
+        <main id="main" class="flex-1 min-w-0 overflow-y-auto"></main>
+        <aside class="w-[28%] min-w-[340px] max-w-[460px] shrink-0 border-l border-slate-200 bg-white flex flex-col">
+          <div class="h-[60px] shrink-0 px-5 flex items-center justify-between border-b border-slate-200">
+            <div class="flex items-center gap-2">
+              <div class="w-7 h-7 rounded-md bg-navy/5 flex items-center justify-center">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#D4AF37" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3z"/></svg>
+              </div>
+              <div>
+                <div class="text-sm font-semibold text-navy leading-tight">Assistant</div>
+                <div class="text-[10px] uppercase tracking-wider text-slate-400 font-medium">Live data · Claude</div>
+              </div>
+            </div>
+            <button class="text-xs text-slate-500 hover:text-navy flex items-center gap-1.5 px-2.5 py-1.5 rounded-md hover:bg-slate-50">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              New chat
+            </button>
+          </div>
+          <div class="flex-1 overflow-y-auto px-5 py-6">
+            <div class="text-sm text-slate-700 leading-relaxed">Hi! I can read your live sensor data, machine health, and forecasts. Ask me anything.</div>
+            <div class="mt-5 space-y-2">
+              <div class="text-[10px] uppercase tracking-[0.14em] text-slate-400 font-semibold pb-1">Suggested</div>
+              <button class="w-full text-left text-sm text-slate-700 px-3.5 py-2.5 rounded-lg border border-slate-200 hover:border-gold hover:bg-gold/5"><span>What's wrong with Al Nakheel right now?</span></button>
+              <button class="w-full text-left text-sm text-slate-700 px-3.5 py-2.5 rounded-lg border border-slate-200 hover:border-gold"><span>Compare risk across all 4 machines</span></button>
+              <button class="w-full text-left text-sm text-slate-700 px-3.5 py-2.5 rounded-lg border border-slate-200 hover:border-gold"><span>When should I schedule the next maintenance window?</span></button>
+              <button class="w-full text-left text-sm text-slate-700 px-3.5 py-2.5 rounded-lg border border-slate-200 hover:border-gold"><span>How will Ramadan affect production capacity?</span></button>
+            </div>
+          </div>
+          <div class="border-t border-slate-200 p-3">
+            <div class="flex items-end gap-2 rounded-xl border border-slate-200 bg-white pl-3.5 pr-2 py-2">
+              <textarea rows="1" placeholder="Ask about machines, alerts, or forecasts…" class="flex-1 resize-none text-sm placeholder:text-slate-400 bg-transparent outline-none py-1 max-h-32"></textarea>
+              <button class="shrink-0 w-8 h-8 rounded-md bg-slate-200 text-slate-400 flex items-center justify-center"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg></button>
+            </div>
+            <div class="text-[10px] text-slate-400 mt-1.5 px-1 font-mono">Enter to send · Shift+Enter for newline</div>
+          </div>
+        </aside>
+      </div>
+    </div>
+
+    <script>
+      // ---- Mock data (mirrors src/mockData.js) ----
+      const machines = [
+        { machine_id:'al-nakheel', name:'Al Nakheel', location:'Abu Dhabi, UAE', status:'running', current_speed_mpm:2150, current_oee_percent:91.4, risk_score:87, risk_tier:'critical', active_alerts_count:3 },
+        { machine_id:'al-bardi', name:'Al Bardi', location:'Tenth of Ramadan, Egypt', status:'running', current_speed_mpm:2080, current_oee_percent:93.6, risk_score:67, risk_tier:'warning', active_alerts_count:2 },
+        { machine_id:'al-sindian', name:'Al Sindian', location:'Sadat City, Egypt', status:'maintenance', current_speed_mpm:0, current_oee_percent:0, risk_score:42, risk_tier:'watch', active_alerts_count:2 },
+        { machine_id:'al-snobar', name:'Al Snobar', location:'Amman, Jordan', status:'running', current_speed_mpm:2210, current_oee_percent:96.1, risk_score:18, risk_tier:'healthy', active_alerts_count:1 },
+      ];
+      const alerts = [
+        { alert_id:'alt-2026-04-25-0017', machine_id:'al-nakheel', component_id:'yankee', severity:'critical', risk_score:87, title:'Bearing 3 vibration trending toward failure', predicted_failure_window_hours:48, estimated_cost_if_unaddressed_usd:480000, created_at:'2026-04-25T08:15:00Z', acknowledged:false },
+        { alert_id:'alt-2026-04-25-0014', machine_id:'al-nakheel', component_id:'aircap', severity:'warning', risk_score:71, title:'AirCap inlet temperature drift above setpoint', predicted_failure_window_hours:240, estimated_cost_if_unaddressed_usd:62000, created_at:'2026-04-24T22:40:00Z', acknowledged:false },
+        { alert_id:'alt-2026-04-24-0009', machine_id:'al-bardi', component_id:'yankee', severity:'warning', risk_score:67, title:'Steam pressure oscillation on Yankee header', predicted_failure_window_hours:168, estimated_cost_if_unaddressed_usd:84000, created_at:'2026-04-24T11:22:00Z', acknowledged:false },
+      ];
+      const kpis = {
+        fleet_avg_oee_percent: 93.7,
+        active_critical_alerts: 1,
+        active_warning_alerts: 4,
+        predicted_downtime_prevented_hours_mtd: 14,
+        estimated_cost_saved_usd_mtd: 280000,
+        machines_running: 3,
+        machines_total: 4,
+        last_updated: '2026-04-28T09:30:00Z',
+      };
+
+      const TIER = { healthy:'#10B981', watch:'#F59E0B', warning:'#F97316', critical:'#EF4444' };
+      const TIER_PILL = {
+        healthy:'bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200',
+        watch:'bg-amber-50 text-amber-700 ring-1 ring-amber-200',
+        warning:'bg-orange-50 text-orange-700 ring-1 ring-orange-200',
+        critical:'bg-red-50 text-red-700 ring-1 ring-red-200',
+      };
+      const SEV_PILL = {
+        info:'bg-blue-50 text-blue-700 ring-1 ring-blue-200',
+        warning:'bg-orange-50 text-orange-700 ring-1 ring-orange-200',
+        critical:'bg-red-50 text-red-700 ring-1 ring-red-200',
+      };
+      const STATUS = {
+        running:{cls:'bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200',dot:'bg-emerald-500'},
+        idle:{cls:'bg-slate-100 text-slate-600 ring-1 ring-slate-200',dot:'bg-slate-400'},
+        maintenance:{cls:'bg-amber-50 text-amber-700 ring-1 ring-amber-200',dot:'bg-amber-500'},
+        offline:{cls:'bg-red-50 text-red-700 ring-1 ring-red-200',dot:'bg-red-500'},
+      };
+
+      function fmtCompact(v){const a=Math.abs(v);if(a>=1e6)return '$'+(v/1e6).toFixed(a>=1e7?1:2)+'M';if(a>=1000)return '$'+Math.round(v/1000)+'K';return '$'+v;}
+      function fmtHours(h){if(h<24)return h+'h';const d=Math.floor(h/24),r=h%24;return r===0?d+'d':d+'d '+r+'h';}
+      function timeAgo(iso){const NOW=new Date('2026-04-28T10:00:00Z').getTime();const t=new Date(iso).getTime();const diff=Math.max(0,NOW-t);const m=Math.floor(diff/60000);if(m<60)return m+'m ago';const h=Math.floor(m/60);if(h<24)return h+'h ago';return Math.floor(h/24)+'d ago';}
+
+      // KPI strip
+      function kpiStripHtml(){
+        const cards = [
+          {kicker:'Fleet OEE', value:kpis.fleet_avg_oee_percent.toFixed(1), suffix:'%', footnote:`${kpis.machines_running} of ${kpis.machines_total} machines running`, icon:'shield', tone:'neutral'},
+          {kicker:'Critical alerts', value:kpis.active_critical_alerts, footnote: kpis.active_critical_alerts>0 ? 'Action required' : `${kpis.active_warning_alerts} warning · monitored`, icon:'alert', tone: kpis.active_critical_alerts>0?'critical':'neutral'},
+          {kicker:'Downtime prevented', value:kpis.predicted_downtime_prevented_hours_mtd, suffix:'h', footnote:'Month to date · vs. baseline', icon:'arrow', tone:'positive'},
+          {kicker:'Cost saved (MTD)', value:fmtCompact(kpis.estimated_cost_saved_usd_mtd), footnote:'Predicted-and-prevented failures', icon:'dollar', tone:'gold'},
+        ];
+        const ICN = {
+          shield:'<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/>',
+          alert:'<path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>',
+          arrow:'<line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/>',
+          dollar:'<line x1="12" y1="2" x2="12" y2="22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>',
+        };
+        return `<div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+          ${cards.map(c => {
+            const valColor = c.tone==='critical' ? 'text-risk-critical' : c.tone==='gold' ? 'text-gold-deep' : 'text-navy';
+            const iconWrap = c.tone==='critical' ? 'bg-red-50 text-risk-critical' : c.tone==='positive' ? 'bg-emerald-50 text-emerald-600' : c.tone==='gold' ? 'bg-gold/10 text-gold-deep' : 'bg-slate-100 text-slate-500';
+            return `<div class="bg-white rounded-xl shadow-card p-5 flex flex-col gap-3 relative overflow-hidden">
+              ${c.tone==='gold' ? '<span class="absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-transparent via-gold to-transparent"></span>' : ''}
+              <div class="flex items-start justify-between gap-3">
+                <div class="text-[10px] uppercase tracking-[0.16em] text-slate-500 font-semibold">${c.kicker}</div>
+                <div class="w-7 h-7 rounded-md flex items-center justify-center ${iconWrap}">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round">${ICN[c.icon]}</svg>
+                </div>
+              </div>
+              <div class="flex items-baseline gap-1">
+                <span class="font-mono text-[32px] font-semibold leading-none tracking-tight ${valColor}">${c.value}</span>
+                ${c.suffix ? `<span class="font-mono text-[16px] text-slate-400 font-medium">${c.suffix}</span>` : ''}
+              </div>
+              <div class="text-xs text-slate-500">${c.footnote}</div>
+            </div>`;
+          }).join('')}
+        </div>`;
+      }
+
+      // Machine grid
+      function machineCardHtml(m){
+        const tierColor = TIER[m.risk_tier];
+        const isMaint = m.status==='maintenance';
+        const tierLabel = m.risk_tier.charAt(0).toUpperCase()+m.risk_tier.slice(1);
+        const status = STATUS[m.status];
+        return `<a href="#/machines/${m.machine_id}" class="group bg-white rounded-xl shadow-card relative overflow-hidden hover:shadow-md transition-shadow flex">
+          <div class="w-[4px] shrink-0" style="background:${tierColor}"></div>
+          <div class="flex-1 p-5 flex flex-col gap-4 min-w-0">
+            <div class="flex items-start justify-between gap-3">
+              <div class="min-w-0">
+                <div class="flex items-center gap-2 flex-wrap">
+                  <h3 class="text-[17px] font-semibold text-navy tracking-tight truncate">${m.name}</h3>
+                  <span class="inline-flex items-center gap-1.5 rounded-full text-[10px] px-2 py-0.5 font-semibold uppercase tracking-wide ${status.cls}"><span class="w-1.5 h-1.5 rounded-full ${status.dot}"></span>${m.status}</span>
+                </div>
+                <div class="text-xs text-slate-500 mt-0.5 truncate">${m.location}</div>
+              </div>
+              <div class="text-right shrink-0">
+                <div class="font-mono text-[44px] leading-none font-semibold tracking-tight tabular-nums" style="color:${tierColor}">${m.risk_score}</div>
+                <div class="text-[10px] uppercase tracking-wider text-slate-400 font-medium mt-0.5">risk score</div>
+              </div>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="inline-flex items-center gap-1.5 rounded-full text-[11px] px-2 py-0.5 font-semibold uppercase tracking-wide ${TIER_PILL[m.risk_tier]}">${tierLabel}</span>
+              ${m.active_alerts_count>0 ? `<span class="text-[11px] text-slate-500">· ${m.active_alerts_count} active alert${m.active_alerts_count===1?'':'s'}</span>` : ''}
+            </div>
+            <div class="grid grid-cols-2 gap-3 pt-3 border-t border-slate-100">
+              <div class="flex items-center gap-2.5">
+                <div class="w-7 h-7 rounded-md bg-slate-50 flex items-center justify-center text-slate-400">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2.5"/></svg>
+                </div>
+                <div>
+                  <div class="text-[10px] uppercase tracking-wider text-slate-400 font-medium">Speed</div>
+                  <div class="font-mono text-sm font-medium text-navy tabular-nums">${isMaint?'—':m.current_speed_mpm.toLocaleString()}${isMaint?'':'<span class="text-slate-400 ml-0.5">m/min</span>'}</div>
+                </div>
+              </div>
+              <div class="flex items-center gap-2.5">
+                <div class="w-7 h-7 rounded-md bg-slate-50 flex items-center justify-center text-slate-400">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                </div>
+                <div>
+                  <div class="text-[10px] uppercase tracking-wider text-slate-400 font-medium">OEE</div>
+                  <div class="font-mono text-sm font-medium text-navy tabular-nums">${isMaint?'—':m.current_oee_percent.toFixed(1)}${isMaint?'':'<span class="text-slate-400 ml-0.5">%</span>'}</div>
+                </div>
+              </div>
+            </div>
+            <div class="flex items-center justify-end pt-1 -mb-1">
+              <span class="text-xs font-medium text-slate-500 group-hover:text-navy flex items-center gap-1">View details <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span>
+            </div>
+          </div>
+        </a>`;
+      }
+
+      function machineGridHtml(){
+        const sorted = [...machines].sort((a,b)=>b.risk_score-a.risk_score);
+        return `<div class="grid grid-cols-1 lg:grid-cols-2 gap-4">${sorted.map(machineCardHtml).join('')}</div>`;
+      }
+
+      // Critical alerts ticker
+      function tickerHtml(){
+        const crit = alerts.filter(a=>a.severity==='critical').sort((a,b)=>b.risk_score-a.risk_score).slice(0,3);
+        return `<section class="bg-white rounded-xl shadow-card overflow-hidden">
+          <header class="flex items-center justify-between gap-3 px-5 py-4 border-b border-slate-100">
+            <div class="flex items-center gap-2.5">
+              <div class="w-7 h-7 rounded-md bg-red-50 text-risk-critical flex items-center justify-center">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              </div>
+              <div>
+                <div class="text-sm font-semibold text-navy">Critical alerts</div>
+                <div class="text-[11px] text-slate-500">Top ${crit.length} requiring immediate attention</div>
+              </div>
+            </div>
+            <a href="#/alerts" class="text-xs text-slate-500 hover:text-navy font-medium flex items-center gap-1">View all alerts <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></a>
+          </header>
+          <ul class="divide-y divide-slate-100">${crit.map(a => {
+            const machine = machines.find(m=>m.machine_id===a.machine_id);
+            return `<li><a href="#/machines/${a.machine_id}" class="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-4 px-5 py-3.5 hover:bg-slate-50 group">
+              <span class="inline-flex items-center gap-1.5 rounded-full text-[10px] px-2 py-0.5 font-semibold uppercase tracking-wide ${SEV_PILL[a.severity]}">${a.severity}</span>
+              <div class="min-w-0">
+                <div class="flex items-center gap-2 text-[11px] text-slate-500">
+                  <span class="font-medium text-navy">${machine.name}</span><span>·</span>
+                  <span class="font-mono uppercase tracking-wide">${a.component_id}</span><span>·</span>
+                  <span>${timeAgo(a.created_at)}</span>
+                </div>
+                <div class="text-sm text-navy font-medium truncate mt-0.5">${a.title}</div>
+              </div>
+              <div class="flex items-center gap-4 shrink-0">
+                ${a.predicted_failure_window_hours!=null ? `<div class="text-right hidden md:block"><div class="text-[10px] uppercase tracking-wider text-slate-400 font-medium">Window</div><div class="font-mono text-sm text-risk-critical font-semibold">${fmtHours(a.predicted_failure_window_hours)}</div></div>` : ''}
+                <div class="text-right hidden md:block"><div class="text-[10px] uppercase tracking-wider text-slate-400 font-medium">At risk</div><div class="font-mono text-sm text-navy font-semibold">${fmtCompact(a.estimated_cost_if_unaddressed_usd)}</div></div>
+                <span class="text-xs font-medium text-slate-400 group-hover:text-navy flex items-center gap-1">View <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>
+              </div>
+            </a></li>`;
+          }).join('')}</ul>
+        </section>`;
+      }
+
+      function overviewHtml(){
+        const stamp = new Date(kpis.last_updated).toLocaleString('en-US',{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit',hour12:false,timeZone:'UTC'});
+        return `<div class="px-8 py-7 max-w-[1200px]">
+          <header class="flex items-end justify-between gap-4 mb-6">
+            <div>
+              <div class="text-[11px] uppercase tracking-[0.18em] text-slate-400 font-semibold">Fleet</div>
+              <h1 class="text-[28px] font-semibold text-navy tracking-tight mt-1">Overview</h1>
+              <p class="text-sm text-slate-500 mt-1">Live health across all four production lines.</p>
+            </div>
+            <div class="text-right hidden md:block">
+              <div class="text-[10px] uppercase tracking-wider text-slate-400 font-medium">Last updated</div>
+              <div class="font-mono text-xs text-slate-600">${stamp} UTC</div>
+            </div>
+          </header>
+          ${kpiStripHtml()}
+          <div class="mt-6">
+            <div class="flex items-baseline justify-between mb-3"><h2 class="text-sm font-semibold text-navy">Production lines</h2><div class="text-[11px] text-slate-400">${machines.length} machines · sorted by risk</div></div>
+            ${machineGridHtml()}
+          </div>
+          <div class="mt-6">${tickerHtml()}</div>
+        </div>`;
+      }
+
+      // Nav
+      const NAV = [
+        { to:'/', label:'Overview', icon:'<rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/>' },
+        { to:'/machines', label:'Machines', icon:'<path d="M2 20h20V9l-6 4V9l-6 4V4H4l-2 4z"/><path d="M7 14v6M12 14v6M17 14v6"/>' },
+        { to:'/alerts', label:'Alerts', icon:'<path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>' },
+        { to:'/demand', label:'Demand Forecast', icon:'<polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/>' },
+        { to:'/roi', label:'Cost Savings', icon:'<line x1="12" y1="2" x2="12" y2="22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>' },
+      ];
+
+      function renderNav(active){
+        document.getElementById('nav').innerHTML = NAV.map(n => {
+          const isA = (n.to==='/' && active==='/') || (n.to!=='/' && active.startsWith(n.to));
+          return `<li><a href="#${n.to}" class="group relative flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors ${isA?'bg-navy text-white shadow-sm':'text-slate-600 hover:bg-slate-50 hover:text-navy'}">
+            ${isA?'<span class="absolute left-0 top-1.5 bottom-1.5 w-[3px] rounded-r bg-gold"></span>':''}
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="${isA?'#D4AF37':'#94A3B8'}" stroke-width="${isA?2.25:1.75}" stroke-linecap="round" stroke-linejoin="round">${n.icon}</svg>
+            <span class="font-medium">${n.label}</span>
+          </a></li>`;
+        }).join('');
+      }
+      function renderCrumbs(path){
+        const labels = {'/':'Overview','/machines':'Machines','/alerts':'Alerts','/demand':'Demand Forecast','/roi':'Cost Savings'};
+        const crumbs = [{label:'Overview', to:'/'}];
+        if(path!=='/'){const parts=path.split('/').filter(Boolean);let acc='';parts.forEach((p,i)=>{acc+='/'+p;const last=i===parts.length-1;crumbs.push({label:labels[acc]||p,to:last?null:acc});});}
+        document.getElementById('crumbs').innerHTML = crumbs.map((c,i)=>`<li class="flex items-center gap-1.5">${i>0?'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#CBD5E1" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>':''}${c.to?`<a href="#${c.to}" class="text-slate-500 hover:text-navy">${c.label}</a>`:`<span class="text-navy font-medium">${c.label}</span>`}</li>`).join('');
+      }
+
+      function route(){
+        const path = location.hash.replace(/^#/,'') || '/';
+        const navKey = path.startsWith('/machines/') ? '/machines' : path;
+        renderNav(navKey); renderCrumbs(path);
+        if(path==='/') document.getElementById('main').innerHTML = overviewHtml();
+        else document.getElementById('main').innerHTML = `<div class="p-8 text-sm text-slate-500">Placeholder for ${path} (Step 3+).</div>`;
+      }
+      window.addEventListener('hashchange', route); route();
+    </script>
+  </body>
+</html>
