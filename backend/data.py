@@ -16,6 +16,8 @@ Public surface (all return contract-shaped dicts):
     get_alerts(filters...)            -> /alerts payload
     get_alert(alert_id)               -> Alert object
     get_kpis_overview()               -> /kpis/overview payload
+    get_components(machine_id)        -> /components payload
+    get_sensors(machine_id)           -> /sensors payload
 
 Exceptions:
     MachineNotFound, AlertNotFound — caught in ``backend/ai_model/api.py``
@@ -24,7 +26,7 @@ Exceptions:
 
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 from pathlib import Path
 from typing import Optional
 
@@ -464,3 +466,167 @@ def get_kpis_overview() -> dict:
         "machines_total": len(machines),
         "last_updated": _now_iso(),
     }
+
+
+# ---------------------------------------------------------------------------
+# Components & sensors — per-machine state mirroring frontend mockData.js for
+# end-to-end parity. Static metadata (name, is_critical, expected_lifetime
+# _hours) lives in COMPONENTS_IN_ORDER above; per-machine state is here.
+# ---------------------------------------------------------------------------
+
+# Anchor "today" so hours_since_last_maintenance is reproducible across runs.
+_ANCHOR_TODAY = date(2026, 4, 25)
+
+# Per-machine component health. Mirrors frontend/app/src/mockData.js >
+# componentsByMachine. ``health_score`` (good = high) is inverted to the
+# contract's ``risk_score`` (bad = high) at response time. al-sindian shows
+# real values even though it's in maintenance — components keep their state,
+# only sensor readings go to zero.
+_COMPONENTS_BY_MACHINE: dict[str, list[dict]] = {
+    "al-nakheel": [
+        {"component_id": "headbox",  "health_score": 88, "tier": "healthy",  "last_service_date": "2026-02-14"},
+        {"component_id": "visconip", "health_score": 64, "tier": "warning",  "last_service_date": "2025-11-08"},
+        {"component_id": "yankee",   "health_score":  9, "tier": "critical", "last_service_date": "2024-09-12"},
+        {"component_id": "aircap",   "health_score": 72, "tier": "watch",    "last_service_date": "2025-12-02"},
+        {"component_id": "softreel", "health_score": 86, "tier": "healthy",  "last_service_date": "2026-01-20"},
+        {"component_id": "rewinder", "health_score": 91, "tier": "healthy",  "last_service_date": "2026-03-05"},
+    ],
+    "al-bardi": [
+        {"component_id": "headbox",  "health_score": 91, "tier": "healthy", "last_service_date": "2026-03-01"},
+        {"component_id": "visconip", "health_score": 78, "tier": "watch",   "last_service_date": "2025-10-22"},
+        {"component_id": "yankee",   "health_score": 58, "tier": "warning", "last_service_date": "2025-08-15"},
+        {"component_id": "aircap",   "health_score": 84, "tier": "healthy", "last_service_date": "2025-12-10"},
+        {"component_id": "softreel", "health_score": 69, "tier": "watch",   "last_service_date": "2025-11-28"},
+        {"component_id": "rewinder", "health_score": 88, "tier": "healthy", "last_service_date": "2026-02-18"},
+    ],
+    "al-sindian": [
+        {"component_id": "headbox",  "health_score": 82, "tier": "healthy", "last_service_date": "2026-01-10"},
+        {"component_id": "visconip", "health_score": 75, "tier": "watch",   "last_service_date": "2025-12-15"},
+        {"component_id": "yankee",   "health_score": 80, "tier": "healthy", "last_service_date": "2025-11-04"},
+        {"component_id": "aircap",   "health_score": 79, "tier": "healthy", "last_service_date": "2026-02-20"},
+        {"component_id": "softreel", "health_score": 71, "tier": "watch",   "last_service_date": "2025-10-30"},
+        {"component_id": "rewinder", "health_score": 62, "tier": "warning", "last_service_date": "2025-09-18"},
+    ],
+    "al-snobar": [
+        {"component_id": "headbox",  "health_score": 96, "tier": "healthy", "last_service_date": "2026-03-22"},
+        {"component_id": "visconip", "health_score": 89, "tier": "healthy", "last_service_date": "2026-01-05"},
+        {"component_id": "yankee",   "health_score": 94, "tier": "healthy", "last_service_date": "2025-11-30"},
+        {"component_id": "aircap",   "health_score": 92, "tier": "healthy", "last_service_date": "2026-02-08"},
+        {"component_id": "softreel", "health_score": 90, "tier": "healthy", "last_service_date": "2026-01-15"},
+        {"component_id": "rewinder", "health_score": 95, "tier": "healthy", "last_service_date": "2026-03-10"},
+    ],
+}
+
+# Per-machine current sensor readings (14 sensors). Mirrors frontend
+# mockData.js > sensorsByMachine after makeSensors() resolution. al-sindian
+# is in maintenance, so every value is 0, every reading non-anomalous, and
+# the timestamp reflects the last reading before line stop.
+_RUNNING_SENSOR_TIMESTAMP = "2026-04-28T09:30:00Z"
+_MAINT_SENSOR_TIMESTAMP   = "2026-04-22T06:00:00Z"
+
+_SENSORS_BY_MACHINE: dict[str, list[dict]] = {
+    "al-nakheel": [
+        {"sensor_type": "headbox_stock_consistency",  "component_id": "headbox",  "unit": "%",    "value": 0.32,  "is_anomaly": False, "timestamp": _RUNNING_SENSOR_TIMESTAMP},
+        {"sensor_type": "headbox_jet_velocity",       "component_id": "headbox",  "unit": "m/s",  "value": 25.4,  "is_anomaly": False, "timestamp": _RUNNING_SENSOR_TIMESTAMP},
+        {"sensor_type": "visconip_nip_load",          "component_id": "visconip", "unit": "kN/m", "value": 95,    "is_anomaly": False, "timestamp": _RUNNING_SENSOR_TIMESTAMP},
+        {"sensor_type": "visconip_felt_moisture",     "component_id": "visconip", "unit": "%",    "value": 47.8,  "is_anomaly": True,  "timestamp": _RUNNING_SENSOR_TIMESTAMP},
+        {"sensor_type": "yankee_surface_temp",        "component_id": "yankee",   "unit": "°C",   "value": 112.4, "is_anomaly": False, "timestamp": _RUNNING_SENSOR_TIMESTAMP},
+        {"sensor_type": "yankee_steam_pressure",      "component_id": "yankee",   "unit": "bar",  "value": 9.6,   "is_anomaly": False, "timestamp": _RUNNING_SENSOR_TIMESTAMP},
+        {"sensor_type": "yankee_vibration_bearing_3", "component_id": "yankee",   "unit": "mm/s", "value": 5.8,   "is_anomaly": True,  "timestamp": _RUNNING_SENSOR_TIMESTAMP},
+        {"sensor_type": "aircap_inlet_temp",          "component_id": "aircap",   "unit": "°C",   "value": 496,   "is_anomaly": True,  "timestamp": _RUNNING_SENSOR_TIMESTAMP},
+        {"sensor_type": "aircap_exhaust_humidity",    "component_id": "aircap",   "unit": "%",    "value": 38,    "is_anomaly": False, "timestamp": _RUNNING_SENSOR_TIMESTAMP},
+        {"sensor_type": "softreel_tension",           "component_id": "softreel", "unit": "N/m",  "value": 198,   "is_anomaly": False, "timestamp": _RUNNING_SENSOR_TIMESTAMP},
+        {"sensor_type": "softreel_drive_current",     "component_id": "softreel", "unit": "A",    "value": 142,   "is_anomaly": False, "timestamp": _RUNNING_SENSOR_TIMESTAMP},
+        {"sensor_type": "rewinder_drive_current",     "component_id": "rewinder", "unit": "A",    "value": 88,    "is_anomaly": False, "timestamp": _RUNNING_SENSOR_TIMESTAMP},
+        {"sensor_type": "rewinder_dancer_position",   "component_id": "rewinder", "unit": "mm",   "value": 24,    "is_anomaly": False, "timestamp": _RUNNING_SENSOR_TIMESTAMP},
+        {"sensor_type": "qcs_basis_weight_cd_stddev", "component_id": "rewinder", "unit": "g/m²", "value": 0.8,   "is_anomaly": False, "timestamp": _RUNNING_SENSOR_TIMESTAMP},
+    ],
+    "al-bardi": [
+        {"sensor_type": "headbox_stock_consistency",  "component_id": "headbox",  "unit": "%",    "value": 0.32,  "is_anomaly": False, "timestamp": _RUNNING_SENSOR_TIMESTAMP},
+        {"sensor_type": "headbox_jet_velocity",       "component_id": "headbox",  "unit": "m/s",  "value": 25.4,  "is_anomaly": False, "timestamp": _RUNNING_SENSOR_TIMESTAMP},
+        {"sensor_type": "visconip_nip_load",          "component_id": "visconip", "unit": "kN/m", "value": 95,    "is_anomaly": False, "timestamp": _RUNNING_SENSOR_TIMESTAMP},
+        {"sensor_type": "visconip_felt_moisture",     "component_id": "visconip", "unit": "%",    "value": 41.2,  "is_anomaly": False, "timestamp": _RUNNING_SENSOR_TIMESTAMP},
+        {"sensor_type": "yankee_surface_temp",        "component_id": "yankee",   "unit": "°C",   "value": 112.4, "is_anomaly": False, "timestamp": _RUNNING_SENSOR_TIMESTAMP},
+        {"sensor_type": "yankee_steam_pressure",      "component_id": "yankee",   "unit": "bar",  "value": 10.7,  "is_anomaly": True,  "timestamp": _RUNNING_SENSOR_TIMESTAMP},
+        {"sensor_type": "yankee_vibration_bearing_3", "component_id": "yankee",   "unit": "mm/s", "value": 3.1,   "is_anomaly": False, "timestamp": _RUNNING_SENSOR_TIMESTAMP},
+        {"sensor_type": "aircap_inlet_temp",          "component_id": "aircap",   "unit": "°C",   "value": 478,   "is_anomaly": False, "timestamp": _RUNNING_SENSOR_TIMESTAMP},
+        {"sensor_type": "aircap_exhaust_humidity",    "component_id": "aircap",   "unit": "%",    "value": 38,    "is_anomaly": False, "timestamp": _RUNNING_SENSOR_TIMESTAMP},
+        {"sensor_type": "softreel_tension",           "component_id": "softreel", "unit": "N/m",  "value": 168,   "is_anomaly": True,  "timestamp": _RUNNING_SENSOR_TIMESTAMP},
+        {"sensor_type": "softreel_drive_current",     "component_id": "softreel", "unit": "A",    "value": 142,   "is_anomaly": False, "timestamp": _RUNNING_SENSOR_TIMESTAMP},
+        {"sensor_type": "rewinder_drive_current",     "component_id": "rewinder", "unit": "A",    "value": 88,    "is_anomaly": False, "timestamp": _RUNNING_SENSOR_TIMESTAMP},
+        {"sensor_type": "rewinder_dancer_position",   "component_id": "rewinder", "unit": "mm",   "value": 24,    "is_anomaly": False, "timestamp": _RUNNING_SENSOR_TIMESTAMP},
+        {"sensor_type": "qcs_basis_weight_cd_stddev", "component_id": "rewinder", "unit": "g/m²", "value": 0.8,   "is_anomaly": False, "timestamp": _RUNNING_SENSOR_TIMESTAMP},
+    ],
+    "al-sindian": [
+        {"sensor_type": "headbox_stock_consistency",  "component_id": "headbox",  "unit": "%",    "value": 0, "is_anomaly": False, "timestamp": _MAINT_SENSOR_TIMESTAMP},
+        {"sensor_type": "headbox_jet_velocity",       "component_id": "headbox",  "unit": "m/s",  "value": 0, "is_anomaly": False, "timestamp": _MAINT_SENSOR_TIMESTAMP},
+        {"sensor_type": "visconip_nip_load",          "component_id": "visconip", "unit": "kN/m", "value": 0, "is_anomaly": False, "timestamp": _MAINT_SENSOR_TIMESTAMP},
+        {"sensor_type": "visconip_felt_moisture",     "component_id": "visconip", "unit": "%",    "value": 0, "is_anomaly": False, "timestamp": _MAINT_SENSOR_TIMESTAMP},
+        {"sensor_type": "yankee_surface_temp",        "component_id": "yankee",   "unit": "°C",   "value": 0, "is_anomaly": False, "timestamp": _MAINT_SENSOR_TIMESTAMP},
+        {"sensor_type": "yankee_steam_pressure",      "component_id": "yankee",   "unit": "bar",  "value": 0, "is_anomaly": False, "timestamp": _MAINT_SENSOR_TIMESTAMP},
+        {"sensor_type": "yankee_vibration_bearing_3", "component_id": "yankee",   "unit": "mm/s", "value": 0, "is_anomaly": False, "timestamp": _MAINT_SENSOR_TIMESTAMP},
+        {"sensor_type": "aircap_inlet_temp",          "component_id": "aircap",   "unit": "°C",   "value": 0, "is_anomaly": False, "timestamp": _MAINT_SENSOR_TIMESTAMP},
+        {"sensor_type": "aircap_exhaust_humidity",    "component_id": "aircap",   "unit": "%",    "value": 0, "is_anomaly": False, "timestamp": _MAINT_SENSOR_TIMESTAMP},
+        {"sensor_type": "softreel_tension",           "component_id": "softreel", "unit": "N/m",  "value": 0, "is_anomaly": False, "timestamp": _MAINT_SENSOR_TIMESTAMP},
+        {"sensor_type": "softreel_drive_current",     "component_id": "softreel", "unit": "A",    "value": 0, "is_anomaly": False, "timestamp": _MAINT_SENSOR_TIMESTAMP},
+        {"sensor_type": "rewinder_drive_current",     "component_id": "rewinder", "unit": "A",    "value": 0, "is_anomaly": False, "timestamp": _MAINT_SENSOR_TIMESTAMP},
+        {"sensor_type": "rewinder_dancer_position",   "component_id": "rewinder", "unit": "mm",   "value": 0, "is_anomaly": False, "timestamp": _MAINT_SENSOR_TIMESTAMP},
+        {"sensor_type": "qcs_basis_weight_cd_stddev", "component_id": "rewinder", "unit": "g/m²", "value": 0, "is_anomaly": False, "timestamp": _MAINT_SENSOR_TIMESTAMP},
+    ],
+    "al-snobar": [
+        {"sensor_type": "headbox_stock_consistency",  "component_id": "headbox",  "unit": "%",    "value": 0.32,  "is_anomaly": False, "timestamp": _RUNNING_SENSOR_TIMESTAMP},
+        {"sensor_type": "headbox_jet_velocity",       "component_id": "headbox",  "unit": "m/s",  "value": 25.4,  "is_anomaly": False, "timestamp": _RUNNING_SENSOR_TIMESTAMP},
+        {"sensor_type": "visconip_nip_load",          "component_id": "visconip", "unit": "kN/m", "value": 95,    "is_anomaly": False, "timestamp": _RUNNING_SENSOR_TIMESTAMP},
+        {"sensor_type": "visconip_felt_moisture",     "component_id": "visconip", "unit": "%",    "value": 41.2,  "is_anomaly": False, "timestamp": _RUNNING_SENSOR_TIMESTAMP},
+        {"sensor_type": "yankee_surface_temp",        "component_id": "yankee",   "unit": "°C",   "value": 112.4, "is_anomaly": False, "timestamp": _RUNNING_SENSOR_TIMESTAMP},
+        {"sensor_type": "yankee_steam_pressure",      "component_id": "yankee",   "unit": "bar",  "value": 9.6,   "is_anomaly": False, "timestamp": _RUNNING_SENSOR_TIMESTAMP},
+        {"sensor_type": "yankee_vibration_bearing_3", "component_id": "yankee",   "unit": "mm/s", "value": 3.1,   "is_anomaly": False, "timestamp": _RUNNING_SENSOR_TIMESTAMP},
+        {"sensor_type": "aircap_inlet_temp",          "component_id": "aircap",   "unit": "°C",   "value": 478,   "is_anomaly": False, "timestamp": _RUNNING_SENSOR_TIMESTAMP},
+        {"sensor_type": "aircap_exhaust_humidity",    "component_id": "aircap",   "unit": "%",    "value": 38,    "is_anomaly": False, "timestamp": _RUNNING_SENSOR_TIMESTAMP},
+        {"sensor_type": "softreel_tension",           "component_id": "softreel", "unit": "N/m",  "value": 198,   "is_anomaly": False, "timestamp": _RUNNING_SENSOR_TIMESTAMP},
+        {"sensor_type": "softreel_drive_current",     "component_id": "softreel", "unit": "A",    "value": 142,   "is_anomaly": False, "timestamp": _RUNNING_SENSOR_TIMESTAMP},
+        {"sensor_type": "rewinder_drive_current",     "component_id": "rewinder", "unit": "A",    "value": 88,    "is_anomaly": False, "timestamp": _RUNNING_SENSOR_TIMESTAMP},
+        {"sensor_type": "rewinder_dancer_position",   "component_id": "rewinder", "unit": "mm",   "value": 24,    "is_anomaly": False, "timestamp": _RUNNING_SENSOR_TIMESTAMP},
+        {"sensor_type": "qcs_basis_weight_cd_stddev", "component_id": "rewinder", "unit": "g/m²", "value": 0.8,   "is_anomaly": False, "timestamp": _RUNNING_SENSOR_TIMESTAMP},
+    ],
+}
+
+
+def get_components(machine_id: str) -> dict:
+    _machine_or_raise(machine_id)
+    rows_by_id = {r["component_id"]: r for r in _COMPONENTS_BY_MACHINE[machine_id]}
+    components = []
+    for meta in COMPONENTS_IN_ORDER:
+        cid = meta["component_id"]
+        row = rows_by_id[cid]
+        last_maint = row["last_service_date"]
+        hours_since = (_ANCHOR_TODAY - date.fromisoformat(last_maint)).days * 24
+        components.append({
+            "component_id": cid,
+            "machine_id": machine_id,
+            "name": meta["name"],
+            "is_critical": meta["is_critical"],
+            "risk_score": 100 - int(row["health_score"]),
+            "risk_tier": row["tier"],
+            "expected_lifetime_hours": meta["expected_lifetime_hours"],
+            "hours_since_last_maintenance": hours_since,
+            "last_maintenance_date": last_maint,
+        })
+    return {"machine_id": machine_id, "components": components}
+
+
+def get_sensors(machine_id: str) -> dict:
+    _machine_or_raise(machine_id)
+    readings = [
+        {
+            "sensor_type": r["sensor_type"],
+            "machine_id": machine_id,
+            "component_id": r["component_id"],
+            "value": r["value"],
+            "unit": r["unit"],
+            "timestamp": r["timestamp"],
+            "is_anomaly": r["is_anomaly"],
+        }
+        for r in _SENSORS_BY_MACHINE[machine_id]
+    ]
+    return {"machine_id": machine_id, "readings": readings, "last_updated": _now_iso()}

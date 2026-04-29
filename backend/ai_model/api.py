@@ -129,6 +129,22 @@ def get_machine_predictions(machine_id: str) -> dict:
         raise _machine_404(machine_id)
 
 
+@app.get("/machines/{machine_id}/components")
+def get_machine_components(machine_id: str) -> dict:
+    try:
+        return fhh_data.get_components(machine_id)
+    except fhh_data.MachineNotFound:
+        raise _machine_404(machine_id)
+
+
+@app.get("/machines/{machine_id}/sensors")
+def get_machine_sensors(machine_id: str) -> dict:
+    try:
+        return fhh_data.get_sensors(machine_id)
+    except fhh_data.MachineNotFound:
+        raise _machine_404(machine_id)
+
+
 @app.get("/alerts")
 def list_alerts(
     severity: Optional[str] = Query(None, pattern="^(info|warning|critical)$"),
