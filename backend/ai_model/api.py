@@ -343,3 +343,32 @@ def chat_suggested_prompts(
         current_machine_id=current_machine_id,
         current_sku=current_sku,
     )
+
+
+def _conversation_404(conversation_id: str) -> HTTPException:
+    return HTTPException(
+        status_code=404,
+        detail={"error": {
+            "code": "conversation_not_found",
+            "message": f"No conversation exists with ID '{conversation_id}'.",
+            "status": 404,
+        }},
+    )
+
+
+@app.get("/chat/conversations/{conversation_id}")
+def chat_get_conversation(conversation_id: str) -> dict:
+    try:
+        return fhh_data.get_conversation(conversation_id)
+    except fhh_data.ConversationNotFound:
+        raise _conversation_404(conversation_id)
+
+
+@app.delete("/chat/conversations/{conversation_id}", status_code=204)
+def chat_delete_conversation(conversation_id: str):
+    try:
+        fhh_data.delete_conversation(conversation_id)
+    except fhh_data.ConversationNotFound:
+        raise _conversation_404(conversation_id)
+    # 204 No Content — return None so FastAPI sends an empty body.
+    return None

@@ -30,6 +30,11 @@ Public surface (all return contract-shaped dicts):
     get_forecast(sku, market, h)      -> /forecast payload
     get_forecast_scenario(...)        -> /forecast/scenario payload
     get_suggested_prompts(...)        -> /chat/suggested-prompts payload
+    create_conversation()             -> new conversation_id
+    get_conversation(id)              -> /chat/conversations/{id} payload
+    delete_conversation(id)           -> bool (was deleted)
+    append_user_message(...)          -> mutate conversation in place
+    append_assistant_message(...)     -> mutate conversation in place
 
 Exceptions:
     MachineNotFound, AlertNotFound, SensorNotFound — caught in
@@ -41,6 +46,7 @@ from __future__ import annotations
 
 import json
 import math
+import uuid
 from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from typing import Optional
@@ -1646,3 +1652,108 @@ def get_suggested_prompts(
         return {"prompts": list(_SUGGESTED_PROMPTS_BY_PAGE[current_page])}
 
     return {"prompts": list(_SUGGESTED_PROMPTS_DEFAULT)}
+
+
+# ---------------------------------------------------------------------------
+# Chat conversation state — in-memory store. Production would persist to
+# Postgres (or Redis); for the demo a process-local dict is enough.
+# Structure of each entry:
+#   {
+#     "conversation_id": "conv-XXXXXXXXXXXX",
+#     "created_at": "2026-04-25T14:25:00Z",
+#     "messages": [
+#       {"role": "user", "content": "...", "timestamp": "..."},
+#       {"role": "assistant", "content": "...", "timestamp": "...",
+#        "data_sources_used": ["..."]},
+#     ],
+#   }
+# ---------------------------------------------------------------------------
+
+_CONVERSATIONS: dict[str, dict] = {}
+
+
+class ConversationNotFound(KeyError):
+    def __init__(self, conversation_id: str):
+        super().__init__(conversation_id)
+        self.conversation_id = conversation_id
+
+
+def _new_conversation_id() -> str:
+    """Format: conv-<12 hex chars> per the spec."""
+    return f"conv-{uuid.uuid4().hex[:12]}"
+
+
+def create_conversation() -> str:
+    """Create a new empty conversation and return its id."""
+    cid = _new_conversation_id()
+    _CONVERSATIONS[cid] = {
+        "conversation_id": cid,
+        "created_at": _now_iso(),
+        "messages": [],
+    }
+    return cid
+
+
+def get_conversation(conversation_id: str) -> dict:
+    """Return a deep-ish copy of the conversation. Raises
+    ConversationNotFound if the id is unknown."""
+    conv = _CONVERSATIONS.get(conversation_id)
+    if conv is None:
+        raise ConversationNotFound(conversation_id)
+    return {
+        "conversation_id": conv["conversation_id"],
+        "created_at": conv["created_at"],
+        "messages": [dict(m) for m in conv["messages"]],
+    }
+
+
+def delete_conversation(conversation_id: str) -> None:
+    """Drop the conversation from memory. Raises ConversationNotFound
+    if the id is unknown (matches the contract's 404 envelope)."""
+    if conversation_id not in _CONVERSATIONS:
+        raise ConversationNotFound(conversation_id)
+    del _CONVERSATIONS[conversation_id]
+
+
+def reset_conversations() -> None:
+    """Clear all conversations — for tests."""
+    _CONVERSATIONS.clear()
+
+
+def append_user_message(conversation_id: str, content: str) -> dict:
+    """Append a {role: 'user'} message to a conversation. Returns the
+    appended message dict (with timestamp). Raises ConversationNotFound."""
+    if conversation_id not in _CONVERSATIONS:
+        raise ConversationNotFound(conversation_id)
+    msg = {"role": "user", "content": content, "timestamp": _now_iso()}
+    _CONVERSATIONS[conversation_id]["messages"].append(msg)
+    return dict(msg)
+
+
+def append_assistant_message(
+    conversation_id: str,
+    content: str,
+    data_sources_used: Optional[list[str]] = None,
+) -> dict:
+    """Append a {role: 'assistant'} message. ``data_sources_used`` is
+    persisted on the message so reopening the conversation history
+    surfaces what tools the assistant used."""
+    if conversation_id not in _CONVERSATIONS:
+        raise ConversationNotFound(conversation_id)
+    msg: dict = {"role": "assistant", "content": content, "timestamp": _now_iso()}
+    if data_sources_used:
+        msg["data_sources_used"] = list(data_sources_used)
+    _CONVERSATIONS[conversation_id]["messages"].append(msg)
+    return dict(msg)
+
+
+def conversation_message_history(conversation_id: str) -> list[dict]:
+    """Return the raw messages list (role + content only) suitable for
+    feeding to Claude as prior turns. Excludes timestamps and other
+    persistence metadata."""
+    if conversation_id not in _CONVERSATIONS:
+        raise ConversationNotFound(conversation_id)
+    return [
+        {"role": m["role"], "content": m["content"]}
+        for m in _CONVERSATIONS[conversation_id]["messages"]
+    ]
