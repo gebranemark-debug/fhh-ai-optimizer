@@ -19,6 +19,7 @@ from typing import Optional
 
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.responses import JSONResponse
+from pydantic import BaseModel, Field
 
 # Make ``backend`` importable whether we're launched as
 # "uvicorn backend.ai_model.api:app" (package import) or "python
@@ -288,3 +289,40 @@ def get_forecast(
         raise _product_404(sku)
     except fhh_data.MarketNotFound:
         raise _market_404(market)
+
+
+class ScenarioBody(BaseModel):
+    type: str = Field(pattern="^(seasonality_shift|price_change|competitor_entry|supply_disruption)$")
+    event: Optional[str] = None
+    magnitude_percent: Optional[float] = None
+
+
+class ForecastScenarioRequest(BaseModel):
+    sku: str
+    market: str
+    horizon_months: int = Field(6, ge=1, le=12)
+    scenario: ScenarioBody
+
+
+@app.post("/forecast/scenario")
+def post_forecast_scenario(body: ForecastScenarioRequest) -> dict:
+    try:
+        return fhh_data.get_forecast_scenario(
+            sku=body.sku,
+            market=body.market,
+            horizon_months=body.horizon_months,
+            scenario=body.scenario.model_dump(),
+        )
+    except fhh_data.ProductNotFound:
+        raise _product_404(body.sku)
+    except fhh_data.MarketNotFound:
+        raise _market_404(body.market)
+    except fhh_data.ScenarioValidationError as exc:
+        raise HTTPException(
+            status_code=422,
+            detail={"error": {
+                "code": "validation_error",
+                "message": str(exc),
+                "status": 422,
+            }},
+        )

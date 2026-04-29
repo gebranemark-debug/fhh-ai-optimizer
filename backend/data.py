@@ -28,6 +28,7 @@ Public surface (all return contract-shaped dicts):
     get_demand_anomalies()            -> /demand/anomalies payload
     get_seasonality(sku, market)      -> /demand/seasonality payload
     get_forecast(sku, market, h)      -> /forecast payload
+    get_forecast_scenario(...)        -> /forecast/scenario payload
 
 Exceptions:
     MachineNotFound, AlertNotFound, SensorNotFound — caught in
@@ -1385,4 +1386,138 @@ def get_forecast(sku: str, market: str, horizon_months: int) -> dict:
         "seasonality_events": [dict(e) for e in _FORECAST_SEASONALITY_EVENTS],
         "regressors_used": list(_FORECAST_REGRESSORS),
         "generated_at": _now_iso(),
+    }
+
+
+# ---------------------------------------------------------------------------
+# Forecast scenarios — transform the baseline Prophet forecast under one
+# of four what-if assumptions, then return both curves + a delta summary.
+# Each transformation is deterministic and stateless: no model re-fit, just
+# a pointwise adjustment to the baseline forecast values.
+# ---------------------------------------------------------------------------
+
+_SCENARIO_TYPES = {"seasonality_shift", "price_change", "competitor_entry", "supply_disruption"}
+
+# Calendar month each named event falls in. Month-only matching keeps
+# this simple at monthly granularity — within our 12-month forecast
+# horizon each event happens at most once.
+_SCENARIO_EVENT_MONTHS = {
+    "ramadan":         {2, 3},   # Ramadan straddles Feb-Mar in our window
+    "eid_al_fitr":     {3, 4},
+    "back_to_school":  {8},
+}
+
+# Price elasticity for the price_change scenario: each 1% price up reduces
+# volume by 1.2%. Negative because higher price drives lower volume.
+_PRICE_ELASTICITY = -1.2
+
+# Competitor entry: total volume reduction by month 3 onward.
+_COMPETITOR_TOTAL_REDUCTION = 0.08
+_COMPETITOR_RAMP_MONTHS = 3
+
+# Supply disruption: hard cap at 85% of baseline (15% reduction).
+_SUPPLY_DISRUPTION_FACTOR = 0.85
+
+
+class ScenarioValidationError(ValueError):
+    """Raised for invalid scenario payloads (caught by the API layer and
+    translated to a 422 response)."""
+
+
+def _apply_scenario(baseline: list[dict], scenario: dict) -> list[dict]:
+    """Return a new forecast list with the scenario applied. ``baseline``
+    is the list of forecast points from get_forecast; ``scenario`` is the
+    request body's scenario block (already validated for ``type``).
+
+    Each transformation operates only on ``forecast_value``; the
+    confidence bounds (lower_bound, upper_bound) are scaled by the same
+    factor so the band tracks the new central line.
+    """
+    s_type = scenario["type"]
+
+    if s_type == "seasonality_shift":
+        event = scenario.get("event")
+        magnitude = scenario.get("magnitude_percent")
+        if event not in _SCENARIO_EVENT_MONTHS:
+            raise ScenarioValidationError(
+                f"unknown event {event!r}; expected one of "
+                f"{sorted(_SCENARIO_EVENT_MONTHS)}"
+            )
+        if magnitude is None:
+            raise ScenarioValidationError("seasonality_shift requires magnitude_percent")
+        factor = 1.0 + magnitude / 100.0
+        target_months = _SCENARIO_EVENT_MONTHS[event]
+        return [
+            _scale_point(p, factor) if int(p["date"].split("-")[1]) in target_months else dict(p)
+            for p in baseline
+        ]
+
+    if s_type == "price_change":
+        magnitude = scenario.get("magnitude_percent")
+        if magnitude is None:
+            raise ScenarioValidationError("price_change requires magnitude_percent")
+        factor = 1.0 + (magnitude / 100.0) * _PRICE_ELASTICITY
+        return [_scale_point(p, factor) for p in baseline]
+
+    if s_type == "competitor_entry":
+        out: list[dict] = []
+        for i, p in enumerate(baseline, start=1):
+            ramp = min(i / _COMPETITOR_RAMP_MONTHS, 1.0)
+            factor = 1.0 - _COMPETITOR_TOTAL_REDUCTION * ramp
+            out.append(_scale_point(p, factor))
+        return out
+
+    if s_type == "supply_disruption":
+        return [_scale_point(p, _SUPPLY_DISRUPTION_FACTOR) for p in baseline]
+
+    # Unreachable — type was validated upstream.
+    raise ScenarioValidationError(f"unknown scenario type {s_type!r}")
+
+
+def _scale_point(p: dict, factor: float) -> dict:
+    return {
+        "date": p["date"],
+        "forecast_value": int(round(p["forecast_value"] * factor)),
+        "lower_bound":    int(round(p["lower_bound"] * factor)),
+        "upper_bound":    int(round(p["upper_bound"] * factor)),
+    }
+
+
+def get_forecast_scenario(
+    sku: str,
+    market: str,
+    horizon_months: int,
+    scenario: dict,
+) -> dict:
+    """Compute baseline + scenario forecasts and the delta summary.
+
+    Raises ScenarioValidationError for invalid scenario inputs (unknown
+    type, missing event/magnitude); ProductNotFound / MarketNotFound
+    propagate from get_forecast for unknown ids."""
+    if not isinstance(scenario, dict) or "type" not in scenario:
+        raise ScenarioValidationError("scenario.type is required")
+    if scenario["type"] not in _SCENARIO_TYPES:
+        raise ScenarioValidationError(
+            f"unknown scenario.type {scenario['type']!r}; expected one of "
+            f"{sorted(_SCENARIO_TYPES)}"
+        )
+
+    baseline_payload = get_forecast(sku, market, horizon_months)
+    baseline = baseline_payload["forecast"]
+    scenario_forecast = _apply_scenario(baseline, scenario)
+
+    total_baseline = sum(p["forecast_value"] for p in baseline)
+    total_scenario = sum(p["forecast_value"] for p in scenario_forecast)
+    delta = total_scenario - total_baseline
+    delta_pct = round((delta / total_baseline) * 100, 1) if total_baseline else 0.0
+
+    return {
+        "baseline_forecast": baseline,
+        "scenario_forecast": scenario_forecast,
+        "delta_summary": {
+            "total_baseline_units": total_baseline,
+            "total_scenario_units": total_scenario,
+            "delta_units": delta,
+            "delta_percent": delta_pct,
+        },
     }
