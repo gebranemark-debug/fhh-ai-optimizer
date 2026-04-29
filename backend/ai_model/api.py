@@ -78,6 +78,17 @@ def _alert_404(alert_id: str) -> HTTPException:
     )
 
 
+def _sensor_404(machine_id: str, sensor_type: str) -> HTTPException:
+    return HTTPException(
+        status_code=404,
+        detail={"error": {
+            "code": "sensor_not_found",
+            "message": f"No sensor '{sensor_type}' exists on machine '{machine_id}'.",
+            "status": 404,
+        }},
+    )
+
+
 # ---------------------------------------------------------------------------
 # Routes
 # ---------------------------------------------------------------------------
@@ -163,6 +174,21 @@ def get_machine_maintenance_log(machine_id: str) -> dict:
         return fhh_data.get_maintenance_log(machine_id)
     except fhh_data.MachineNotFound:
         raise _machine_404(machine_id)
+
+
+@app.get("/machines/{machine_id}/sensors/{sensor_type}/history")
+def get_machine_sensor_history(
+    machine_id: str,
+    sensor_type: str,
+    window: str = Query("24h", pattern="^(1h|24h|7d|30d)$"),
+    aggregation: str = Query("hourly", pattern="^(raw|hourly|daily)$"),
+) -> dict:
+    try:
+        return fhh_data.get_sensor_history(machine_id, sensor_type, window, aggregation)
+    except fhh_data.MachineNotFound:
+        raise _machine_404(machine_id)
+    except fhh_data.SensorNotFound:
+        raise _sensor_404(machine_id, sensor_type)
 
 
 @app.get("/alerts")

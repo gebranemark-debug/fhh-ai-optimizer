@@ -20,14 +20,17 @@ Public surface (all return contract-shaped dicts):
     get_sensors(machine_id)           -> /sensors payload
     get_alarms(machine_id, ...)       -> /alarms payload
     get_maintenance_log(machine_id)   -> /maintenance-log payload
+    get_sensor_history(...)           -> /sensors/{type}/history payload
 
 Exceptions:
-    MachineNotFound, AlertNotFound — caught in ``backend/ai_model/api.py``
-    and translated to the contract's 404 error envelope.
+    MachineNotFound, AlertNotFound, SensorNotFound — caught in
+    ``backend/ai_model/api.py`` and translated to the contract's 404
+    error envelope.
 """
 
 from __future__ import annotations
 
+import math
 from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from typing import Optional
@@ -76,6 +79,13 @@ class AlertNotFound(KeyError):
     def __init__(self, alert_id: str):
         super().__init__(alert_id)
         self.alert_id = alert_id
+
+
+class SensorNotFound(KeyError):
+    def __init__(self, machine_id: str, sensor_type: str):
+        super().__init__(f"{machine_id}/{sensor_type}")
+        self.machine_id = machine_id
+        self.sensor_type = sensor_type
 
 
 # ---------------------------------------------------------------------------
@@ -842,4 +852,159 @@ def get_maintenance_log(machine_id: str) -> dict:
     return {
         "machine_id": machine_id,
         "logs": [_translate_maint_entry(e) for e in _MAINTENANCE_BY_MACHINE[machine_id]],
+    }
+
+
+# ---------------------------------------------------------------------------
+# Sensor history — Python port of frontend/app/src/mockData.js > genHistory.
+# Same trig-driven curve so the API output stays in lockstep with the
+# frontend's chart renderer until parquet ETL takes over. Anchor "now" is
+# reused from the alarms section (one shared canonical timestamp keeps the
+# UI's various time-axes aligned).
+# ---------------------------------------------------------------------------
+
+# Normal operating range per sensor_type — physical property of the sensor,
+# machine-independent. Keys mirror sensorsByMachine in mockData.js.
+_SENSOR_NORMAL_RANGES: dict[str, tuple[float, float]] = {
+    "headbox_stock_consistency":  (0.28, 0.34),
+    "headbox_jet_velocity":       (23.0, 27.0),
+    "visconip_nip_load":          (85.0, 110.0),
+    "visconip_felt_moisture":     (35.0, 45.0),
+    "yankee_surface_temp":        (108.0, 118.0),
+    "yankee_steam_pressure":      (9.0, 10.5),
+    "yankee_vibration_bearing_3": (2.0, 4.0),
+    "aircap_inlet_temp":          (470.0, 490.0),
+    "aircap_exhaust_humidity":    (32.0, 42.0),
+    "softreel_tension":           (180.0, 220.0),
+    "softreel_drive_current":     (130.0, 160.0),
+    "rewinder_drive_current":     (75.0, 105.0),
+    "rewinder_dancer_position":   (18.0, 32.0),
+    "qcs_basis_weight_cd_stddev": (0.4, 1.2),
+}
+
+# Cap raw (minute-level) point count so a 30d ?aggregation=raw query stays
+# bounded. 1440 = the most recent 24 hours at minute resolution, which is
+# what the chart actually renders usefully anyway.
+_RAW_POINTS_CAP = 1440
+
+
+def _resolve_history_grid(window: str, aggregation: str) -> tuple[int, int]:
+    """Return (n_points, step_seconds) for a given window/aggregation. The
+    upstream FastAPI route enforces the enum so we can KeyError here on a
+    bad value — it should never reach this layer in practice."""
+    window_minutes = {"1h": 60, "24h": 1440, "7d": 7 * 1440, "30d": 30 * 1440}[window]
+    if aggregation == "hourly":
+        # 1 point per hour, minimum 1 (so 1h = 1 point not 0).
+        return max(1, window_minutes // 60), 3600
+    if aggregation == "daily":
+        # 1 point per day, minimum 1 (so 1h/24h both yield 1 daily point).
+        return max(1, window_minutes // 1440), 86400
+    if aggregation == "raw":
+        return min(window_minutes, _RAW_POINTS_CAP), 60
+    raise KeyError(f"unknown aggregation {aggregation!r}")
+
+
+def _gen_sensor_history_points(
+    value: float,
+    normal_range: tuple[float, float],
+    is_anomaly: bool,
+    n_points: int,
+    step_seconds: int,
+) -> list[dict]:
+    """Port of mockData.js > genHistory generalised over (n_points, step).
+    The trig multipliers (0.7, 1.3, 0.4) and exponent (1.6) are taken
+    from the JS verbatim and applied to the loop index ``i`` so the curve
+    is deterministic and reproducible across runs.
+
+    The contract requires per-point ``min`` and ``max`` for chart band
+    rendering. These are NOT real time-bucket aggregates — they're a
+    synthetic ±5%-of-range band around ``value`` that gives the line
+    chart a visible confidence ribbon. When parquet ETL lands, this
+    function is the one swap point that needs upgrading to real bucket
+    min/max.
+    """
+    lo, hi = normal_range
+    range_width = hi - lo
+    band = round(0.05 * range_width, 4)
+
+    # Maintenance / no-reading short-circuit. al-sindian's underlying
+    # sensor rows have value=0 with the maint timestamp; the chart should
+    # render a flat zero line, not a noise-driven oscillation around 0.
+    if value == 0:
+        anchor_zeroes: list[dict] = []
+        for i in range(n_points - 1, -1, -1):
+            t = _ALARMS_BASE_TIME - timedelta(seconds=i * step_seconds)
+            anchor_zeroes.append({
+                "timestamp": _format_iso_z(t),
+                "value": 0,
+                "min": 0,
+                "max": 0,
+            })
+        return anchor_zeroes
+
+    mid = (lo + hi) / 2.0
+    start = mid if is_anomaly else value
+
+    points: list[dict] = []
+    for i in range(n_points - 1, -1, -1):
+        # A lone point (n_points == 1) sits at "now" and represents the
+        # current state, so progress = 1.0 — without this short-circuit
+        # the JS-style formula divides by zero AND would place the point
+        # at the oldest end of the curve.
+        if n_points == 1:
+            progress = 1.0
+        else:
+            progress = (n_points - 1 - i) / (n_points - 1)
+        noise = (math.sin(0.7 * i) + math.cos(1.3 * i)) * range_width * 0.04
+        if is_anomaly:
+            v = start + (value - start) * (progress ** 1.6) + noise
+        else:
+            v = value + noise + math.sin(0.4 * i) * range_width * 0.05
+        v = round(v, 2)
+        t = _ALARMS_BASE_TIME - timedelta(seconds=i * step_seconds)
+        points.append({
+            "timestamp": _format_iso_z(t),
+            "value": v,
+            "min": round(v - band, 2),
+            "max": round(v + band, 2),
+        })
+    return points
+
+
+def _sensor_row(machine_id: str, sensor_type: str) -> dict:
+    """Look up the current sensor reading row from _SENSORS_BY_MACHINE.
+    Raises SensorNotFound if the sensor_type isn't present for the given
+    machine. Caller is responsible for the prior MachineNotFound check."""
+    for r in _SENSORS_BY_MACHINE[machine_id]:
+        if r["sensor_type"] == sensor_type:
+            return r
+    raise SensorNotFound(machine_id, sensor_type)
+
+
+def get_sensor_history(
+    machine_id: str,
+    sensor_type: str,
+    window: str = "24h",
+    aggregation: str = "hourly",
+) -> dict:
+    _machine_or_raise(machine_id)
+    row = _sensor_row(machine_id, sensor_type)
+    normal_range = _SENSOR_NORMAL_RANGES[sensor_type]
+    n_points, step_seconds = _resolve_history_grid(window, aggregation)
+    points = _gen_sensor_history_points(
+        value=row["value"],
+        normal_range=normal_range,
+        is_anomaly=row["is_anomaly"],
+        n_points=n_points,
+        step_seconds=step_seconds,
+    )
+    lo, hi = normal_range
+    return {
+        "machine_id": machine_id,
+        "sensor_type": sensor_type,
+        "unit": row["unit"],
+        "window": window,
+        "aggregation": aggregation,
+        "normal_range": {"min": lo, "max": hi},
+        "points": points,
     }
