@@ -274,3 +274,17 @@ def get_demand_seasonality(
         raise _product_404(sku)
     except fhh_data.MarketNotFound:
         raise _market_404(market or "")
+
+
+@app.get("/forecast")
+def get_forecast(
+    sku: str,
+    market: str,
+    horizon_months: int = Query(6, ge=1, le=12),
+) -> dict:
+    try:
+        return fhh_data.get_forecast(sku, market, horizon_months)
+    except fhh_data.ProductNotFound:
+        raise _product_404(sku)
+    except fhh_data.MarketNotFound:
+        raise _market_404(market)

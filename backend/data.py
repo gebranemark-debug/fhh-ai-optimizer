@@ -27,6 +27,7 @@ Public surface (all return contract-shaped dicts):
     get_demand_history(sku, market)   -> DataFrame for the forecast layer
     get_demand_anomalies()            -> /demand/anomalies payload
     get_seasonality(sku, market)      -> /demand/seasonality payload
+    get_forecast(sku, market, h)      -> /forecast payload
 
 Exceptions:
     MachineNotFound, AlertNotFound, SensorNotFound — caught in
@@ -1261,3 +1262,127 @@ _DEMAND_ANOMALIES: list[dict] = [
 
 def get_demand_anomalies() -> dict:
     return {"anomalies": [dict(a) for a in _DEMAND_ANOMALIES]}
+
+
+# ---------------------------------------------------------------------------
+# Forecast (Prophet). Models are fit lazily on first call per (sku, market)
+# and cached in-process — re-fitting takes ~1-3s per pair so repeat calls
+# from the dashboard return instantly.
+# ---------------------------------------------------------------------------
+
+# Anchor "today" for the demo: forecasts always start at the first day of
+# the next month from this anchor. Locked so the forecast window is
+# reproducible across runs even when the wall clock advances.
+_FORECAST_ANCHOR_DATE = date(2026, 4, 25)
+_FORECAST_HORIZON_MIN = 1
+_FORECAST_HORIZON_MAX = 12
+
+# Holiday dates fed into Prophet so the model picks up Ramadan/Eid lifts
+# in the historical signal. ``upper_window`` covers the duration of the
+# event (Ramadan ≈ 30 days, Eid ≈ 3 days).
+_PROPHET_HOLIDAYS = pd.DataFrame({
+    "holiday": [
+        "ramadan", "ramadan", "ramadan",
+        "eid_al_fitr", "eid_al_fitr", "eid_al_fitr",
+    ],
+    "ds": pd.to_datetime([
+        "2024-03-10", "2025-03-01", "2026-02-18",
+        "2024-04-10", "2025-03-30", "2026-03-20",
+    ]),
+    "lower_window": [0, 0, 0, 0, 0, 0],
+    "upper_window": [29, 29, 29, 3, 3, 3],
+})
+
+# Seasonality event markers returned in the /forecast response. These are
+# the contract's stylized values — anchor-relative, illustrative, suitable
+# for the chart's "Ramadan / Eid begins" reference lines.
+_FORECAST_SEASONALITY_EVENTS: list[dict] = [
+    {"date": "2026-03-10", "label": "Ramadan begins", "expected_lift_percent": 35},
+    {"date": "2026-04-09", "label": "Eid al-Fitr",    "expected_lift_percent": 22},
+]
+
+_FORECAST_REGRESSORS = ["historical_sales", "ramadan_calendar", "b2b_pipeline"]
+
+# Cache of fitted Prophet models keyed by (sku, market). Cleared by
+# reset_forecast_cache() if needed (for tests).
+_FORECAST_MODEL_CACHE: dict[tuple[str, str], "object"] = {}
+
+
+def reset_forecast_cache() -> None:
+    _FORECAST_MODEL_CACHE.clear()
+
+
+def _next_month_start(d: date) -> pd.Timestamp:
+    """First day of the month after ``d``. 2026-04-25 -> 2026-05-01."""
+    if d.month == 12:
+        return pd.Timestamp(year=d.year + 1, month=1, day=1)
+    return pd.Timestamp(year=d.year, month=d.month + 1, day=1)
+
+
+def _fit_prophet_model(sku: str, market: str):
+    """Fit a Prophet model on the (sku, market) history and return it.
+    Importing inside the function keeps module-import time low for
+    callers that never hit /forecast (Module 1 endpoints, etc.)."""
+    from prophet import Prophet  # noqa: WPS433 — local import is intentional.
+
+    history = get_demand_history(sku, market)
+    df = history[["date", "units_sold"]].rename(columns={"date": "ds", "units_sold": "y"})
+
+    model = Prophet(
+        yearly_seasonality=True,
+        weekly_seasonality=False,
+        daily_seasonality=False,
+        holidays=_PROPHET_HOLIDAYS,
+        interval_width=0.85,
+    )
+    model.fit(df)
+    return model
+
+
+def _get_or_fit_forecast_model(sku: str, market: str):
+    key = (sku, market)
+    if key not in _FORECAST_MODEL_CACHE:
+        _FORECAST_MODEL_CACHE[key] = _fit_prophet_model(sku, market)
+    return _FORECAST_MODEL_CACHE[key]
+
+
+def get_forecast(sku: str, market: str, horizon_months: int) -> dict:
+    """Return the contract-shaped /forecast payload for (sku, market). Fits
+    a Prophet model on the seeded demand history (with Ramadan + Eid as
+    holidays) and predicts ``horizon_months`` months starting from the
+    first of the month after the demo anchor (2026-05-01 onward)."""
+    if not (_FORECAST_HORIZON_MIN <= horizon_months <= _FORECAST_HORIZON_MAX):
+        raise ValueError(
+            f"horizon_months {horizon_months} outside [{_FORECAST_HORIZON_MIN}, "
+            f"{_FORECAST_HORIZON_MAX}]"
+        )
+
+    _product_or_raise(sku)
+    _market_or_raise(market)
+
+    model = _get_or_fit_forecast_model(sku, market)
+
+    start = _next_month_start(_FORECAST_ANCHOR_DATE)
+    future_dates = pd.date_range(start=start, periods=horizon_months, freq="MS")
+    future_df = pd.DataFrame({"ds": future_dates})
+    pred = model.predict(future_df)
+
+    forecast_points: list[dict] = []
+    for _, row in pred.iterrows():
+        forecast_points.append({
+            "date": row["ds"].strftime("%Y-%m-%d"),
+            "forecast_value": int(round(float(row["yhat"]))),
+            "lower_bound":    int(round(float(row["yhat_lower"]))),
+            "upper_bound":    int(round(float(row["yhat_upper"]))),
+        })
+
+    return {
+        "sku": sku,
+        "market": market,
+        "horizon_months": horizon_months,
+        "model": "prophet",
+        "forecast": forecast_points,
+        "seasonality_events": [dict(e) for e in _FORECAST_SEASONALITY_EVENTS],
+        "regressors_used": list(_FORECAST_REGRESSORS),
+        "generated_at": _now_iso(),
+    }
