@@ -29,6 +29,12 @@ Public surface (all return contract-shaped dicts):
     get_seasonality(sku, market)      -> /demand/seasonality payload
     get_forecast(sku, market, h)      -> /forecast payload
     get_forecast_scenario(...)        -> /forecast/scenario payload
+    get_suggested_prompts(...)        -> /chat/suggested-prompts payload
+    create_conversation()             -> new conversation_id
+    get_conversation(id)              -> /chat/conversations/{id} payload
+    delete_conversation(id)           -> bool (was deleted)
+    append_user_message(...)          -> mutate conversation in place
+    append_assistant_message(...)     -> mutate conversation in place
 
 Exceptions:
     MachineNotFound, AlertNotFound, SensorNotFound — caught in
@@ -40,6 +46,7 @@ from __future__ import annotations
 
 import json
 import math
+import uuid
 from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from typing import Optional
@@ -1555,3 +1562,198 @@ def get_forecast_scenario(
             "delta_percent": delta_pct,
         },
     }
+
+
+# ---------------------------------------------------------------------------
+# Chat assistant — suggested prompts. Pure static logic (no Anthropic call):
+# the frontend shows these as clickable chips when the chat sidebar is empty,
+# so the endpoint just needs to return contextually relevant openers fast.
+# ---------------------------------------------------------------------------
+
+# Default prompts when no current_page is provided.
+_SUGGESTED_PROMPTS_DEFAULT: list[str] = [
+    "What's the overall fleet status right now?",
+    "Which machine has the highest risk?",
+    "When is the next scheduled maintenance window?",
+    "How much have we saved this year from predictive maintenance?",
+]
+
+# Per-page base prompts. Adapted further when current_machine_id /
+# current_sku is supplied.
+_SUGGESTED_PROMPTS_BY_PAGE: dict[str, list[str]] = {
+    "overview": [
+        "What's wrong with Al Nakheel right now?",
+        "Compare risk across all 4 machines",
+        "When should I schedule the next maintenance window?",
+        "How will Ramadan affect production capacity?",
+    ],
+    "machine_detail": [
+        "Why is the Yankee component flagged?",
+        "Which sensor is driving the current risk score?",
+        "Show me the maintenance history for this machine",
+        "What's the predicted failure window for the riskiest component?",
+    ],
+    "alerts": [
+        "What's the most urgent alert right now?",
+        "Which alerts are still unacknowledged?",
+        "What's the cost impact if I ignore the critical alert?",
+        "How many alerts came in over the last 24 hours?",
+    ],
+    "demand_forecast": [
+        "What's the 6-month forecast for this SKU?",
+        "How will Ramadan affect demand?",
+        "Show me any demand anomalies from last month",
+        "What if I run a 30% promotion during Eid?",
+    ],
+}
+
+
+def _machine_display_name(machine_id: str) -> Optional[str]:
+    for m in _MACHINES:
+        if m["machine_id"] == machine_id:
+            return m["name"]
+    return None
+
+
+def _product_display_name(sku: str) -> Optional[str]:
+    p = _PRODUCTS_BY_SKU.get(sku)
+    return p["name"] if p else None
+
+
+def get_suggested_prompts(
+    current_page: Optional[str] = None,
+    current_machine_id: Optional[str] = None,
+    current_sku: Optional[str] = None,
+) -> dict:
+    """Return 4 contextually-relevant suggested prompts for the chat
+    sidebar. Page + machine + sku context narrow the suggestions; with
+    no context the default fleet-level set is returned."""
+    if current_page == "machine_detail" and current_machine_id:
+        name = _machine_display_name(current_machine_id)
+        if name:
+            return {"prompts": [
+                f"Why is the Yankee component on {name} flagged?",
+                f"Which sensor is driving {name}'s current risk score?",
+                f"Show me the maintenance history for {name}",
+                f"What's the predicted failure window on {name}?",
+            ]}
+
+    if current_page == "demand_forecast" and current_sku:
+        product_name = _product_display_name(current_sku)
+        if product_name:
+            return {"prompts": [
+                f"What's the 6-month forecast for {product_name}?",
+                f"How will Ramadan affect demand for {product_name}?",
+                f"Show me recent anomalies for {product_name}",
+                f"What if I run a 30% promotion on {product_name} during Eid?",
+            ]}
+
+    if current_page in _SUGGESTED_PROMPTS_BY_PAGE:
+        return {"prompts": list(_SUGGESTED_PROMPTS_BY_PAGE[current_page])}
+
+    return {"prompts": list(_SUGGESTED_PROMPTS_DEFAULT)}
+
+
+# ---------------------------------------------------------------------------
+# Chat conversation state — in-memory store. Production would persist to
+# Postgres (or Redis); for the demo a process-local dict is enough.
+# Structure of each entry:
+#   {
+#     "conversation_id": "conv-XXXXXXXXXXXX",
+#     "created_at": "2026-04-25T14:25:00Z",
+#     "messages": [
+#       {"role": "user", "content": "...", "timestamp": "..."},
+#       {"role": "assistant", "content": "...", "timestamp": "...",
+#        "data_sources_used": ["..."]},
+#     ],
+#   }
+# ---------------------------------------------------------------------------
+
+_CONVERSATIONS: dict[str, dict] = {}
+
+
+class ConversationNotFound(KeyError):
+    def __init__(self, conversation_id: str):
+        super().__init__(conversation_id)
+        self.conversation_id = conversation_id
+
+
+def _new_conversation_id() -> str:
+    """Format: conv-<12 hex chars> per the spec."""
+    return f"conv-{uuid.uuid4().hex[:12]}"
+
+
+def create_conversation() -> str:
+    """Create a new empty conversation and return its id."""
+    cid = _new_conversation_id()
+    _CONVERSATIONS[cid] = {
+        "conversation_id": cid,
+        "created_at": _now_iso(),
+        "messages": [],
+    }
+    return cid
+
+
+def get_conversation(conversation_id: str) -> dict:
+    """Return a deep-ish copy of the conversation. Raises
+    ConversationNotFound if the id is unknown."""
+    conv = _CONVERSATIONS.get(conversation_id)
+    if conv is None:
+        raise ConversationNotFound(conversation_id)
+    return {
+        "conversation_id": conv["conversation_id"],
+        "created_at": conv["created_at"],
+        "messages": [dict(m) for m in conv["messages"]],
+    }
+
+
+def delete_conversation(conversation_id: str) -> None:
+    """Drop the conversation from memory. Raises ConversationNotFound
+    if the id is unknown (matches the contract's 404 envelope)."""
+    if conversation_id not in _CONVERSATIONS:
+        raise ConversationNotFound(conversation_id)
+    del _CONVERSATIONS[conversation_id]
+
+
+def reset_conversations() -> None:
+    """Clear all conversations — for tests."""
+    _CONVERSATIONS.clear()
+
+
+def append_user_message(conversation_id: str, content: str) -> dict:
+    """Append a {role: 'user'} message to a conversation. Returns the
+    appended message dict (with timestamp). Raises ConversationNotFound."""
+    if conversation_id not in _CONVERSATIONS:
+        raise ConversationNotFound(conversation_id)
+    msg = {"role": "user", "content": content, "timestamp": _now_iso()}
+    _CONVERSATIONS[conversation_id]["messages"].append(msg)
+    return dict(msg)
+
+
+def append_assistant_message(
+    conversation_id: str,
+    content: str,
+    data_sources_used: Optional[list[str]] = None,
+) -> dict:
+    """Append a {role: 'assistant'} message. ``data_sources_used`` is
+    persisted on the message so reopening the conversation history
+    surfaces what tools the assistant used."""
+    if conversation_id not in _CONVERSATIONS:
+        raise ConversationNotFound(conversation_id)
+    msg: dict = {"role": "assistant", "content": content, "timestamp": _now_iso()}
+    if data_sources_used:
+        msg["data_sources_used"] = list(data_sources_used)
+    _CONVERSATIONS[conversation_id]["messages"].append(msg)
+    return dict(msg)
+
+
+def conversation_message_history(conversation_id: str) -> list[dict]:
+    """Return the raw messages list (role + content only) suitable for
+    feeding to Claude as prior turns. Excludes timestamps and other
+    persistence metadata."""
+    if conversation_id not in _CONVERSATIONS:
+        raise ConversationNotFound(conversation_id)
+    return [
+        {"role": m["role"], "content": m["content"]}
+        for m in _CONVERSATIONS[conversation_id]["messages"]
+    ]
