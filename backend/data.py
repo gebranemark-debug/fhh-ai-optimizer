@@ -18,6 +18,8 @@ Public surface (all return contract-shaped dicts):
     get_kpis_overview()               -> /kpis/overview payload
     get_components(machine_id)        -> /components payload
     get_sensors(machine_id)           -> /sensors payload
+    get_alarms(machine_id, ...)       -> /alarms payload
+    get_maintenance_log(machine_id)   -> /maintenance-log payload
 
 Exceptions:
     MachineNotFound, AlertNotFound — caught in ``backend/ai_model/api.py``
@@ -26,7 +28,7 @@ Exceptions:
 
 from __future__ import annotations
 
-from datetime import date, datetime, timezone
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from typing import Optional
 
@@ -630,3 +632,214 @@ def get_sensors(machine_id: str) -> dict:
         for r in _SENSORS_BY_MACHINE[machine_id]
     ]
     return {"machine_id": machine_id, "readings": readings, "last_updated": _now_iso()}
+
+
+# ---------------------------------------------------------------------------
+# Alarms — Valmet DNA DCS event log. Generation logic is a Python port of
+# frontend/app/src/mockData.js > genAlarms (verbatim message catalog +
+# ordering math), so the API output stays in lockstep with the frontend's
+# placeholder alarms while the parquet ETL doesn't yet exist.
+# ---------------------------------------------------------------------------
+
+# Anchor "now" — same constant as JS `new Date('2026-04-28T09:30:00Z')`.
+_ALARMS_BASE_TIME = datetime(2026, 4, 28, 9, 30, tzinfo=timezone.utc)
+
+# 18-row template catalog. Order and content match mockData.js verbatim;
+# rotation index `(i + seed) % 18` selects which template a given alarm
+# uses, so the per-machine seeds yield distinct-but-overlapping sequences.
+_ALARM_TEMPLATES: list[dict] = [
+    {"severity": "critical", "message": "Bearing 3 vibration trending above warning limit",  "component_id": "yankee"},
+    {"severity": "warning",  "message": "PV-2102 deviation > 5%",                              "component_id": "yankee"},
+    {"severity": "warning",  "message": "Yankee steam header pressure oscillation",            "component_id": "yankee"},
+    {"severity": "warning",  "message": "Bearing 3 temperature trending above warning limit",  "component_id": "yankee"},
+    {"severity": "info",     "message": "Yankee surface temp deviation < 2°C",                 "component_id": "yankee"},
+    {"severity": "warning",  "message": "ViscoNip felt moisture above target",                 "component_id": "visconip"},
+    {"severity": "warning",  "message": "Nip load fluctuation outside band",                   "component_id": "visconip"},
+    {"severity": "info",     "message": "Felt life advisory — 22% remaining",                  "component_id": "visconip"},
+    {"severity": "warning",  "message": "Hood damper position fault",                          "component_id": "aircap"},
+    {"severity": "warning",  "message": "AirCap inlet temp setpoint deviation",                "component_id": "aircap"},
+    {"severity": "info",     "message": "Exhaust humidity drift — burner re-tune advised",     "component_id": "aircap"},
+    {"severity": "warning",  "message": "Stock consistency setpoint deviation",                "component_id": "headbox"},
+    {"severity": "info",     "message": "Headbox jet velocity deviation < 1%",                 "component_id": "headbox"},
+    {"severity": "warning",  "message": "QCS scanner CD profile out of band",                  "component_id": "rewinder"},
+    {"severity": "warning",  "message": "Reel build-up rate fault",                            "component_id": "softreel"},
+    {"severity": "warning",  "message": "Dancer position out of tolerance",                    "component_id": "rewinder"},
+    {"severity": "info",     "message": "Drive current spike — single event",                  "component_id": "rewinder"},
+    {"severity": "info",     "message": "SoftReel tension trending low",                       "component_id": "softreel"},
+]
+
+
+def _format_iso_z(dt: datetime) -> str:
+    """Contract canonical ISO format — no milliseconds, Z suffix."""
+    return dt.astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+
+def _alarm_downtime_minutes(severity: str, resolved: bool, i: int) -> int:
+    """Deterministic downtime per alarm. 0 for unresolved alarms (still
+    in flight) and for info-severity advisories. Resolved warning/critical
+    alarms map to bounded ranges keyed off the loop index ``i`` so the
+    output is reproducible across runs."""
+    if not resolved or severity == "info":
+        return 0
+    if severity == "warning":
+        return (i % 11) + 5     # 5..15 inclusive
+    if severity == "critical":
+        return (i % 31) + 15    # 15..45 inclusive
+    return 0
+
+
+def _gen_alarms(machine_id: str, count: int, seed: int) -> list[dict]:
+    """Python port of mockData.js > genAlarms. Output is contract-shaped:
+    {alarm_id, timestamp, severity, description, resolved_at, downtime
+    _minutes}. machine_id, component_id and the raw resolved flag from
+    mockData are intentionally dropped (machine_id is on the wrapper;
+    component_id and resolved aren't on the contract's per-alarm shape).
+    """
+    out: list[dict] = []
+    for i in range(count):
+        tmpl = _ALARM_TEMPLATES[(i + seed) % len(_ALARM_TEMPLATES)]
+        minutes_ago = i * 47 + (i * i) % 23 + 5
+        raised = _ALARMS_BASE_TIME - timedelta(minutes=minutes_ago)
+        # First 5 alarms (i ≤ 4) always unresolved — they're "in flight".
+        resolved = (i > 4) and ((i * 7 + seed) % 3 != 0)
+        timestamp = _format_iso_z(raised)
+        resolved_at = _format_iso_z(raised + timedelta(minutes=30)) if resolved else None
+        out.append({
+            "alarm_id": f"alm-{machine_id}-{(count - i):04d}",
+            "timestamp": timestamp,
+            "severity": tmpl["severity"],
+            "description": tmpl["message"],
+            "resolved_at": resolved_at,
+            "downtime_minutes": _alarm_downtime_minutes(tmpl["severity"], resolved, i),
+        })
+    return out
+
+
+# Per-machine (count, seed) pairs — same numbers as mockData.js so the
+# precomputed alarm streams are byte-identical in content / ordering.
+_ALARM_COUNTS_AND_SEEDS: dict[str, tuple[int, int]] = {
+    "al-nakheel": (34, 0),
+    "al-bardi":   (31, 3),
+    "al-sindian": (30, 7),
+    "al-snobar":  (30, 11),
+}
+
+_ALARMS_BY_MACHINE: dict[str, list[dict]] = {
+    mid: _gen_alarms(mid, count, seed)
+    for mid, (count, seed) in _ALARM_COUNTS_AND_SEEDS.items()
+}
+
+
+def get_alarms(
+    machine_id: str,
+    limit: int = 50,
+    severity: Optional[str] = None,
+) -> dict:
+    _machine_or_raise(machine_id)
+    items = list(_ALARMS_BY_MACHINE[machine_id])
+    if severity is not None:
+        items = [a for a in items if a["severity"] == severity]
+    # Sort newest-first BEFORE limit so a small ?limit= still shows the
+    # most recent alarms — what the frontend's ticker needs.
+    items.sort(key=lambda a: a["timestamp"], reverse=True)
+    items = items[:limit]
+    return {
+        "machine_id": machine_id,
+        "alarms": [dict(a) for a in items],
+        "total": len(items),
+    }
+
+
+# ---------------------------------------------------------------------------
+# Maintenance log — verbatim mirror of frontend mockData.js >
+# maintenanceLogByMachine. Translated to contract field names at response
+# time (entry_id → log_id, kind → maintenance_type, summary → notes, etc.)
+# so the source data stays in lockstep with the frontend.
+# ---------------------------------------------------------------------------
+
+# 'inspection' isn't in the contract enum {preventive, corrective,
+# predictive, emergency}; map it to the closest semantic neighbour.
+_MAINTENANCE_TYPE_MAP: dict[str, str] = {
+    "preventive": "preventive",
+    "corrective": "corrective",
+    "inspection": "preventive",
+}
+
+_MAINTENANCE_BY_MACHINE: dict[str, list[dict]] = {
+    "al-nakheel": [
+        {"entry_id": "mnt-aln-0008", "date": "2026-03-05", "kind": "preventive", "component_id": "rewinder", "summary": "Replaced rewinder drive belt and tensioner.",                                "cost_usd":  4800, "technician": "A. Khalil"},
+        {"entry_id": "mnt-aln-0007", "date": "2026-02-14", "kind": "preventive", "component_id": "headbox",  "summary": "Cleaned and inspected headbox slice. No anomalies.",                          "cost_usd":  2200, "technician": "M. Said"},
+        {"entry_id": "mnt-aln-0006", "date": "2026-01-20", "kind": "preventive", "component_id": "softreel", "summary": "Replaced creping blade. Set angle to 18°.",                                   "cost_usd":  6400, "technician": "A. Khalil"},
+        {"entry_id": "mnt-aln-0005", "date": "2025-12-02", "kind": "inspection", "component_id": "aircap",   "summary": "Infrared scan of hood + burner tuning. Note: bearing 3 watchlist.",           "cost_usd":  1800, "technician": "External (Valmet)"},
+        {"entry_id": "mnt-aln-0004", "date": "2025-11-08", "kind": "preventive", "component_id": "visconip", "summary": "Felt change. Old felt at 11% life remaining.",                                "cost_usd": 28500, "technician": "A. Khalil"},
+        {"entry_id": "mnt-aln-0003", "date": "2025-10-12", "kind": "inspection", "component_id": "yankee",   "summary": "Vibration analysis on Yankee bearings. Bearing 3 baseline 2.4 mm/s.",         "cost_usd":  2400, "technician": "External (Valmet)"},
+        {"entry_id": "mnt-aln-0002", "date": "2024-09-12", "kind": "corrective", "component_id": "yankee",   "summary": "Replaced bearings 1 and 2. Bearing 3 left in service per OEM.",               "cost_usd": 11200, "technician": "External (Valmet)"},
+        {"entry_id": "mnt-aln-0001", "date": "2024-08-04", "kind": "preventive", "component_id": "rewinder", "summary": "Quarterly drive inspection. Lubrication topped up.",                          "cost_usd":  1500, "technician": "M. Said"},
+    ],
+    "al-bardi": [
+        {"entry_id": "mnt-alb-0009", "date": "2026-03-01", "kind": "preventive", "component_id": "headbox",  "summary": "Headbox flush + slice inspection.",                                           "cost_usd":  2400, "technician": "H. Farouk"},
+        {"entry_id": "mnt-alb-0008", "date": "2026-02-18", "kind": "preventive", "component_id": "rewinder", "summary": "Belt and bearing inspection on main drive.",                                  "cost_usd":  1600, "technician": "H. Farouk"},
+        {"entry_id": "mnt-alb-0007", "date": "2025-12-10", "kind": "inspection", "component_id": "aircap",   "summary": "Annual hood inspection. Damper actuators within spec.",                       "cost_usd":  1900, "technician": "External (Valmet)"},
+        {"entry_id": "mnt-alb-0006", "date": "2025-11-28", "kind": "corrective", "component_id": "softreel", "summary": "Dancer load cell recalibration after drift fault.",                           "cost_usd":  3200, "technician": "H. Farouk"},
+        {"entry_id": "mnt-alb-0005", "date": "2025-10-22", "kind": "preventive", "component_id": "visconip", "summary": "Felt change. New felt installed and tensioned.",                              "cost_usd": 26800, "technician": "External (Valmet)"},
+        {"entry_id": "mnt-alb-0004", "date": "2025-09-30", "kind": "corrective", "component_id": "yankee",   "summary": "PRV stiction repair on steam header.",                                        "cost_usd":  5400, "technician": "External (Valmet)"},
+        {"entry_id": "mnt-alb-0003", "date": "2025-08-15", "kind": "corrective", "component_id": "yankee",   "summary": "Replaced bearing 1 after vibration trend exceeded threshold.",                "cost_usd": 12400, "technician": "External (Valmet)"},
+        {"entry_id": "mnt-alb-0002", "date": "2025-07-04", "kind": "preventive", "component_id": "softreel", "summary": "Creping blade replacement.",                                                   "cost_usd":  5800, "technician": "H. Farouk"},
+        {"entry_id": "mnt-alb-0001", "date": "2025-06-12", "kind": "inspection", "component_id": "rewinder", "summary": "Quarterly inspection. No findings.",                                           "cost_usd":  1400, "technician": "H. Farouk"},
+    ],
+    "al-sindian": [
+        {"entry_id": "mnt-als-0010", "date": "2026-04-22", "kind": "corrective", "component_id": "rewinder", "summary": "IN PROGRESS — drive current spike investigation. Vibration analysis underway.", "cost_usd":     0, "technician": "External (Valmet)"},
+        {"entry_id": "mnt-als-0009", "date": "2026-04-22", "kind": "preventive", "component_id": "visconip", "summary": "IN PROGRESS — scheduled felt change.",                                           "cost_usd":     0, "technician": "O. Mansour"},
+        {"entry_id": "mnt-als-0008", "date": "2026-02-20", "kind": "preventive", "component_id": "aircap",   "summary": "Burner tuning + damper inspection.",                                            "cost_usd":  2700, "technician": "O. Mansour"},
+        {"entry_id": "mnt-als-0007", "date": "2026-01-10", "kind": "preventive", "component_id": "headbox",  "summary": "Headbox cleaning and gasket replacement.",                                      "cost_usd":  3100, "technician": "O. Mansour"},
+        {"entry_id": "mnt-als-0006", "date": "2025-12-15", "kind": "preventive", "component_id": "visconip", "summary": "Nip load calibration.",                                                         "cost_usd":  1900, "technician": "O. Mansour"},
+        {"entry_id": "mnt-als-0005", "date": "2025-11-04", "kind": "preventive", "component_id": "yankee",   "summary": "Steam trap inspection and replacement.",                                        "cost_usd":  4200, "technician": "External (Valmet)"},
+        {"entry_id": "mnt-als-0004", "date": "2025-10-30", "kind": "inspection", "component_id": "softreel", "summary": "Drive bearing thermography scan.",                                              "cost_usd":  1600, "technician": "External (Valmet)"},
+        {"entry_id": "mnt-als-0003", "date": "2025-09-18", "kind": "corrective", "component_id": "rewinder", "summary": "Dancer position sensor replacement.",                                           "cost_usd":  3400, "technician": "O. Mansour"},
+        {"entry_id": "mnt-als-0002", "date": "2025-08-01", "kind": "preventive", "component_id": "softreel", "summary": "Creping blade replacement.",                                                    "cost_usd":  5200, "technician": "O. Mansour"},
+        {"entry_id": "mnt-als-0001", "date": "2025-06-22", "kind": "inspection", "component_id": "yankee",   "summary": "Annual Yankee bearing inspection.",                                             "cost_usd":  2800, "technician": "External (Valmet)"},
+    ],
+    "al-snobar": [
+        {"entry_id": "mnt-asn-0008", "date": "2026-03-22", "kind": "preventive", "component_id": "headbox",  "summary": "Headbox slice cleaning.",                                                      "cost_usd":  1900, "technician": "R. Haddad"},
+        {"entry_id": "mnt-asn-0007", "date": "2026-03-10", "kind": "preventive", "component_id": "rewinder", "summary": "Drive inspection. Lubrication topped up.",                                     "cost_usd":  1300, "technician": "R. Haddad"},
+        {"entry_id": "mnt-asn-0006", "date": "2026-02-08", "kind": "preventive", "component_id": "aircap",   "summary": "Burner re-tune and damper actuator check.",                                    "cost_usd":  2500, "technician": "R. Haddad"},
+        {"entry_id": "mnt-asn-0005", "date": "2026-01-15", "kind": "preventive", "component_id": "softreel", "summary": "Creping blade replacement and angle calibration.",                              "cost_usd":  5600, "technician": "R. Haddad"},
+        {"entry_id": "mnt-asn-0004", "date": "2026-01-05", "kind": "preventive", "component_id": "visconip", "summary": "Felt inspection. Life remaining 38% — schedule swap.",                          "cost_usd":  1200, "technician": "R. Haddad"},
+        {"entry_id": "mnt-asn-0003", "date": "2025-11-30", "kind": "inspection", "component_id": "yankee",   "summary": "Vibration baseline scan. All bearings within spec.",                            "cost_usd":  2100, "technician": "External (Valmet)"},
+        {"entry_id": "mnt-asn-0002", "date": "2025-10-18", "kind": "preventive", "component_id": "rewinder", "summary": "Dancer recalibration after seasonal humidity shift.",                            "cost_usd":  1800, "technician": "R. Haddad"},
+        {"entry_id": "mnt-asn-0001", "date": "2025-09-04", "kind": "preventive", "component_id": "headbox",  "summary": "Stock consistency loop tuning.",                                                "cost_usd":  1400, "technician": "R. Haddad"},
+    ],
+}
+
+
+def _maint_downtime_hours(cost_usd: float) -> int:
+    """Deterministic estimate from cost. Rough technician rate ~$1750/hr,
+    clamped to [1, 12] for non-zero cost. In-progress work (cost=0) shows
+    0 hours since the actual outage time hasn't been booked yet."""
+    if not cost_usd:
+        return 0
+    return max(1, min(12, round(cost_usd / 1750)))
+
+
+def _translate_maint_entry(entry: dict) -> dict:
+    """Apply the mockData → contract field renames + maintenance_type map
+    + downtime_hours computation. Output keys exactly match the contract's
+    Maintenance log object shape."""
+    return {
+        "log_id": entry["entry_id"],
+        "component_id": entry["component_id"],
+        "maintenance_type": _MAINTENANCE_TYPE_MAP[entry["kind"]],
+        "date_performed": entry["date"],
+        "cost_usd": entry["cost_usd"],
+        "downtime_hours": _maint_downtime_hours(entry["cost_usd"]),
+        "technician": entry["technician"],
+        "notes": entry["summary"],
+    }
+
+
+def get_maintenance_log(machine_id: str) -> dict:
+    _machine_or_raise(machine_id)
+    return {
+        "machine_id": machine_id,
+        "logs": [_translate_maint_entry(e) for e in _MAINTENANCE_BY_MACHINE[machine_id]],
+    }

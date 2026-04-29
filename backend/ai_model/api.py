@@ -145,6 +145,26 @@ def get_machine_sensors(machine_id: str) -> dict:
         raise _machine_404(machine_id)
 
 
+@app.get("/machines/{machine_id}/alarms")
+def get_machine_alarms(
+    machine_id: str,
+    limit: int = Query(50, ge=1, le=200),
+    severity: Optional[str] = Query(None, pattern="^(info|warning|critical)$"),
+) -> dict:
+    try:
+        return fhh_data.get_alarms(machine_id, limit=limit, severity=severity)
+    except fhh_data.MachineNotFound:
+        raise _machine_404(machine_id)
+
+
+@app.get("/machines/{machine_id}/maintenance-log")
+def get_machine_maintenance_log(machine_id: str) -> dict:
+    try:
+        return fhh_data.get_maintenance_log(machine_id)
+    except fhh_data.MachineNotFound:
+        raise _machine_404(machine_id)
+
+
 @app.get("/alerts")
 def list_alerts(
     severity: Optional[str] = Query(None, pattern="^(info|warning|critical)$"),
