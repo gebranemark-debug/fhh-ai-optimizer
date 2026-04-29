@@ -234,3 +234,43 @@ def list_products() -> dict:
 @app.get("/markets")
 def list_markets() -> dict:
     return fhh_data.get_markets()
+
+
+def _product_404(sku: str) -> HTTPException:
+    return HTTPException(
+        status_code=404,
+        detail={"error": {
+            "code": "sku_not_found",
+            "message": f"No product exists with SKU '{sku}'.",
+            "status": 404,
+        }},
+    )
+
+
+def _market_404(market_id: str) -> HTTPException:
+    return HTTPException(
+        status_code=404,
+        detail={"error": {
+            "code": "invalid_request",
+            "message": f"No market exists with ID '{market_id}'.",
+            "status": 404,
+        }},
+    )
+
+
+@app.get("/demand/anomalies")
+def list_demand_anomalies() -> dict:
+    return fhh_data.get_demand_anomalies()
+
+
+@app.get("/demand/seasonality")
+def get_demand_seasonality(
+    sku: str,
+    market: Optional[str] = None,
+) -> dict:
+    try:
+        return fhh_data.get_seasonality(sku, market)
+    except fhh_data.ProductNotFound:
+        raise _product_404(sku)
+    except fhh_data.MarketNotFound:
+        raise _market_404(market or "")

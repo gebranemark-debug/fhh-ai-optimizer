@@ -24,6 +24,9 @@ Public surface (all return contract-shaped dicts):
     get_cost_savings(window)          -> /kpis/cost-savings payload
     get_products()                    -> /products payload
     get_markets()                     -> /markets payload
+    get_demand_history(sku, market)   -> DataFrame for the forecast layer
+    get_demand_anomalies()            -> /demand/anomalies payload
+    get_seasonality(sku, market)      -> /demand/seasonality payload
 
 Exceptions:
     MachineNotFound, AlertNotFound, SensorNotFound — caught in
@@ -1140,3 +1143,121 @@ def _market_or_raise(market_id: str) -> dict:
     if market_id not in _MARKETS_BY_ID:
         raise MarketNotFound(market_id)
     return _MARKETS_BY_ID[market_id]
+
+
+# ---------------------------------------------------------------------------
+# Demand history (parquet) + anomalies + seasonality.
+# ---------------------------------------------------------------------------
+
+_DEMAND_HISTORY_PATH = _DEMAND_SEED_DIR / "demand_history.parquet"
+
+
+def _try_load_demand_history() -> Optional[pd.DataFrame]:
+    if not _DEMAND_HISTORY_PATH.exists():
+        return None
+    try:
+        df = pd.read_parquet(_DEMAND_HISTORY_PATH)
+        df["date"] = pd.to_datetime(df["date"])
+        return df
+    except Exception:
+        return None
+
+
+_DEMAND_HISTORY: Optional[pd.DataFrame] = _try_load_demand_history()
+
+
+def demand_history_loaded() -> bool:
+    return _DEMAND_HISTORY is not None
+
+
+def get_demand_history(sku: str, market: str) -> pd.DataFrame:
+    """Return the (date, units_sold) history for a (sku, market) pair, sorted
+    ascending. Raises ProductNotFound / MarketNotFound for unknown IDs."""
+    _product_or_raise(sku)
+    _market_or_raise(market)
+    if _DEMAND_HISTORY is None:
+        raise FileNotFoundError(
+            f"demand_history.parquet not found at {_DEMAND_HISTORY_PATH}. "
+            f"Run `python backend/data/generate_demand_history.py` first."
+        )
+    df = _DEMAND_HISTORY[
+        (_DEMAND_HISTORY["sku"] == sku) & (_DEMAND_HISTORY["market"] == market)
+    ].copy()
+    return df.sort_values("date").reset_index(drop=True)
+
+
+# Seasonality events block — contract values, fleet-wide. Per-SKU
+# yearly_pattern is computed from the history below.
+_SEASONALITY_EVENTS: list[dict] = [
+    {"name": "ramadan",        "average_lift_percent": 35},
+    {"name": "eid_al_fitr",    "average_lift_percent": 22},
+    {"name": "back_to_school", "average_lift_percent": 12},
+]
+
+
+def get_seasonality(sku: str, market: Optional[str] = None) -> dict:
+    _product_or_raise(sku)
+    if market is not None:
+        _market_or_raise(market)
+    if _DEMAND_HISTORY is None:
+        raise FileNotFoundError(
+            f"demand_history.parquet not found at {_DEMAND_HISTORY_PATH}."
+        )
+
+    df = _DEMAND_HISTORY[_DEMAND_HISTORY["sku"] == sku]
+    if market is not None:
+        df = df[df["market"] == market]
+    if df.empty:
+        # Should be unreachable since we validated sku + market above.
+        raise ProductNotFound(sku)
+
+    monthly_avg = df.groupby(df["date"].dt.month)["units_sold"].mean()
+    overall_avg = float(df["units_sold"].mean())
+    yearly_pattern = [
+        {"month": int(m), "index": round(float(monthly_avg.get(m, overall_avg) / overall_avg), 2)}
+        for m in range(1, 13)
+    ]
+    return {
+        "sku": sku,
+        "market": market,
+        "yearly_pattern": yearly_pattern,
+        "events": [dict(e) for e in _SEASONALITY_EVENTS],
+    }
+
+
+# Three deliberate anomalies seeded into demand_history.parquet — these
+# are the exact rows /demand/anomalies returns. ``detected_at`` is set
+# in April 2026 so the page feels current.
+_DEMAND_ANOMALIES: list[dict] = [
+    {
+        "anomaly_id": "anm-2026-04-22-001",
+        "sku": "fine-baby-s3",
+        "market": "ksa",
+        "detected_at": "2026-04-22",
+        "type": "spike",
+        "magnitude_percent": 47,
+        "explanation": "Sales 47% above expected — possible distributor restocking or demand surge.",
+    },
+    {
+        "anomaly_id": "anm-2026-04-15-002",
+        "sku": "fine-toilet-3ply",
+        "market": "uae",
+        "detected_at": "2026-04-15",
+        "type": "dip",
+        "magnitude_percent": 32,
+        "explanation": "Sales 32% below expected — short-term supply disruption flagged in operations log.",
+    },
+    {
+        "anomaly_id": "anm-2026-04-08-003",
+        "sku": "fine-facial-200",
+        "market": "egypt",
+        "detected_at": "2026-04-08",
+        "type": "trend_break",
+        "magnitude_percent": 18,
+        "explanation": "Sustained 18% downward shift since April 2025. Possible competitor entry or category re-pricing.",
+    },
+]
+
+
+def get_demand_anomalies() -> dict:
+    return {"anomalies": [dict(a) for a in _DEMAND_ANOMALIES]}
