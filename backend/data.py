@@ -21,6 +21,7 @@ Public surface (all return contract-shaped dicts):
     get_alarms(machine_id, ...)       -> /alarms payload
     get_maintenance_log(machine_id)   -> /maintenance-log payload
     get_sensor_history(...)           -> /sensors/{type}/history payload
+    get_cost_savings(window)          -> /kpis/cost-savings payload
 
 Exceptions:
     MachineNotFound, AlertNotFound, SensorNotFound — caught in
@@ -1007,4 +1008,76 @@ def get_sensor_history(
         "aggregation": aggregation,
         "normal_range": {"min": lo, "max": hi},
         "points": points,
+    }
+
+
+# ---------------------------------------------------------------------------
+# Cost savings — ROI tracker. The ytd baseline matches the contract's
+# example response verbatim; other windows scale proportionally so the
+# four windows feel like a coherent narrative on the dashboard.
+# ---------------------------------------------------------------------------
+
+_COST_SAVINGS_YTD_BASELINE = {
+    "total_predictions": 23,
+    "predictions_acted_on": 18,
+    "estimated_downtime_hours_prevented": 47,
+    "estimated_cost_saved_usd": 940_000,
+    "breakdown": {
+        "al-nakheel": 480_000,
+        "al-bardi":   220_000,
+        "al-sindian": 160_000,
+        "al-snobar":   80_000,
+    },
+}
+
+# Scale factors relative to ytd. mtd is "month-to-date" (~6 weeks of the
+# year), qtd is "quarter-to-date" (~3.5 months), all extends ytd into a
+# trailing-12-months total.
+_COST_SAVINGS_WINDOW_SCALE = {
+    "mtd": 0.15,
+    "qtd": 0.40,
+    "ytd": 1.00,
+    "all": 1.60,
+}
+
+
+def _round_to_thousand(usd: float) -> int:
+    return int(round(usd / 1000.0) * 1000)
+
+
+def get_cost_savings(window: str) -> dict:
+    """Return the contract-shaped /kpis/cost-savings payload for the given
+    window. The breakdown_by_machine entries always sum exactly to
+    estimated_cost_saved_usd — any rounding drift is absorbed by the
+    largest machine's entry (al-nakheel, the most-saved-on)."""
+    if window not in _COST_SAVINGS_WINDOW_SCALE:
+        raise ValueError(f"unknown window {window!r}")
+
+    scale = _COST_SAVINGS_WINDOW_SCALE[window]
+    base = _COST_SAVINGS_YTD_BASELINE
+
+    total_predictions = int(round(base["total_predictions"] * scale))
+    predictions_acted_on = int(round(base["predictions_acted_on"] * scale))
+    downtime_hours = int(round(base["estimated_downtime_hours_prevented"] * scale))
+    total_cost_saved = _round_to_thousand(base["estimated_cost_saved_usd"] * scale)
+
+    # Scale + round each machine's contribution, then absorb any drift
+    # in the largest entry so the breakdown sums exactly to the total.
+    breakdown_unsorted = [
+        {"machine_id": mid, "cost_saved_usd": _round_to_thousand(amt * scale)}
+        for mid, amt in base["breakdown"].items()
+    ]
+    drift = total_cost_saved - sum(b["cost_saved_usd"] for b in breakdown_unsorted)
+    if drift != 0:
+        # Largest entry by current cost takes the correction.
+        largest = max(breakdown_unsorted, key=lambda b: b["cost_saved_usd"])
+        largest["cost_saved_usd"] += drift
+
+    return {
+        "window": window,
+        "total_predictions": total_predictions,
+        "predictions_acted_on": predictions_acted_on,
+        "estimated_downtime_hours_prevented": downtime_hours,
+        "estimated_cost_saved_usd": total_cost_saved,
+        "breakdown_by_machine": breakdown_unsorted,
     }

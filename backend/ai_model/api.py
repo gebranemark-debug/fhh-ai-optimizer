@@ -217,3 +217,10 @@ def get_alert(alert_id: str) -> dict:
 @app.get("/kpis/overview")
 def kpis_overview() -> dict:
     return fhh_data.get_kpis_overview()
+
+
+@app.get("/kpis/cost-savings")
+def kpis_cost_savings(
+    window: str = Query("ytd", pattern="^(mtd|qtd|ytd|all)$"),
+) -> dict:
+    return fhh_data.get_cost_savings(window)
