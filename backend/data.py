@@ -1424,7 +1424,41 @@ class ScenarioValidationError(ValueError):
     translated to a 422 response)."""
 
 
-def _apply_scenario(baseline: list[dict], scenario: dict) -> list[dict]:
+def _seasonality_target_months(sku: str, event: str) -> set[int]:
+    """Map a seasonality_shift event to the SKU's correlated months.
+
+    Why this exists rather than literal calendar matching:
+    Ramadan / Eid happen on Hijri calendar dates that drift across the
+    Gregorian year. With our anchor (forecast starts 2026-05-01) the
+    next Ramadan is Feb 2027 — only horizons >=10 reach it, so a
+    short-horizon scenario was a no-op (delta=0). The modeling intent
+    of "scale Ramadan demand by +X%" is "scale the months this SKU
+    historically peaks, since that's where the Ramadan signal lands."
+    So we read the SKU's yearly_pattern and pick the top-2 months by
+    seasonality index as the Ramadan-correlated months. Eid follows
+    Ramadan, so it boosts the month immediately after each top month.
+    Back-to-school is calendar-fixed (August) everywhere.
+    """
+    if event == "back_to_school":
+        return {8}
+
+    if event in ("ramadan", "eid_al_fitr"):
+        pattern = get_seasonality(sku)["yearly_pattern"]
+        # Top-2 months by seasonality index — the SKU's natural peaks.
+        # Tie-break on month number so the choice is deterministic.
+        ranked = sorted(pattern, key=lambda x: (-x["index"], x["month"]))
+        ramadan_months = {p["month"] for p in ranked[:2]}
+        if event == "ramadan":
+            return ramadan_months
+        # Eid follows Ramadan: shift each month by +1 (wrapping Dec -> Jan).
+        return {(m % 12) + 1 for m in ramadan_months}
+
+    # Defensive fallback — current valid events (above) cover the
+    # contract's full enum, so this only fires for future event names.
+    return _SCENARIO_EVENT_MONTHS.get(event, set())
+
+
+def _apply_scenario(baseline: list[dict], scenario: dict, sku: str) -> list[dict]:
     """Return a new forecast list with the scenario applied. ``baseline``
     is the list of forecast points from get_forecast; ``scenario`` is the
     request body's scenario block (already validated for ``type``).
@@ -1446,7 +1480,7 @@ def _apply_scenario(baseline: list[dict], scenario: dict) -> list[dict]:
         if magnitude is None:
             raise ScenarioValidationError("seasonality_shift requires magnitude_percent")
         factor = 1.0 + magnitude / 100.0
-        target_months = _SCENARIO_EVENT_MONTHS[event]
+        target_months = _seasonality_target_months(sku, event)
         return [
             _scale_point(p, factor) if int(p["date"].split("-")[1]) in target_months else dict(p)
             for p in baseline
@@ -1504,7 +1538,7 @@ def get_forecast_scenario(
 
     baseline_payload = get_forecast(sku, market, horizon_months)
     baseline = baseline_payload["forecast"]
-    scenario_forecast = _apply_scenario(baseline, scenario)
+    scenario_forecast = _apply_scenario(baseline, scenario, sku)
 
     total_baseline = sum(p["forecast_value"] for p in baseline)
     total_scenario = sum(p["forecast_value"] for p in scenario_forecast)
