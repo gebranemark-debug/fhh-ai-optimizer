@@ -29,6 +29,7 @@ if str(_PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(_PROJECT_ROOT))
 
 from backend import data as fhh_data  # noqa: E402
+from backend.ai_model import chat_handler as chat_mod  # noqa: E402
 
 
 # ---------------------------------------------------------------------------
@@ -372,3 +373,105 @@ def chat_delete_conversation(conversation_id: str):
         raise _conversation_404(conversation_id)
     # 204 No Content — return None so FastAPI sends an empty body.
     return None
+
+
+# -- POST /chat -------------------------------------------------------------
+
+# One handler instance per process. Lazy-construct so the import doesn't
+# require ANTHROPIC_API_KEY (e.g. for tests that don't hit /chat).
+_CHAT_HANDLER: Optional[chat_mod.ChatHandler] = None
+
+
+def _get_chat_handler() -> chat_mod.ChatHandler:
+    global _CHAT_HANDLER
+    if _CHAT_HANDLER is None:
+        _CHAT_HANDLER = chat_mod.ChatHandler()
+    return _CHAT_HANDLER
+
+
+def _reset_chat_handler() -> None:
+    """For tests — drop the cached handler so the next request rebuilds
+    it (e.g. after env var changes)."""
+    global _CHAT_HANDLER
+    _CHAT_HANDLER = None
+
+
+def _chat_unavailable(message: str) -> HTTPException:
+    return HTTPException(
+        status_code=503,
+        detail={"error": {
+            "code": "chat_unavailable",
+            "message": message,
+            "status": 503,
+        }},
+    )
+
+
+def _model_unavailable(message: str) -> HTTPException:
+    return HTTPException(
+        status_code=503,
+        detail={"error": {
+            "code": "model_unavailable",
+            "message": message,
+            "status": 503,
+        }},
+    )
+
+
+class ChatContext(BaseModel):
+    current_page: Optional[str] = Field(None, pattern="^(overview|machine_detail|alerts|demand_forecast)$")
+    current_machine_id: Optional[str] = None
+    current_component_id: Optional[str] = None
+    current_sku: Optional[str] = None
+    current_market: Optional[str] = None
+
+
+class ChatRequest(BaseModel):
+    message: str = Field(min_length=1, max_length=2000)
+    conversation_id: Optional[str] = None
+    context: Optional[ChatContext] = None
+
+
+@app.post("/chat")
+def post_chat(body: ChatRequest) -> dict:
+    # 1. Resolve conversation: existing id or create a new one.
+    if body.conversation_id is None:
+        cid = fhh_data.create_conversation()
+    else:
+        try:
+            fhh_data.get_conversation(body.conversation_id)
+        except fhh_data.ConversationNotFound:
+            raise _conversation_404(body.conversation_id)
+        cid = body.conversation_id
+
+    # 2. Pull prior turns (role + content only) before appending the new one.
+    history = fhh_data.conversation_message_history(cid)
+
+    # 3. Persist the user's message right away so even if Anthropic fails the
+    #    user's input is in the conversation log.
+    fhh_data.append_user_message(cid, body.message)
+
+    # 4. Run the model.
+    handler = _get_chat_handler()
+    context = body.context.model_dump() if body.context else None
+    try:
+        result = handler.run(message=body.message, history=history, context=context)
+    except chat_mod.UnknownToolError as exc:
+        raise _model_unavailable(str(exc))
+    except chat_mod.ChatUnavailableError as exc:
+        raise _chat_unavailable(str(exc))
+
+    # 5. Persist the assistant's reply with data_sources_used metadata.
+    fhh_data.append_assistant_message(
+        cid,
+        result["reply"],
+        data_sources_used=result.get("data_sources_used"),
+    )
+
+    return {
+        "conversation_id": cid,
+        "reply": result["reply"],
+        "data_sources_used": result.get("data_sources_used", []),
+        "suggested_followups": result.get("suggested_followups", []),
+        "timestamp": fhh_data._now_iso(),
+    }
