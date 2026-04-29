@@ -21,6 +21,14 @@ Public surface (all return contract-shaped dicts):
     get_alarms(machine_id, ...)       -> /alarms payload
     get_maintenance_log(machine_id)   -> /maintenance-log payload
     get_sensor_history(...)           -> /sensors/{type}/history payload
+    get_cost_savings(window)          -> /kpis/cost-savings payload
+    get_products()                    -> /products payload
+    get_markets()                     -> /markets payload
+    get_demand_history(sku, market)   -> DataFrame for the forecast layer
+    get_demand_anomalies()            -> /demand/anomalies payload
+    get_seasonality(sku, market)      -> /demand/seasonality payload
+    get_forecast(sku, market, h)      -> /forecast payload
+    get_forecast_scenario(...)        -> /forecast/scenario payload
 
 Exceptions:
     MachineNotFound, AlertNotFound, SensorNotFound — caught in
@@ -30,6 +38,7 @@ Exceptions:
 
 from __future__ import annotations
 
+import json
 import math
 from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
@@ -1007,4 +1016,508 @@ def get_sensor_history(
         "aggregation": aggregation,
         "normal_range": {"min": lo, "max": hi},
         "points": points,
+    }
+
+
+# ---------------------------------------------------------------------------
+# Cost savings — ROI tracker. The ytd baseline matches the contract's
+# example response verbatim; other windows scale proportionally so the
+# four windows feel like a coherent narrative on the dashboard.
+# ---------------------------------------------------------------------------
+
+_COST_SAVINGS_YTD_BASELINE = {
+    "total_predictions": 23,
+    "predictions_acted_on": 18,
+    "estimated_downtime_hours_prevented": 47,
+    "estimated_cost_saved_usd": 940_000,
+    "breakdown": {
+        "al-nakheel": 480_000,
+        "al-bardi":   220_000,
+        "al-sindian": 160_000,
+        "al-snobar":   80_000,
+    },
+}
+
+# Scale factors relative to ytd. mtd is "month-to-date" (~6 weeks of the
+# year), qtd is "quarter-to-date" (~3.5 months), all extends ytd into a
+# trailing-12-months total.
+_COST_SAVINGS_WINDOW_SCALE = {
+    "mtd": 0.15,
+    "qtd": 0.40,
+    "ytd": 1.00,
+    "all": 1.60,
+}
+
+
+def _round_to_thousand(usd: float) -> int:
+    return int(round(usd / 1000.0) * 1000)
+
+
+def get_cost_savings(window: str) -> dict:
+    """Return the contract-shaped /kpis/cost-savings payload for the given
+    window. The breakdown_by_machine entries always sum exactly to
+    estimated_cost_saved_usd — any rounding drift is absorbed by the
+    largest machine's entry (al-nakheel, the most-saved-on)."""
+    if window not in _COST_SAVINGS_WINDOW_SCALE:
+        raise ValueError(f"unknown window {window!r}")
+
+    scale = _COST_SAVINGS_WINDOW_SCALE[window]
+    base = _COST_SAVINGS_YTD_BASELINE
+
+    total_predictions = int(round(base["total_predictions"] * scale))
+    predictions_acted_on = int(round(base["predictions_acted_on"] * scale))
+    downtime_hours = int(round(base["estimated_downtime_hours_prevented"] * scale))
+    total_cost_saved = _round_to_thousand(base["estimated_cost_saved_usd"] * scale)
+
+    # Scale + round each machine's contribution, then absorb any drift
+    # in the largest entry so the breakdown sums exactly to the total.
+    breakdown_unsorted = [
+        {"machine_id": mid, "cost_saved_usd": _round_to_thousand(amt * scale)}
+        for mid, amt in base["breakdown"].items()
+    ]
+    drift = total_cost_saved - sum(b["cost_saved_usd"] for b in breakdown_unsorted)
+    if drift != 0:
+        # Largest entry by current cost takes the correction.
+        largest = max(breakdown_unsorted, key=lambda b: b["cost_saved_usd"])
+        largest["cost_saved_usd"] += drift
+
+    return {
+        "window": window,
+        "total_predictions": total_predictions,
+        "predictions_acted_on": predictions_acted_on,
+        "estimated_downtime_hours_prevented": downtime_hours,
+        "estimated_cost_saved_usd": total_cost_saved,
+        "breakdown_by_machine": breakdown_unsorted,
+    }
+
+
+# ---------------------------------------------------------------------------
+# Demand catalog — products + markets. Static seed files kept under
+# ``backend/data/`` so they can be edited without touching code, and so
+# the parquet ETL can read the same SKU list.
+# ---------------------------------------------------------------------------
+
+_DEMAND_SEED_DIR = Path(__file__).parent / "data"
+
+
+def _load_json(path: Path) -> dict:
+    with path.open("r", encoding="utf-8") as fh:
+        return json.load(fh)
+
+
+_PRODUCTS_DOC = _load_json(_DEMAND_SEED_DIR / "products.json")
+_MARKETS_DOC = _load_json(_DEMAND_SEED_DIR / "markets.json")
+
+# Index for O(1) lookup; the .json keeps definition order so ``products``
+# in the response stays in catalog order.
+_PRODUCTS_BY_SKU: dict[str, dict] = {p["sku"]: p for p in _PRODUCTS_DOC["products"]}
+_MARKETS_BY_ID: dict[str, dict] = {m["market_id"]: m for m in _MARKETS_DOC["markets"]}
+
+
+class ProductNotFound(KeyError):
+    def __init__(self, sku: str):
+        super().__init__(sku)
+        self.sku = sku
+
+
+class MarketNotFound(KeyError):
+    def __init__(self, market_id: str):
+        super().__init__(market_id)
+        self.market_id = market_id
+
+
+def get_products() -> dict:
+    products = list(_PRODUCTS_DOC["products"])
+    return {"products": products, "total": len(products)}
+
+
+def get_markets() -> dict:
+    return {"markets": list(_MARKETS_DOC["markets"])}
+
+
+def _product_or_raise(sku: str) -> dict:
+    if sku not in _PRODUCTS_BY_SKU:
+        raise ProductNotFound(sku)
+    return _PRODUCTS_BY_SKU[sku]
+
+
+def _market_or_raise(market_id: str) -> dict:
+    if market_id not in _MARKETS_BY_ID:
+        raise MarketNotFound(market_id)
+    return _MARKETS_BY_ID[market_id]
+
+
+# ---------------------------------------------------------------------------
+# Demand history (parquet) + anomalies + seasonality.
+# ---------------------------------------------------------------------------
+
+_DEMAND_HISTORY_PATH = _DEMAND_SEED_DIR / "demand_history.parquet"
+
+
+def _try_load_demand_history() -> Optional[pd.DataFrame]:
+    if not _DEMAND_HISTORY_PATH.exists():
+        return None
+    try:
+        df = pd.read_parquet(_DEMAND_HISTORY_PATH)
+        df["date"] = pd.to_datetime(df["date"])
+        return df
+    except Exception:
+        return None
+
+
+_DEMAND_HISTORY: Optional[pd.DataFrame] = _try_load_demand_history()
+
+
+def demand_history_loaded() -> bool:
+    return _DEMAND_HISTORY is not None
+
+
+def get_demand_history(sku: str, market: str) -> pd.DataFrame:
+    """Return the (date, units_sold) history for a (sku, market) pair, sorted
+    ascending. Raises ProductNotFound / MarketNotFound for unknown IDs."""
+    _product_or_raise(sku)
+    _market_or_raise(market)
+    if _DEMAND_HISTORY is None:
+        raise FileNotFoundError(
+            f"demand_history.parquet not found at {_DEMAND_HISTORY_PATH}. "
+            f"Run `python backend/data/generate_demand_history.py` first."
+        )
+    df = _DEMAND_HISTORY[
+        (_DEMAND_HISTORY["sku"] == sku) & (_DEMAND_HISTORY["market"] == market)
+    ].copy()
+    return df.sort_values("date").reset_index(drop=True)
+
+
+# Seasonality events block — contract values, fleet-wide. Per-SKU
+# yearly_pattern is computed from the history below.
+_SEASONALITY_EVENTS: list[dict] = [
+    {"name": "ramadan",        "average_lift_percent": 35},
+    {"name": "eid_al_fitr",    "average_lift_percent": 22},
+    {"name": "back_to_school", "average_lift_percent": 12},
+]
+
+
+def get_seasonality(sku: str, market: Optional[str] = None) -> dict:
+    _product_or_raise(sku)
+    if market is not None:
+        _market_or_raise(market)
+    if _DEMAND_HISTORY is None:
+        raise FileNotFoundError(
+            f"demand_history.parquet not found at {_DEMAND_HISTORY_PATH}."
+        )
+
+    df = _DEMAND_HISTORY[_DEMAND_HISTORY["sku"] == sku]
+    if market is not None:
+        df = df[df["market"] == market]
+    if df.empty:
+        # Should be unreachable since we validated sku + market above.
+        raise ProductNotFound(sku)
+
+    monthly_avg = df.groupby(df["date"].dt.month)["units_sold"].mean()
+    overall_avg = float(df["units_sold"].mean())
+    yearly_pattern = [
+        {"month": int(m), "index": round(float(monthly_avg.get(m, overall_avg) / overall_avg), 2)}
+        for m in range(1, 13)
+    ]
+    return {
+        "sku": sku,
+        "market": market,
+        "yearly_pattern": yearly_pattern,
+        "events": [dict(e) for e in _SEASONALITY_EVENTS],
+    }
+
+
+# Three deliberate anomalies seeded into demand_history.parquet — these
+# are the exact rows /demand/anomalies returns. ``detected_at`` is set
+# in April 2026 so the page feels current.
+_DEMAND_ANOMALIES: list[dict] = [
+    {
+        "anomaly_id": "anm-2026-04-22-001",
+        "sku": "fine-baby-s3",
+        "market": "ksa",
+        "detected_at": "2026-04-22",
+        "type": "spike",
+        "magnitude_percent": 47,
+        "explanation": "Sales 47% above expected — possible distributor restocking or demand surge.",
+    },
+    {
+        "anomaly_id": "anm-2026-04-15-002",
+        "sku": "fine-toilet-3ply",
+        "market": "uae",
+        "detected_at": "2026-04-15",
+        "type": "dip",
+        "magnitude_percent": 32,
+        "explanation": "Sales 32% below expected — short-term supply disruption flagged in operations log.",
+    },
+    {
+        "anomaly_id": "anm-2026-04-08-003",
+        "sku": "fine-facial-200",
+        "market": "egypt",
+        "detected_at": "2026-04-08",
+        "type": "trend_break",
+        "magnitude_percent": 18,
+        "explanation": "Sustained 18% downward shift since April 2025. Possible competitor entry or category re-pricing.",
+    },
+]
+
+
+def get_demand_anomalies() -> dict:
+    return {"anomalies": [dict(a) for a in _DEMAND_ANOMALIES]}
+
+
+# ---------------------------------------------------------------------------
+# Forecast (Prophet). Models are fit lazily on first call per (sku, market)
+# and cached in-process — re-fitting takes ~1-3s per pair so repeat calls
+# from the dashboard return instantly.
+# ---------------------------------------------------------------------------
+
+# Anchor "today" for the demo: forecasts always start at the first day of
+# the next month from this anchor. Locked so the forecast window is
+# reproducible across runs even when the wall clock advances.
+_FORECAST_ANCHOR_DATE = date(2026, 4, 25)
+_FORECAST_HORIZON_MIN = 1
+_FORECAST_HORIZON_MAX = 12
+
+# Holiday dates fed into Prophet so the model picks up Ramadan/Eid lifts
+# in the historical signal. ``upper_window`` covers the duration of the
+# event (Ramadan ≈ 30 days, Eid ≈ 3 days).
+_PROPHET_HOLIDAYS = pd.DataFrame({
+    "holiday": [
+        "ramadan", "ramadan", "ramadan",
+        "eid_al_fitr", "eid_al_fitr", "eid_al_fitr",
+    ],
+    "ds": pd.to_datetime([
+        "2024-03-10", "2025-03-01", "2026-02-18",
+        "2024-04-10", "2025-03-30", "2026-03-20",
+    ]),
+    "lower_window": [0, 0, 0, 0, 0, 0],
+    "upper_window": [29, 29, 29, 3, 3, 3],
+})
+
+# Seasonality event markers returned in the /forecast response. These are
+# the contract's stylized values — anchor-relative, illustrative, suitable
+# for the chart's "Ramadan / Eid begins" reference lines.
+_FORECAST_SEASONALITY_EVENTS: list[dict] = [
+    {"date": "2026-03-10", "label": "Ramadan begins", "expected_lift_percent": 35},
+    {"date": "2026-04-09", "label": "Eid al-Fitr",    "expected_lift_percent": 22},
+]
+
+_FORECAST_REGRESSORS = ["historical_sales", "ramadan_calendar", "b2b_pipeline"]
+
+# Cache of fitted Prophet models keyed by (sku, market). Cleared by
+# reset_forecast_cache() if needed (for tests).
+_FORECAST_MODEL_CACHE: dict[tuple[str, str], "object"] = {}
+
+
+def reset_forecast_cache() -> None:
+    _FORECAST_MODEL_CACHE.clear()
+
+
+def _next_month_start(d: date) -> pd.Timestamp:
+    """First day of the month after ``d``. 2026-04-25 -> 2026-05-01."""
+    if d.month == 12:
+        return pd.Timestamp(year=d.year + 1, month=1, day=1)
+    return pd.Timestamp(year=d.year, month=d.month + 1, day=1)
+
+
+def _fit_prophet_model(sku: str, market: str):
+    """Fit a Prophet model on the (sku, market) history and return it.
+    Importing inside the function keeps module-import time low for
+    callers that never hit /forecast (Module 1 endpoints, etc.)."""
+    from prophet import Prophet  # noqa: WPS433 — local import is intentional.
+
+    history = get_demand_history(sku, market)
+    df = history[["date", "units_sold"]].rename(columns={"date": "ds", "units_sold": "y"})
+
+    model = Prophet(
+        yearly_seasonality=True,
+        weekly_seasonality=False,
+        daily_seasonality=False,
+        holidays=_PROPHET_HOLIDAYS,
+        interval_width=0.85,
+    )
+    model.fit(df)
+    return model
+
+
+def _get_or_fit_forecast_model(sku: str, market: str):
+    key = (sku, market)
+    if key not in _FORECAST_MODEL_CACHE:
+        _FORECAST_MODEL_CACHE[key] = _fit_prophet_model(sku, market)
+    return _FORECAST_MODEL_CACHE[key]
+
+
+def get_forecast(sku: str, market: str, horizon_months: int) -> dict:
+    """Return the contract-shaped /forecast payload for (sku, market). Fits
+    a Prophet model on the seeded demand history (with Ramadan + Eid as
+    holidays) and predicts ``horizon_months`` months starting from the
+    first of the month after the demo anchor (2026-05-01 onward)."""
+    if not (_FORECAST_HORIZON_MIN <= horizon_months <= _FORECAST_HORIZON_MAX):
+        raise ValueError(
+            f"horizon_months {horizon_months} outside [{_FORECAST_HORIZON_MIN}, "
+            f"{_FORECAST_HORIZON_MAX}]"
+        )
+
+    _product_or_raise(sku)
+    _market_or_raise(market)
+
+    model = _get_or_fit_forecast_model(sku, market)
+
+    start = _next_month_start(_FORECAST_ANCHOR_DATE)
+    future_dates = pd.date_range(start=start, periods=horizon_months, freq="MS")
+    future_df = pd.DataFrame({"ds": future_dates})
+    pred = model.predict(future_df)
+
+    forecast_points: list[dict] = []
+    for _, row in pred.iterrows():
+        forecast_points.append({
+            "date": row["ds"].strftime("%Y-%m-%d"),
+            "forecast_value": int(round(float(row["yhat"]))),
+            "lower_bound":    int(round(float(row["yhat_lower"]))),
+            "upper_bound":    int(round(float(row["yhat_upper"]))),
+        })
+
+    return {
+        "sku": sku,
+        "market": market,
+        "horizon_months": horizon_months,
+        "model": "prophet",
+        "forecast": forecast_points,
+        "seasonality_events": [dict(e) for e in _FORECAST_SEASONALITY_EVENTS],
+        "regressors_used": list(_FORECAST_REGRESSORS),
+        "generated_at": _now_iso(),
+    }
+
+
+# ---------------------------------------------------------------------------
+# Forecast scenarios — transform the baseline Prophet forecast under one
+# of four what-if assumptions, then return both curves + a delta summary.
+# Each transformation is deterministic and stateless: no model re-fit, just
+# a pointwise adjustment to the baseline forecast values.
+# ---------------------------------------------------------------------------
+
+_SCENARIO_TYPES = {"seasonality_shift", "price_change", "competitor_entry", "supply_disruption"}
+
+# Calendar month each named event falls in. Month-only matching keeps
+# this simple at monthly granularity — within our 12-month forecast
+# horizon each event happens at most once.
+_SCENARIO_EVENT_MONTHS = {
+    "ramadan":         {2, 3},   # Ramadan straddles Feb-Mar in our window
+    "eid_al_fitr":     {3, 4},
+    "back_to_school":  {8},
+}
+
+# Price elasticity for the price_change scenario: each 1% price up reduces
+# volume by 1.2%. Negative because higher price drives lower volume.
+_PRICE_ELASTICITY = -1.2
+
+# Competitor entry: total volume reduction by month 3 onward.
+_COMPETITOR_TOTAL_REDUCTION = 0.08
+_COMPETITOR_RAMP_MONTHS = 3
+
+# Supply disruption: hard cap at 85% of baseline (15% reduction).
+_SUPPLY_DISRUPTION_FACTOR = 0.85
+
+
+class ScenarioValidationError(ValueError):
+    """Raised for invalid scenario payloads (caught by the API layer and
+    translated to a 422 response)."""
+
+
+def _apply_scenario(baseline: list[dict], scenario: dict) -> list[dict]:
+    """Return a new forecast list with the scenario applied. ``baseline``
+    is the list of forecast points from get_forecast; ``scenario`` is the
+    request body's scenario block (already validated for ``type``).
+
+    Each transformation operates only on ``forecast_value``; the
+    confidence bounds (lower_bound, upper_bound) are scaled by the same
+    factor so the band tracks the new central line.
+    """
+    s_type = scenario["type"]
+
+    if s_type == "seasonality_shift":
+        event = scenario.get("event")
+        magnitude = scenario.get("magnitude_percent")
+        if event not in _SCENARIO_EVENT_MONTHS:
+            raise ScenarioValidationError(
+                f"unknown event {event!r}; expected one of "
+                f"{sorted(_SCENARIO_EVENT_MONTHS)}"
+            )
+        if magnitude is None:
+            raise ScenarioValidationError("seasonality_shift requires magnitude_percent")
+        factor = 1.0 + magnitude / 100.0
+        target_months = _SCENARIO_EVENT_MONTHS[event]
+        return [
+            _scale_point(p, factor) if int(p["date"].split("-")[1]) in target_months else dict(p)
+            for p in baseline
+        ]
+
+    if s_type == "price_change":
+        magnitude = scenario.get("magnitude_percent")
+        if magnitude is None:
+            raise ScenarioValidationError("price_change requires magnitude_percent")
+        factor = 1.0 + (magnitude / 100.0) * _PRICE_ELASTICITY
+        return [_scale_point(p, factor) for p in baseline]
+
+    if s_type == "competitor_entry":
+        out: list[dict] = []
+        for i, p in enumerate(baseline, start=1):
+            ramp = min(i / _COMPETITOR_RAMP_MONTHS, 1.0)
+            factor = 1.0 - _COMPETITOR_TOTAL_REDUCTION * ramp
+            out.append(_scale_point(p, factor))
+        return out
+
+    if s_type == "supply_disruption":
+        return [_scale_point(p, _SUPPLY_DISRUPTION_FACTOR) for p in baseline]
+
+    # Unreachable — type was validated upstream.
+    raise ScenarioValidationError(f"unknown scenario type {s_type!r}")
+
+
+def _scale_point(p: dict, factor: float) -> dict:
+    return {
+        "date": p["date"],
+        "forecast_value": int(round(p["forecast_value"] * factor)),
+        "lower_bound":    int(round(p["lower_bound"] * factor)),
+        "upper_bound":    int(round(p["upper_bound"] * factor)),
+    }
+
+
+def get_forecast_scenario(
+    sku: str,
+    market: str,
+    horizon_months: int,
+    scenario: dict,
+) -> dict:
+    """Compute baseline + scenario forecasts and the delta summary.
+
+    Raises ScenarioValidationError for invalid scenario inputs (unknown
+    type, missing event/magnitude); ProductNotFound / MarketNotFound
+    propagate from get_forecast for unknown ids."""
+    if not isinstance(scenario, dict) or "type" not in scenario:
+        raise ScenarioValidationError("scenario.type is required")
+    if scenario["type"] not in _SCENARIO_TYPES:
+        raise ScenarioValidationError(
+            f"unknown scenario.type {scenario['type']!r}; expected one of "
+            f"{sorted(_SCENARIO_TYPES)}"
+        )
+
+    baseline_payload = get_forecast(sku, market, horizon_months)
+    baseline = baseline_payload["forecast"]
+    scenario_forecast = _apply_scenario(baseline, scenario)
+
+    total_baseline = sum(p["forecast_value"] for p in baseline)
+    total_scenario = sum(p["forecast_value"] for p in scenario_forecast)
+    delta = total_scenario - total_baseline
+    delta_pct = round((delta / total_baseline) * 100, 1) if total_baseline else 0.0
+
+    return {
+        "baseline_forecast": baseline,
+        "scenario_forecast": scenario_forecast,
+        "delta_summary": {
+            "total_baseline_units": total_baseline,
+            "total_scenario_units": total_scenario,
+            "delta_units": delta,
+            "delta_percent": delta_pct,
+        },
     }

@@ -19,6 +19,7 @@ from typing import Optional
 
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.responses import JSONResponse
+from pydantic import BaseModel, Field
 
 # Make ``backend`` importable whether we're launched as
 # "uvicorn backend.ai_model.api:app" (package import) or "python
@@ -217,3 +218,111 @@ def get_alert(alert_id: str) -> dict:
 @app.get("/kpis/overview")
 def kpis_overview() -> dict:
     return fhh_data.get_kpis_overview()
+
+
+@app.get("/kpis/cost-savings")
+def kpis_cost_savings(
+    window: str = Query("ytd", pattern="^(mtd|qtd|ytd|all)$"),
+) -> dict:
+    return fhh_data.get_cost_savings(window)
+
+
+@app.get("/products")
+def list_products() -> dict:
+    return fhh_data.get_products()
+
+
+@app.get("/markets")
+def list_markets() -> dict:
+    return fhh_data.get_markets()
+
+
+def _product_404(sku: str) -> HTTPException:
+    return HTTPException(
+        status_code=404,
+        detail={"error": {
+            "code": "sku_not_found",
+            "message": f"No product exists with SKU '{sku}'.",
+            "status": 404,
+        }},
+    )
+
+
+def _market_404(market_id: str) -> HTTPException:
+    return HTTPException(
+        status_code=404,
+        detail={"error": {
+            "code": "invalid_request",
+            "message": f"No market exists with ID '{market_id}'.",
+            "status": 404,
+        }},
+    )
+
+
+@app.get("/demand/anomalies")
+def list_demand_anomalies() -> dict:
+    return fhh_data.get_demand_anomalies()
+
+
+@app.get("/demand/seasonality")
+def get_demand_seasonality(
+    sku: str,
+    market: Optional[str] = None,
+) -> dict:
+    try:
+        return fhh_data.get_seasonality(sku, market)
+    except fhh_data.ProductNotFound:
+        raise _product_404(sku)
+    except fhh_data.MarketNotFound:
+        raise _market_404(market or "")
+
+
+@app.get("/forecast")
+def get_forecast(
+    sku: str,
+    market: str,
+    horizon_months: int = Query(6, ge=1, le=12),
+) -> dict:
+    try:
+        return fhh_data.get_forecast(sku, market, horizon_months)
+    except fhh_data.ProductNotFound:
+        raise _product_404(sku)
+    except fhh_data.MarketNotFound:
+        raise _market_404(market)
+
+
+class ScenarioBody(BaseModel):
+    type: str = Field(pattern="^(seasonality_shift|price_change|competitor_entry|supply_disruption)$")
+    event: Optional[str] = None
+    magnitude_percent: Optional[float] = None
+
+
+class ForecastScenarioRequest(BaseModel):
+    sku: str
+    market: str
+    horizon_months: int = Field(6, ge=1, le=12)
+    scenario: ScenarioBody
+
+
+@app.post("/forecast/scenario")
+def post_forecast_scenario(body: ForecastScenarioRequest) -> dict:
+    try:
+        return fhh_data.get_forecast_scenario(
+            sku=body.sku,
+            market=body.market,
+            horizon_months=body.horizon_months,
+            scenario=body.scenario.model_dump(),
+        )
+    except fhh_data.ProductNotFound:
+        raise _product_404(body.sku)
+    except fhh_data.MarketNotFound:
+        raise _market_404(body.market)
+    except fhh_data.ScenarioValidationError as exc:
+        raise HTTPException(
+            status_code=422,
+            detail={"error": {
+                "code": "validation_error",
+                "message": str(exc),
+                "status": 422,
+            }},
+        )
