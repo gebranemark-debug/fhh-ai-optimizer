@@ -31,6 +31,9 @@ if str(_PROJECT_ROOT) not in sys.path:
 from backend import data as fhh_data  # noqa: E402
 from backend.ai_model import chat_handler as chat_mod  # noqa: E402
 
+import time as _time
+from collections import deque as _deque
+
 
 # ---------------------------------------------------------------------------
 # App
@@ -377,6 +380,42 @@ def chat_delete_conversation(conversation_id: str):
 
 # -- POST /chat -------------------------------------------------------------
 
+# Simple in-memory rate limit: max N requests per window seconds across
+# the whole process. Plenty for the demo and trivially swappable for
+# Redis later. Keyed globally because the contract notes "too many chat
+# requests" without per-user scoping.
+_CHAT_RATE_MAX_REQUESTS = 30
+_CHAT_RATE_WINDOW_SECONDS = 60
+_CHAT_RATE_TIMESTAMPS: "_deque[float]" = _deque()
+
+
+def _check_chat_rate_limit() -> None:
+    now = _time.monotonic()
+    cutoff = now - _CHAT_RATE_WINDOW_SECONDS
+    # Drop expired entries from the left.
+    while _CHAT_RATE_TIMESTAMPS and _CHAT_RATE_TIMESTAMPS[0] < cutoff:
+        _CHAT_RATE_TIMESTAMPS.popleft()
+    if len(_CHAT_RATE_TIMESTAMPS) >= _CHAT_RATE_MAX_REQUESTS:
+        raise HTTPException(
+            status_code=429,
+            detail={"error": {
+                "code": "rate_limited",
+                "message": (
+                    f"Too many chat requests. Limit is "
+                    f"{_CHAT_RATE_MAX_REQUESTS} per "
+                    f"{_CHAT_RATE_WINDOW_SECONDS}s window."
+                ),
+                "status": 429,
+            }},
+        )
+    _CHAT_RATE_TIMESTAMPS.append(now)
+
+
+def _reset_chat_rate_limit() -> None:
+    """For tests — drop the rolling window."""
+    _CHAT_RATE_TIMESTAMPS.clear()
+
+
 # One handler instance per process. Lazy-construct so the import doesn't
 # require ANTHROPIC_API_KEY (e.g. for tests that don't hit /chat).
 _CHAT_HANDLER: Optional[chat_mod.ChatHandler] = None
@@ -434,6 +473,9 @@ class ChatRequest(BaseModel):
 
 @app.post("/chat")
 def post_chat(body: ChatRequest) -> dict:
+    # 0. Rate limit: 429 envelope if too many recent requests.
+    _check_chat_rate_limit()
+
     # 1. Resolve conversation: existing id or create a new one.
     if body.conversation_id is None:
         cid = fhh_data.create_conversation()
