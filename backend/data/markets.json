@@ -1,0 +1,9 @@
+{
+  "markets": [
+    { "market_id": "uae",     "name": "United Arab Emirates", "currency": "AED" },
+    { "market_id": "ksa",     "name": "Saudi Arabia",         "currency": "SAR" },
+    { "market_id": "jordan",  "name": "Jordan",               "currency": "JOD" },
+    { "market_id": "egypt",   "name": "Egypt",                "currency": "EGP" },
+    { "market_id": "morocco", "name": "Morocco",              "currency": "MAD" }
+  ]
+}

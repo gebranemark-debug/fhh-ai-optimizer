@@ -1,0 +1,46 @@
+{
+  "products": [
+    { "sku": "fine-facial-100",           "name": "Fine Facial Tissue 100ct",         "category": "tissue",     "unit": "box" },
+    { "sku": "fine-facial-150",           "name": "Fine Facial Tissue 150ct",         "category": "tissue",     "unit": "box" },
+    { "sku": "fine-facial-200",           "name": "Fine Facial Tissue 200ct",         "category": "tissue",     "unit": "box" },
+    { "sku": "fine-facial-pocket",        "name": "Fine Facial Pocket Pack",          "category": "tissue",     "unit": "pack" },
+    { "sku": "fine-toilet-2ply",          "name": "Fine Toilet Roll 2-Ply (12pk)",    "category": "tissue",     "unit": "pack" },
+    { "sku": "fine-toilet-3ply",          "name": "Fine Toilet Roll 3-Ply (12pk)",    "category": "tissue",     "unit": "pack" },
+    { "sku": "fine-toilet-jumbo",         "name": "Fine Toilet Jumbo Roll",           "category": "tissue",     "unit": "roll" },
+    { "sku": "fine-toilet-eco",           "name": "Fine Toilet Eco Roll (24pk)",      "category": "tissue",     "unit": "pack" },
+    { "sku": "fine-kitchen-2ply",         "name": "Fine Kitchen Towel 2-Ply",         "category": "tissue",     "unit": "pack" },
+    { "sku": "fine-kitchen-mega",         "name": "Fine Kitchen Mega Roll",           "category": "tissue",     "unit": "pack" },
+    { "sku": "fine-kitchen-extra",        "name": "Fine Kitchen Extra Strong",        "category": "tissue",     "unit": "pack" },
+    { "sku": "fine-napkin-white",         "name": "Fine Dinner Napkins White",        "category": "tissue",     "unit": "pack" },
+    { "sku": "fine-napkin-printed",       "name": "Fine Dinner Napkins Printed",      "category": "tissue",     "unit": "pack" },
+    { "sku": "fine-napkin-luxury",        "name": "Fine Luxury Dinner Napkins",       "category": "tissue",     "unit": "pack" },
+    { "sku": "fine-napkin-cocktail",      "name": "Fine Cocktail Napkins",            "category": "tissue",     "unit": "pack" },
+
+    { "sku": "fine-baby-s1",              "name": "Fine Baby Diapers Size 1 Newborn", "category": "baby_care",  "unit": "pack" },
+    { "sku": "fine-baby-s2",              "name": "Fine Baby Diapers Size 2 Mini",    "category": "baby_care",  "unit": "pack" },
+    { "sku": "fine-baby-s3",              "name": "Fine Baby Diapers Size 3 Midi",    "category": "baby_care",  "unit": "pack" },
+    { "sku": "fine-baby-s4",              "name": "Fine Baby Diapers Size 4 Maxi",    "category": "baby_care",  "unit": "pack" },
+    { "sku": "fine-baby-s5",              "name": "Fine Baby Diapers Size 5 Junior",  "category": "baby_care",  "unit": "pack" },
+    { "sku": "fine-baby-s6",              "name": "Fine Baby Diapers Size 6 XL",      "category": "baby_care",  "unit": "pack" },
+    { "sku": "fine-baby-wipes",           "name": "Fine Baby Wipes Sensitive 80ct",   "category": "baby_care",  "unit": "pack" },
+    { "sku": "fine-baby-pull-ups",        "name": "Fine Baby Pull-Ups Trainers",      "category": "baby_care",  "unit": "pack" },
+
+    { "sku": "fine-adult-pads",           "name": "Fine Adult Pads Light",            "category": "adult_care", "unit": "pack" },
+    { "sku": "fine-adult-briefs-m",       "name": "Fine Adult Briefs Medium",         "category": "adult_care", "unit": "pack" },
+    { "sku": "fine-adult-briefs-l",       "name": "Fine Adult Briefs Large",          "category": "adult_care", "unit": "pack" },
+    { "sku": "fine-adult-underpads",      "name": "Fine Adult Underpads",             "category": "adult_care", "unit": "pack" },
+
+    { "sku": "fine-guard-tissue",         "name": "Fine Guard Antibacterial Tissue",  "category": "fine_guard", "unit": "box" },
+    { "sku": "fine-guard-wipes",          "name": "Fine Guard Sanitizing Wipes",      "category": "fine_guard", "unit": "pack" },
+    { "sku": "fine-guard-spray",          "name": "Fine Guard Disinfectant Spray",    "category": "fine_guard", "unit": "bottle" },
+
+    { "sku": "fine-wellness-reg",         "name": "Fine Wellness Pads Regular",       "category": "wellness",   "unit": "pack" },
+    { "sku": "fine-wellness-night",       "name": "Fine Wellness Pads Night",         "category": "wellness",   "unit": "pack" },
+    { "sku": "fine-wellness-light",       "name": "Fine Wellness Pads Light",         "category": "wellness",   "unit": "pack" },
+    { "sku": "fine-wellness-pantyliners", "name": "Fine Wellness Pantyliners",        "category": "wellness",   "unit": "pack" },
+
+    { "sku": "fine-cosmetics-cotton-pads","name": "Fine Cosmetic Cotton Pads",        "category": "cosmetics",  "unit": "pack" },
+    { "sku": "fine-cosmetics-cotton-balls","name": "Fine Cosmetic Cotton Balls",      "category": "cosmetics",  "unit": "pack" },
+    { "sku": "fine-cosmetics-q-tips",     "name": "Fine Cosmetic Cotton Buds",        "category": "cosmetics",  "unit": "pack" }
+  ]
+}

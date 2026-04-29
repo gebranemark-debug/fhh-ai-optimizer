@@ -22,6 +22,8 @@ Public surface (all return contract-shaped dicts):
     get_maintenance_log(machine_id)   -> /maintenance-log payload
     get_sensor_history(...)           -> /sensors/{type}/history payload
     get_cost_savings(window)          -> /kpis/cost-savings payload
+    get_products()                    -> /products payload
+    get_markets()                     -> /markets payload
 
 Exceptions:
     MachineNotFound, AlertNotFound, SensorNotFound — caught in
@@ -31,6 +33,7 @@ Exceptions:
 
 from __future__ import annotations
 
+import json
 import math
 from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
@@ -1081,3 +1084,59 @@ def get_cost_savings(window: str) -> dict:
         "estimated_cost_saved_usd": total_cost_saved,
         "breakdown_by_machine": breakdown_unsorted,
     }
+
+
+# ---------------------------------------------------------------------------
+# Demand catalog — products + markets. Static seed files kept under
+# ``backend/data/`` so they can be edited without touching code, and so
+# the parquet ETL can read the same SKU list.
+# ---------------------------------------------------------------------------
+
+_DEMAND_SEED_DIR = Path(__file__).parent / "data"
+
+
+def _load_json(path: Path) -> dict:
+    with path.open("r", encoding="utf-8") as fh:
+        return json.load(fh)
+
+
+_PRODUCTS_DOC = _load_json(_DEMAND_SEED_DIR / "products.json")
+_MARKETS_DOC = _load_json(_DEMAND_SEED_DIR / "markets.json")
+
+# Index for O(1) lookup; the .json keeps definition order so ``products``
+# in the response stays in catalog order.
+_PRODUCTS_BY_SKU: dict[str, dict] = {p["sku"]: p for p in _PRODUCTS_DOC["products"]}
+_MARKETS_BY_ID: dict[str, dict] = {m["market_id"]: m for m in _MARKETS_DOC["markets"]}
+
+
+class ProductNotFound(KeyError):
+    def __init__(self, sku: str):
+        super().__init__(sku)
+        self.sku = sku
+
+
+class MarketNotFound(KeyError):
+    def __init__(self, market_id: str):
+        super().__init__(market_id)
+        self.market_id = market_id
+
+
+def get_products() -> dict:
+    products = list(_PRODUCTS_DOC["products"])
+    return {"products": products, "total": len(products)}
+
+
+def get_markets() -> dict:
+    return {"markets": list(_MARKETS_DOC["markets"])}
+
+
+def _product_or_raise(sku: str) -> dict:
+    if sku not in _PRODUCTS_BY_SKU:
+        raise ProductNotFound(sku)
+    return _PRODUCTS_BY_SKU[sku]
+
+
+def _market_or_raise(market_id: str) -> dict:
+    if market_id not in _MARKETS_BY_ID:
+        raise MarketNotFound(market_id)
+    return _MARKETS_BY_ID[market_id]

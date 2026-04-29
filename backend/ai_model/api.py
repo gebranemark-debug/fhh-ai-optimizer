@@ -224,3 +224,13 @@ def kpis_cost_savings(
     window: str = Query("ytd", pattern="^(mtd|qtd|ytd|all)$"),
 ) -> dict:
     return fhh_data.get_cost_savings(window)
+
+
+@app.get("/products")
+def list_products() -> dict:
+    return fhh_data.get_products()
+
+
+@app.get("/markets")
+def list_markets() -> dict:
+    return fhh_data.get_markets()
