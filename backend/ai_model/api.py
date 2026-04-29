@@ -326,3 +326,20 @@ def post_forecast_scenario(body: ForecastScenarioRequest) -> dict:
                 "status": 422,
             }},
         )
+
+
+# ---------------------------------------------------------------------------
+# Module 3 — chat assistant
+# ---------------------------------------------------------------------------
+
+@app.get("/chat/suggested-prompts")
+def chat_suggested_prompts(
+    current_page: Optional[str] = Query(None, pattern="^(overview|machine_detail|alerts|demand_forecast)$"),
+    current_machine_id: Optional[str] = None,
+    current_sku: Optional[str] = None,
+) -> dict:
+    return fhh_data.get_suggested_prompts(
+        current_page=current_page,
+        current_machine_id=current_machine_id,
+        current_sku=current_sku,
+    )
