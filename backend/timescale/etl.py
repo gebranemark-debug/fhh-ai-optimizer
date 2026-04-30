@@ -45,8 +45,9 @@ from __future__ import annotations
 
 import argparse
 import os
+import random
 from dataclasses import dataclass
-from datetime import date, datetime, timezone
+from datetime import date, datetime, time, timedelta, timezone
 from pathlib import Path
 from typing import Optional
 
@@ -483,6 +484,169 @@ def build_feature_dataset(
 # CLI
 # =============================================================================
 
+# =============================================================================
+# Raw-parquet feature build — the path used when no Postgres is available.
+# Reads sensor_readings_raw.parquet (wide, per-minute) +
+# sensor_failure_events.parquet (label set), then synthesizes plausible
+# production_runs + maintenance_logs in-memory so the feature engineering
+# below produces the exact same 43-column schema as the DB-backed path.
+# =============================================================================
+
+DEFAULT_RAW_PATH = Path(__file__).parent / "sensor_readings_raw.parquet"
+DEFAULT_EVENTS_PATH = Path(__file__).parent / "sensor_failure_events.parquet"
+DEFAULT_FEATURES_PATH = Path(__file__).parent / "features.parquet"
+
+_MACHINES_FOR_SYNTH = ["al-nakheel", "al-bardi", "al-sindian", "al-snobar"]
+# Mean OEE per machine — al-sindian sits at 0 because it's in maintenance
+# (matches the data layer's status). Others wobble around the dashboard
+# values from backend/data.py.
+_MACHINE_BASE_OEE = {
+    "al-nakheel": 91.4,
+    "al-bardi":   93.6,
+    "al-sindian":  0.0,
+    "al-snobar":  96.1,
+}
+# Cadence (days between events) per component, matches the relational
+# scaffolding in backend/postgres/seed_data.py so days_since_last
+# _maintenance_* land in the same neighbourhood whether the ETL runs
+# from Postgres or from the in-memory synth.
+_MAINT_CADENCE = {
+    "yankee":   14,
+    "visconip": 28,
+    "aircap":   45,
+    "headbox":  60,
+    "softreel": 75,
+    "rewinder": 75,
+}
+
+
+def _melt_wide_to_long(wide: pd.DataFrame) -> pd.DataFrame:
+    """Convert a wide raw parquet (timestamp, machine_id, <sensor>...) to
+    the long format ``aggregate_hourly_in_memory`` already understands."""
+    sensor_cols = [c for c in wide.columns if c not in ("timestamp", "machine_id")]
+    long = wide.melt(
+        id_vars=["timestamp", "machine_id"],
+        value_vars=sensor_cols,
+        var_name="sensor_type",
+        value_name="value",
+    )
+    return long
+
+
+def _synth_production_runs(start: datetime, end: datetime) -> pd.DataFrame:
+    """Synthesize a year of 8-hour production runs (3 shifts/day × 4
+    machines) so ``_add_oee`` can attach an OEE to every hour bucket
+    without needing PostgreSQL."""
+    rng = random.Random(42)
+    rows: list[dict] = []
+    days = (end.date() - start.date()).days + 1
+    shifts = [("a", 6), ("b", 14), ("c", 22)]
+    for day_offset in range(days):
+        d = start.date() + timedelta(days=day_offset)
+        for shift_label, hour_start in shifts:
+            ts_start = datetime.combine(d, time(hour_start, 0), tzinfo=timezone.utc)
+            ts_end = ts_start + timedelta(hours=8)
+            for machine_id in _MACHINES_FOR_SYNTH:
+                base = _MACHINE_BASE_OEE[machine_id]
+                if base <= 0:
+                    oee = 0.0
+                else:
+                    oee = max(60.0, min(98.5, rng.gauss(base, 2.5)))
+                rows.append({
+                    "run_id": f"run-{machine_id}-{d.isoformat()}-{shift_label}",
+                    "machine_id": machine_id,
+                    "start_time": ts_start,
+                    "end_time": ts_end,
+                    "oee_percent": round(oee, 2),
+                })
+    return pd.DataFrame(rows)
+
+
+def _synth_maintenance_logs(start: datetime, end: datetime) -> pd.DataFrame:
+    """Synthesize a per-component maintenance log following the seed
+    data's cadence so days_since_last_maintenance_* features land in
+    plausible ranges."""
+    rng = random.Random(42)
+    rows: list[dict] = []
+    counter = 0
+    for machine_id in _MACHINES_FOR_SYNTH:
+        for component_id, cad_days in _MAINT_CADENCE.items():
+            d = start.date() + timedelta(days=rng.randint(0, cad_days))
+            while d <= end.date():
+                counter += 1
+                rows.append({
+                    "log_id": f"mlog-{d.isoformat()}-{counter:04d}",
+                    "machine_id": machine_id,
+                    "component_id": component_id,
+                    "date_performed": datetime.combine(d, time(8, 0), tzinfo=timezone.utc),
+                })
+                d += timedelta(days=cad_days + rng.randint(-3, 5))
+    return pd.DataFrame(rows)
+
+
+def build_features_from_raw(
+    raw_path: Path = DEFAULT_RAW_PATH,
+    events_path: Path = DEFAULT_EVENTS_PATH,
+    out_path: Optional[Path] = None,
+) -> FeatureSet:
+    """Build the 43-column feature parquet from the wide raw layer + the
+    events sidecar. Downstream consumers (predict.py, train_model.py,
+    backend/data.py) read the resulting features.parquet without any
+    schema awareness of the raw layer.
+    """
+    print(f"[etl]  reading raw parquet: {raw_path}")
+    raw = pd.read_parquet(raw_path)
+    print(f"[etl]  raw: {len(raw):,} rows × {len(raw.columns)} cols")
+
+    print(f"[etl]  reading failure events: {events_path}")
+    events = pd.read_parquet(events_path)
+    events["failure_time"] = pd.to_datetime(events["failure_time"], utc=True)
+    print(f"[etl]  events: {len(events):,}")
+
+    # 1) Wide → long → hourly aggregates (reuses the existing helper).
+    print("[etl]  melting wide → long")
+    long = _melt_wide_to_long(raw)
+    print(f"[etl]  long-format: {len(long):,} rows")
+
+    print("[etl]  aggregating hourly (avg/min/max/std per sensor per machine per hour)")
+    agg = aggregate_hourly_in_memory(long)
+    # Free the long frame eagerly — peak memory is here.
+    del long
+    print(f"[etl]  hourly aggregates: {len(agg):,} rows")
+
+    # 2) Synthesize the relational tables the feature engineers need.
+    start_dt = raw["timestamp"].min().to_pydatetime()
+    end_dt   = raw["timestamp"].max().to_pydatetime()
+    del raw
+    print("[etl]  synthesizing production_runs + maintenance_logs in-memory")
+    runs = _synth_production_runs(start_dt, end_dt)
+    logs = _synth_maintenance_logs(start_dt, end_dt)
+    print(f"[etl]  runs={len(runs):,}  logs={len(logs):,}")
+
+    # 3) Pivot + engineer features (reuses the existing helpers — same
+    #    output shape and column names as the DB-backed path).
+    print("[etl]  pivoting + engineering features")
+    df = _pivot_hourly(agg)
+    df = _add_temperature_deviation(df)
+    df = _add_vibration_trend(df)
+    df = _add_days_since_maintenance(df, logs)
+    df = _add_oee(df, runs)
+    df = _add_failure_label(df, events, horizon_hours=72)
+
+    feature_cols = [c for c in df.columns if c not in ("machine_id", "hour_bucket")]
+    pos_rate = float(df["target_failure_within_72h"].mean()) if len(df) else 0.0
+    print(f"[etl]  feature dataset: {len(df):,} rows × {len(feature_cols)} features")
+    print(f"[etl]  positive rate (target_failure_within_72h=1): {pos_rate:.4%}  "
+          f"({int(df['target_failure_within_72h'].sum()):,} positive rows)")
+
+    if out_path is not None:
+        out_path.parent.mkdir(parents=True, exist_ok=True)
+        df.to_parquet(out_path, index=False)
+        print(f"[etl]  wrote features → {out_path}")
+
+    return FeatureSet(df=df, n_rows=len(df), n_features=len(feature_cols), positive_rate=pos_rate)
+
+
 def _parse_iso(s: Optional[str]) -> Optional[datetime]:
     if s is None:
         return None
@@ -508,14 +672,33 @@ def main() -> None:
     p.add_argument("--interval-seconds", type=int, default=300,
                    help="Sample interval in seconds for --in-memory mode "
                         "(default 300 = 5 min). Ignored without --in-memory.")
+    p.add_argument("--from-raw", action="store_true",
+                   help="Read sensor_readings_raw.parquet + sensor_failure"
+                        "_events.parquet (produced by `sensor_simulator.py "
+                        "--yearly-raw`) and synthesize production_runs + "
+                        "maintenance_logs in-memory. Skips PostgreSQL and "
+                        "TimescaleDB entirely. Output schema is identical "
+                        "to the DB-backed path.")
+    p.add_argument("--raw-path", type=Path, default=DEFAULT_RAW_PATH,
+                   help=f"Path to the wide raw parquet (default {DEFAULT_RAW_PATH}).")
+    p.add_argument("--events-path", type=Path, default=DEFAULT_EVENTS_PATH,
+                   help=f"Path to the failure-events parquet (default {DEFAULT_EVENTS_PATH}).")
     args = p.parse_args()
 
-    fs = build_feature_dataset(
-        start=_parse_iso(args.start),
-        end=_parse_iso(args.end),
-        in_memory=args.in_memory,
-        interval_seconds=args.interval_seconds,
-    )
+    if args.from_raw:
+        out_path = Path(args.out) if args.out else DEFAULT_FEATURES_PATH
+        fs = build_features_from_raw(
+            raw_path=args.raw_path,
+            events_path=args.events_path,
+            out_path=out_path,
+        )
+    else:
+        fs = build_feature_dataset(
+            start=_parse_iso(args.start),
+            end=_parse_iso(args.end),
+            in_memory=args.in_memory,
+            interval_seconds=args.interval_seconds,
+        )
 
     print("\n[etl]  preview (head 3):")
     pd.set_option("display.max_columns", 80)
@@ -526,7 +709,9 @@ def main() -> None:
     for c in [c for c in fs.df.columns if c not in ("machine_id", "hour_bucket")]:
         print(f"  - {c}")
 
-    if args.out:
+    # --from-raw already writes inside build_features_from_raw; skip the
+    # double-write here so the on-disk file isn't reopened just to round-trip.
+    if args.out and not args.from_raw:
         out = Path(args.out)
         out.parent.mkdir(parents=True, exist_ok=True)
         if out.suffix.lower() == ".parquet":
