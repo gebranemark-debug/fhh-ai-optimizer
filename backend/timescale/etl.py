@@ -520,10 +520,36 @@ _MAINT_CADENCE = {
 }
 
 
+_NON_SENSOR_RAW_COLS = ("timestamp", "machine_id", "product_active")
+
+# Product types from sensor_simulator.NOISE_PRODUCT_REGIMES (kept here as
+# a constant so etl.py doesn't need to import sensor_simulator's heavy
+# deps just for the names).
+_PRODUCT_TYPES = ("facial_tissue", "toilet_paper", "kitchen_towel", "napkin")
+
+# Per-product offsets for yankee_surface_temp specifically — used to
+# compute a *product-aware* temperature_deviation_from_baseline so a
+# kitchen_towel run at 115°C doesn't look like a thermal precursor.
+# Mirrors PRODUCT_SENSOR_OFFSETS in sensor_simulator.py.
+_PRODUCT_TEMP_OFFSETS = {
+    "facial_tissue":  0.0,
+    "toilet_paper":   2.0,
+    "kitchen_towel":  5.0,
+    "napkin":         0.0,
+}
+
+# Label-noise toggle. Mirrors NOISE_LABEL_NOISE_PERCENT in
+# sensor_simulator.py (set there for visibility, applied here).
+_LABEL_NOISE_PERCENT = 0.03
+_LABEL_NOISE_SEED = 42
+
+
 def _melt_wide_to_long(wide: pd.DataFrame) -> pd.DataFrame:
     """Convert a wide raw parquet (timestamp, machine_id, <sensor>...) to
-    the long format ``aggregate_hourly_in_memory`` already understands."""
-    sensor_cols = [c for c in wide.columns if c not in ("timestamp", "machine_id")]
+    the long format ``aggregate_hourly_in_memory`` already understands.
+    Non-sensor columns like ``product_active`` are excluded — they're
+    handled separately so they end up on the feature row directly."""
+    sensor_cols = [c for c in wide.columns if c not in _NON_SENSOR_RAW_COLS]
     long = wide.melt(
         id_vars=["timestamp", "machine_id"],
         value_vars=sensor_cols,
@@ -531,6 +557,87 @@ def _melt_wide_to_long(wide: pd.DataFrame) -> pd.DataFrame:
         value_name="value",
     )
     return long
+
+
+def _aggregate_product_active(wide: pd.DataFrame) -> Optional[pd.DataFrame]:
+    """Per-(machine, hour) mode of product_active. Returns None if the
+    raw parquet pre-dates the product regime feature (no product_active
+    column). With 5-15 day product blocks, the per-hour mode is the
+    same as taking the first reading in each hour bucket — within a
+    block the value is constant, only block-boundary hours might mix
+    products, and that's rare."""
+    if "product_active" not in wide.columns:
+        return None
+    df = wide[["timestamp", "machine_id", "product_active"]].copy()
+    df["hour_bucket"] = df["timestamp"].dt.floor("1h")
+    return (
+        df.sort_values(["machine_id", "timestamp"])
+          .groupby(["machine_id", "hour_bucket"], as_index=False)
+          .first()
+          .drop(columns=["timestamp"])
+    )
+
+
+def _add_product_one_hot(df: pd.DataFrame, product_df: Optional[pd.DataFrame]) -> pd.DataFrame:
+    """Attach ``product_active`` per (machine, hour_bucket), then expand
+    to one-hot columns the model can consume. Falls back to all-zero
+    one-hots (with facial_tissue=1 default) when no product_active
+    column is present in the raw layer (backward compatibility)."""
+    if product_df is None:
+        df["product_active"] = "facial_tissue"
+    else:
+        df = df.merge(product_df, on=["machine_id", "hour_bucket"], how="left")
+        df["product_active"] = df["product_active"].fillna("facial_tissue")
+    for product in _PRODUCT_TYPES:
+        df[f"product_active_{product}"] = (df["product_active"] == product).astype(int)
+    return df
+
+
+def _add_temperature_deviation_product_aware(df: pd.DataFrame) -> pd.DataFrame:
+    """Replace the simple yankee_surface_temp - 110 deviation with one
+    that subtracts the product's expected offset too. A 115°C reading
+    while running kitchen_towel (whose product baseline is +5°C) gives
+    deviation = 115 - 110 - 5 = 0 — i.e. normal — instead of +5 which
+    would falsely register as a thermal precursor."""
+    if "yankee_surface_temp_avg" not in df.columns:
+        return df
+    if "product_active" in df.columns:
+        product_offset = df["product_active"].map(_PRODUCT_TEMP_OFFSETS).fillna(0.0)
+    else:
+        product_offset = 0.0
+    df["temperature_deviation_from_baseline"] = (
+        df["yankee_surface_temp_avg"]
+        - SENSOR_BASELINES["yankee_surface_temp"]
+        - product_offset
+    )
+    return df
+
+
+def _apply_label_noise(df: pd.DataFrame, fraction: float, seed: int) -> pd.DataFrame:
+    """Flip ``fraction`` of target_failure_within_72h labels to simulate
+    real-world maintenance log mistakes. Symmetric: a uniform-random
+    sample of ``fraction × len(df)`` rows has its label inverted, so
+    both ``ground-truth positive → labelled 0`` and
+    ``ground-truth negative → labelled 1`` errors are introduced.
+
+    Deterministic via ``seed`` so the same noisy label set is produced
+    on every retrain — the model trains on the same noise it'll be
+    evaluated against."""
+    if fraction <= 0 or "target_failure_within_72h" not in df.columns or len(df) == 0:
+        return df
+    rng = np.random.default_rng(seed)
+    n_flip = int(round(len(df) * fraction))
+    if n_flip <= 0:
+        return df
+    flip_idx = rng.choice(len(df), size=n_flip, replace=False)
+    pre_pos = int(df["target_failure_within_72h"].sum())
+    df.loc[df.index[flip_idx], "target_failure_within_72h"] = (
+        1 - df.loc[df.index[flip_idx], "target_failure_within_72h"]
+    )
+    post_pos = int(df["target_failure_within_72h"].sum())
+    print(f"[etl]  label noise: flipped {n_flip:,} rows "
+          f"(positives {pre_pos:,} → {post_pos:,})")
+    return df
 
 
 def _synth_production_runs(start: datetime, end: datetime) -> pd.DataFrame:
@@ -614,6 +721,14 @@ def build_features_from_raw(
     del long
     print(f"[etl]  hourly aggregates: {len(agg):,} rows")
 
+    # 1b) Per-(machine, hour) product mode — separate path because it's a
+    #     categorical, not a sensor value. Returns None on legacy raw
+    #     parquets that pre-date the product_active column.
+    print("[etl]  aggregating product_active per hour")
+    product_df = _aggregate_product_active(raw)
+    if product_df is not None:
+        print(f"[etl]  product_active hourly rows: {len(product_df):,}")
+
     # 2) Synthesize the relational tables the feature engineers need.
     start_dt = raw["timestamp"].min().to_pydatetime()
     end_dt   = raw["timestamp"].max().to_pydatetime()
@@ -623,15 +738,28 @@ def build_features_from_raw(
     logs = _synth_maintenance_logs(start_dt, end_dt)
     print(f"[etl]  runs={len(runs):,}  logs={len(logs):,}")
 
-    # 3) Pivot + engineer features (reuses the existing helpers — same
-    #    output shape and column names as the DB-backed path).
+    # 3) Pivot + engineer features (reuses the existing helpers; the new
+    #    product-aware deviation + one-hot product columns are layered on
+    #    top so the 43-column legacy schema is preserved as a subset).
     print("[etl]  pivoting + engineering features")
     df = _pivot_hourly(agg)
-    df = _add_temperature_deviation(df)
+    df = _add_product_one_hot(df, product_df)
+    df = _add_temperature_deviation_product_aware(df)
     df = _add_vibration_trend(df)
     df = _add_days_since_maintenance(df, logs)
     df = _add_oee(df, runs)
     df = _add_failure_label(df, events, horizon_hours=72)
+
+    # 4) Apply label noise — simulates ~3% mislabelled events from
+    #    imperfect maintenance logging. Deterministic seed so the
+    #    flipped set is identical across retrains.
+    df = _apply_label_noise(df, _LABEL_NOISE_PERCENT, _LABEL_NOISE_SEED)
+
+    # 5) Drop the string product_active column — its signal lives in
+    #    the 4 one-hot product_active_* columns, and train_model.py's
+    #    pd.to_numeric path NaNs strings (which would mask every row).
+    if "product_active" in df.columns:
+        df = df.drop(columns=["product_active"])
 
     feature_cols = [c for c in df.columns if c not in ("machine_id", "hour_bucket")]
     pos_rate = float(df["target_failure_within_72h"].mean()) if len(df) else 0.0

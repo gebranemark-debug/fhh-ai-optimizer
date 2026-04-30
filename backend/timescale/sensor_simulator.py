@@ -463,6 +463,184 @@ YEARLY_PRECURSOR_DAYS_MIN = 5
 YEARLY_PRECURSOR_DAYS_MAX = 10
 
 
+# =============================================================================
+# Realistic-noise controls. Each constant is independently dialable so we can
+# tune metrics without rewriting code: set any to 0 / False to disable that
+# factor entirely. Tuned slightly milder than max realism so the supervised
+# model still hits the demo targets (Precision ≥0.75, Recall ≥0.80).
+# =============================================================================
+
+# 1. False-alarm spikes: workers / equipment cause brief sensor spikes that
+#    are NOT real failure precursors. Distributed across (machine, sensor)
+#    pairs and kept clear of real precursor windows so they challenge the
+#    model's precision rather than masking real failures.
+NOISE_FALSE_ALARM_COUNT = 100      # set to 0 to disable
+NOISE_FALSE_ALARM_DURATION_MIN = 1 # samples (1-min granularity → 30-90s)
+NOISE_FALSE_ALARM_DURATION_MAX = 2
+NOISE_FALSE_ALARM_AMPLITUDE_FRAC = 0.50  # spike size as fraction of normal range
+
+# 2. Sensor drift: each sensor's baseline slowly walks ±NOISE_DRIFT_PERCENT
+#    of its normal range over months, then snaps back at recalibration days
+#    (every NOISE_DRIFT_RECAL_INTERVAL_DAYS_* range).
+NOISE_DRIFT_PERCENT = 0.08         # set to 0 to disable
+NOISE_DRIFT_RECAL_INTERVAL_DAYS_MIN = 90
+NOISE_DRIFT_RECAL_INTERVAL_DAYS_MAX = 120
+
+# 3. Operating regime shifts: each machine runs different products in 5-15
+#    day blocks. Each product has a small offset per sensor.
+NOISE_PRODUCT_REGIMES = True       # set to False to use facial_tissue baseline always
+NOISE_PRODUCT_BLOCK_DAYS_MIN = 5
+NOISE_PRODUCT_BLOCK_DAYS_MAX = 15
+
+PRODUCT_TYPES = ["facial_tissue", "toilet_paper", "kitchen_towel", "napkin"]
+
+# Per-product additive offsets (in the sensor's native units). facial_tissue
+# is the reference baseline (no offset). Values calibrated to be smaller
+# than failure-precursor deltas so the model can still pick out failures.
+PRODUCT_SENSOR_OFFSETS: dict[str, dict[str, float]] = {
+    "facial_tissue":  {},
+    "toilet_paper": {
+        "rewinder_speed":              61.5,    # +3% of 2050
+        "yankee_surface_temp":          2.0,
+        "yankee_vibration_bearing_1":   0.05,
+        "yankee_vibration_bearing_2":   0.05,
+        "yankee_vibration_bearing_3":   0.05,
+    },
+    "kitchen_towel": {
+        "rewinder_speed":            -102.5,    # -5% of 2050
+        "yankee_surface_temp":          5.0,
+        "yankee_vibration_bearing_1":  -0.05,
+        "yankee_vibration_bearing_2":  -0.05,
+        "yankee_vibration_bearing_3":  -0.05,
+    },
+    "napkin": {
+        "rewinder_speed":             102.5,    # +5%
+    },
+}
+
+# 4. No-warning failures: a fraction of failure events have no precursor
+#    ramp — the sensor reads normal until the failure moment. The label
+#    set still records them; the model is forced to either pick them up
+#    from indirect cues (e.g. anomaly score on related sensors) or accept
+#    the recall hit. Marked in the events parquet via ``precursor_type``.
+NOISE_NO_WARNING_FRACTION = 0.12   # set to 0 for all-precursor failures
+
+# 5. Label noise (applied in etl.py, not here — surfaced for visibility).
+#    A small fraction of target_failure_within_72h labels are flipped to
+#    simulate maintenance-log mistakes.
+NOISE_LABEL_NOISE_PERCENT = 0.03   # set to 0 to disable in the ETL
+
+
+# -- Helpers -----------------------------------------------------------------
+
+def _sensor_range_width(spec: SensorSpec) -> float:
+    """Normal range width per spec — used for noise amplitudes that scale
+    with the sensor's physical scale."""
+    # The simulator's spec.mu is the centre of the normal range; the
+    # contract's range is roughly ±10% of mu for most sensors. Fall back
+    # to that when we don't have an explicit width.
+    return abs(spec.diurnal_amp * 4.0) if spec.diurnal_amp else max(1.0, abs(spec.mu) * 0.05)
+
+
+def _build_product_schedule(
+    rng: random.Random,
+    total_days: int,
+) -> list[tuple[int, int, str]]:
+    """Per-machine deterministic schedule of (start_day, end_day, product).
+    Blocks are 5-15 days long; products are sampled uniformly so each
+    machine sees a varied mix over the year."""
+    schedule: list[tuple[int, int, str]] = []
+    day = 0
+    while day < total_days:
+        block_len = rng.randint(NOISE_PRODUCT_BLOCK_DAYS_MIN, NOISE_PRODUCT_BLOCK_DAYS_MAX)
+        product = rng.choice(PRODUCT_TYPES)
+        schedule.append((day, min(day + block_len, total_days), product))
+        day += block_len
+    return schedule
+
+
+def _expand_schedule_per_minute(
+    schedule: list[tuple[int, int, str]],
+    n_minutes: int,
+):
+    """Convert a day-block schedule to a per-minute string array."""
+    import numpy as np
+    out = np.empty(n_minutes, dtype=object)
+    for start_day, end_day, product in schedule:
+        start_idx = start_day * 1440
+        end_idx = min(end_day * 1440, n_minutes)
+        out[start_idx:end_idx] = product
+    return out
+
+
+def _build_drift_overlay(
+    np_rng,
+    range_width: float,
+    n_days: int,
+    n_minutes: int,
+):
+    """Build a per-minute drift overlay for one sensor. The drift is a
+    daily random walk capped at ±NOISE_DRIFT_PERCENT × range_width, with
+    full-reset events at random intervals every 90-120 days simulating
+    field recalibration."""
+    import numpy as np
+    if NOISE_DRIFT_PERCENT <= 0:
+        return np.zeros(n_minutes, dtype=np.float64)
+
+    # Daily increments: small Gaussian steps. Step size scales so a year's
+    # accumulation lands in the same order as the cap.
+    step_sigma = NOISE_DRIFT_PERCENT * range_width / math.sqrt(n_days) * 1.5
+    daily_steps = np_rng.normal(0.0, step_sigma, n_days)
+    cumulative = np.cumsum(daily_steps)
+
+    # Recalibration days — snap drift back to 0 from that day forward.
+    recal_days: list[int] = []
+    nxt = int(np_rng.integers(NOISE_DRIFT_RECAL_INTERVAL_DAYS_MIN,
+                              NOISE_DRIFT_RECAL_INTERVAL_DAYS_MAX + 1))
+    while nxt < n_days:
+        recal_days.append(nxt)
+        nxt += int(np_rng.integers(NOISE_DRIFT_RECAL_INTERVAL_DAYS_MIN,
+                                   NOISE_DRIFT_RECAL_INTERVAL_DAYS_MAX + 1))
+    for r in recal_days:
+        cumulative[r:] -= cumulative[r]
+
+    cap = NOISE_DRIFT_PERCENT * range_width
+    cumulative = np.clip(cumulative, -cap, cap)
+    return np.repeat(cumulative, 1440)[:n_minutes]
+
+
+def _build_false_alarm_overlay(
+    rng: random.Random,
+    n_minutes: int,
+    range_width: float,
+    n_spikes: int,
+    protected_ranges: list[tuple[int, int]],
+    ts_int,
+):
+    """Per-(machine, sensor) overlay of n_spikes brief positive spikes
+    (1-2 samples each) that are not real failures. Avoids the protected
+    ranges around real failure precursors so the spikes don't accidentally
+    land where the labels say a failure is imminent."""
+    import numpy as np
+    overlay = np.zeros(n_minutes, dtype=np.float64)
+    if n_spikes <= 0:
+        return overlay
+    amp = NOISE_FALSE_ALARM_AMPLITUDE_FRAC * range_width
+    placed = 0
+    attempts = 0
+    while placed < n_spikes and attempts < n_spikes * 30:
+        attempts += 1
+        t_idx = rng.randint(0, n_minutes - NOISE_FALSE_ALARM_DURATION_MAX - 1)
+        t_int = int(ts_int[t_idx])
+        if any(ds <= t_int <= ft for ds, ft in protected_ranges):
+            continue
+        dur = rng.randint(NOISE_FALSE_ALARM_DURATION_MIN,
+                          NOISE_FALSE_ALARM_DURATION_MAX)
+        overlay[t_idx:t_idx + dur] += amp
+        placed += 1
+    return overlay
+
+
 def _build_yearly_failure_events(rng: random.Random) -> list[dict]:
     """Generate ``YEARLY_FAILURE_EVENT_COUNT`` deterministic failure events
     stratified so all 4 failure modes appear on every machine. With 16
@@ -513,7 +691,34 @@ def _build_yearly_failure_events(rng: random.Random) -> list[dict]:
                     "failure_time": failure_time,
                     "failure_mode": mode,
                     "description": f"{sensor_type} {mode} on {machine_id}",
+                    # Default — the next pass below converts a fraction
+                    # to "sudden" (no-precursor) failures.
+                    "precursor_type": "gradual",
                 })
+
+    # Mark NOISE_NO_WARNING_FRACTION of events as "sudden" — the raw sensor
+    # data shows nothing unusual until failure_time. The label set still
+    # records the failure, so the model's recall takes the hit unless it
+    # learns to lean on indirect cues. Distribute across distinct machines
+    # so no single machine carries every no-warning event.
+    if NOISE_NO_WARNING_FRACTION > 0 and events:
+        n_sudden = max(1, int(round(len(events) * NOISE_NO_WARNING_FRACTION)))
+        # Group event indices by machine so we can pull one-per-machine.
+        by_machine: dict[str, list[int]] = {m: [] for m in MACHINE_IDS}
+        for i, ev in enumerate(events):
+            by_machine[ev["machine_id"]].append(i)
+        machines_cycle = list(MACHINE_IDS)
+        rng.shuffle(machines_cycle)
+        chosen: list[int] = []
+        for mid in machines_cycle:
+            if len(chosen) >= n_sudden:
+                break
+            if not by_machine[mid]:
+                continue
+            chosen.append(rng.choice(by_machine[mid]))
+        for idx in chosen:
+            events[idx]["precursor_type"] = "sudden"
+
     return events
 
 
@@ -557,33 +762,72 @@ def generate_yearly_raw_parquet(
     seconds_into_day = (ts_int % 86400).astype(np.float64)
     diurnal_phase = np.sin(2 * np.pi * seconds_into_day / 86400.0)
 
-    sensor_specs = {s.sensor_type: s for s in SENSORS}
-
     # -- per-machine generation ------------------------------------------
+    spikes_per_pair = NOISE_FALSE_ALARM_COUNT // (len(MACHINE_IDS) * len(SENSORS))
+
     frames: list[pd.DataFrame] = []
     for machine_id in MACHINE_IDS:
+        # Build per-machine product schedule (always — the column lands in
+        # the parquet so the ETL can read it. When the regimes constant is
+        # off, every minute reads "facial_tissue").
+        if NOISE_PRODUCT_REGIMES:
+            schedule = _build_product_schedule(rng, YEARLY_DAYS)
+            product_per_minute = _expand_schedule_per_minute(schedule, n)
+        else:
+            product_per_minute = np.full(n, "facial_tissue", dtype=object)
+
         cols: dict = {
-            "timestamp":  timestamps,
-            "machine_id": np.full(n, machine_id, dtype=object),
+            "timestamp":      timestamps,
+            "machine_id":     np.full(n, machine_id, dtype=object),
+            "product_active": product_per_minute,
         }
         machine_events = events_df[events_df["machine_id"] == machine_id]
+
+        # Pre-compute per-product offset masks for vectorized application
+        # below. mask[product] == True at minute i iff that product was
+        # active at minute i.
+        product_masks = {
+            p: (product_per_minute == p) for p in PRODUCT_TYPES
+        }
+
+        # Protected ranges (in epoch seconds) around real precursors —
+        # used to keep false-alarm spikes from landing on top of real
+        # failure windows where they'd corrupt the labels.
+        protected_ranges: list[tuple[int, int]] = []
+        for _, ev in machine_events.iterrows():
+            ds = int(pd.Timestamp(ev["degradation_start"]).timestamp()) - 2 * 86400
+            ft = int(pd.Timestamp(ev["failure_time"]).timestamp()) + 2 * 86400
+            protected_ranges.append((ds, ft))
+
         for spec in SENSORS:
             base = (
                 np.full(n, spec.mu, dtype=np.float64)
                 + spec.diurnal_amp * diurnal_phase
                 + np_rng.normal(0.0, spec.sigma, n)
             )
-            # Apply failure overlays: ramp from 0 at degradation_start to
-            # (peak - mu) at failure_time. Multiple overlapping events on
-            # the same sensor combine via element-wise max so the most
-            # aggressive ramp wins.
+
+            # NOISE 3: product-regime offsets per minute.
+            if NOISE_PRODUCT_REGIMES:
+                for product, mask in product_masks.items():
+                    offset = PRODUCT_SENSOR_OFFSETS.get(product, {}).get(spec.sensor_type, 0.0)
+                    if offset and mask.any():
+                        base[mask] += offset
+
+            # NOISE 2: slow drift + recalibration snap-backs.
+            range_width = _sensor_range_width(spec)
+            drift = _build_drift_overlay(np_rng, range_width, YEARLY_DAYS, n)
+            base = base + drift
+
+            # Failure overlays: ramp from 0 at degradation_start to
+            # (peak - mu) at failure_time. ``sudden`` events are skipped
+            # so the raw sensor reads normal until failure_time (the
+            # NOISE 4 path).
             overlay = np.zeros(n, dtype=np.float64)
             sensor_events = machine_events[machine_events["sensor_type"] == spec.sensor_type]
+            sensor_events = sensor_events[sensor_events["precursor_type"] == "gradual"]
             if not sensor_events.empty:
                 deg_starts_int = sensor_events["degradation_start"].to_numpy().astype("datetime64[s]").astype("int64")
                 fail_times_int = sensor_events["failure_time"].to_numpy().astype("datetime64[s]").astype("int64")
-                # All events for this (machine, sensor) share the same peak
-                # since peak is a property of the sensor type.
                 pk = _PEAK_BY_SENSOR[spec.sensor_type]
                 for ds_int, ft_int in zip(deg_starts_int, fail_times_int):
                     mask = (ts_int >= ds_int) & (ts_int <= ft_int)
@@ -592,10 +836,18 @@ def generate_yearly_raw_parquet(
                     progress = (ts_int[mask] - ds_int) / max(1.0, float(ft_int - ds_int))
                     ramp = (pk - spec.mu) * progress
                     overlay[mask] = np.maximum(overlay[mask], ramp)
-            cols[spec.sensor_type] = (base + overlay).astype(np.float32)
+
+            # NOISE 1: false-alarm spikes (added on top of overlay so the
+            # sensor reads briefly elevated even if there's no failure).
+            spike_overlay = _build_false_alarm_overlay(
+                rng, n, range_width, spikes_per_pair, protected_ranges, ts_int,
+            )
+            cols[spec.sensor_type] = (base + overlay + spike_overlay).astype(np.float32)
 
         frames.append(pd.DataFrame(cols))
-        print(f"[yr]  generated {machine_id}: {n:,} rows")
+        n_sudden = int((machine_events["precursor_type"] == "sudden").sum())
+        print(f"[yr]  generated {machine_id}: {n:,} rows  "
+              f"({n_sudden} sudden / {len(machine_events) - n_sudden} gradual events)")
 
     df = pd.concat(frames, ignore_index=True)
     print(f"[yr]  combined wide-format frame: {len(df):,} rows × {df.shape[1]} cols")

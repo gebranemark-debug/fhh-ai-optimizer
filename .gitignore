@@ -12,4 +12,10 @@ backend/timescale/sensor_readings_raw.parquet
 backend/timescale/sensor_failure_events.parquet
 backend/timescale/features.parquet
 backend/timescale/features.csv
-backend/ai_model/artifacts/
+# Exclude artifact contents but keep the directory traversable so the
+# ``clean_baseline/`` subfolder below can be re-included. Git can't
+# negate inside a directory that's been excluded as a whole.
+backend/ai_model/artifacts/*
+# ...except the clean-baseline checkpoint, which is a safety fallback
+# we always want available without having to retrain.
+!backend/ai_model/artifacts/clean_baseline/
