@@ -1,0 +1,9 @@
+{
+  "rows_total": 35040,
+  "rows_usable": 34996,
+  "positive_rate": 0.030946393873585554,
+  "rf_roc_auc": 0.9999442901099319,
+  "rf_pr_auc": 0.9983138108092862,
+  "anomaly_score_separation": 36.5080078593526,
+  "feature_count": 40
+}
