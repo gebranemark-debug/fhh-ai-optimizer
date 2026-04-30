@@ -410,5 +410,220 @@ def main() -> None:
     print("[sim]  OK.")
 
 
+# =============================================================================
+# Yearly raw layer — production-mirror of what Valmet DNA DCS would stream:
+# per-minute wide-format snapshots (one row per (timestamp, machine_id) with
+# 8 sensor value columns). 4 machines × 1440 min/day × 365 days = ~2.1M rows.
+#
+# This is the raw layer in the three-tier architecture from
+# docs/fhh_database_architecture.pdf:
+#   raw (per-minute, this file)  →  feature (hourly, etl.py)  →  model
+#
+# By implementing all three layers — even though only the feature layer is
+# used for training — the pipeline is validated at production scale and the
+# Oracle ADW connector swap point is real instead of theoretical.
+# =============================================================================
+
+YEARLY_TODAY = date(2026, 4, 25)
+YEARLY_DAYS = 365
+YEARLY_INTERVAL_SECONDS = 60  # per-minute density
+# Spread across 4 machines × 6 sensor types. Tuned to land the
+# target_failure_within_72h positive count in [800, 1500] after ETL
+# labelling — each event labels ~73 hour-buckets, so 16 events give
+# ≈1,168 positives. Higher counts cause label overlap that pushes the
+# positive rate past 50% and the model collapses to a trivial classifier.
+# (The minute-resolution PRECURSOR window stays rich: 16 events with
+# 5-10 day precursors = 100,000+ minute-readings of degradation signal.)
+YEARLY_FAILURE_EVENT_COUNT = 16
+
+# Eligible sensor types per failure mode. Each mode draws from one or more
+# physical sensors; bearings have three options, the others one each. The
+# `peak` is the value the sensor ramps to at failure_time (well beyond the
+# normal range so trend / std features pick it up cleanly).
+_FAILURE_MODE_POOL = {
+    "bearing_fatigue":  [
+        ("yankee_vibration_bearing_1", 7.5),
+        ("yankee_vibration_bearing_2", 7.5),
+        ("yankee_vibration_bearing_3", 7.5),
+    ],
+    "thermal_runaway":  [("yankee_surface_temp",   125.0)],
+    "pressure_anomaly": [("yankee_steam_pressure", 11.5)],
+    "fan_drift":        [("aircap_inlet_temp",     535.0)],
+}
+
+# Flat lookup: sensor_type -> peak value (used by the generator inside
+# generate_yearly_raw_parquet to apply ramps).
+_PEAK_BY_SENSOR = {
+    sensor: peak
+    for pool in _FAILURE_MODE_POOL.values()
+    for sensor, peak in pool
+}
+
+YEARLY_PRECURSOR_DAYS_MIN = 5
+YEARLY_PRECURSOR_DAYS_MAX = 10
+
+
+def _build_yearly_failure_events(rng: random.Random) -> list[dict]:
+    """Generate ``YEARLY_FAILURE_EVENT_COUNT`` deterministic failure events
+    stratified so all 4 failure modes appear on every machine. With 16
+    events that's 4 modes × 4 machines = 1 event per (machine, mode);
+    larger counts repeat the rotation. Each event has a 5-10 day
+    precursor during which the affected sensor ramps from baseline to
+    peak; ETL labels the 73 hour-buckets ending at failure_time as
+    target_failure_within_72h=1."""
+    start_dt = datetime.combine(YEARLY_TODAY - timedelta(days=YEARLY_DAYS), time(0, 0), tzinfo=timezone.utc)
+    end_dt   = datetime.combine(YEARLY_TODAY, time(0, 0), tzinfo=timezone.utc)
+    span_seconds = int((end_dt - start_dt).total_seconds())
+
+    modes = list(_FAILURE_MODE_POOL.keys())
+    sensor_to_component = {
+        "yankee_vibration_bearing_1": "yankee",
+        "yankee_vibration_bearing_2": "yankee",
+        "yankee_vibration_bearing_3": "yankee",
+        "yankee_surface_temp":        "yankee",
+        "yankee_steam_pressure":      "yankee",
+        "aircap_inlet_temp":          "aircap",
+    }
+
+    events: list[dict] = []
+    counter = 0
+    # Stratified round-robin: each (machine, mode) pair gets exactly
+    # ``per_pair`` events. With YEARLY_FAILURE_EVENT_COUNT=16 and 16
+    # pairs, that's 1 each.
+    n_pairs = len(MACHINE_IDS) * len(modes)
+    per_pair = max(1, YEARLY_FAILURE_EVENT_COUNT // n_pairs)
+    for machine_id in MACHINE_IDS:
+        for mode in modes:
+            for _ in range(per_pair):
+                sensor_type, peak = rng.choice(_FAILURE_MODE_POOL[mode])
+                # failure_time uniform within the year, leaving a 12-day
+                # buffer at the start so 5-10 day precursors don't fall
+                # outside the simulated window.
+                failure_offset = rng.randint(int(86400 * 12), span_seconds - 1)
+                failure_time = start_dt + timedelta(seconds=failure_offset)
+                precursor_days = rng.randint(YEARLY_PRECURSOR_DAYS_MIN, YEARLY_PRECURSOR_DAYS_MAX)
+                degradation_start = failure_time - timedelta(days=precursor_days)
+                counter += 1
+                events.append({
+                    "event_id": f"fyr-{counter:04d}-{machine_id}-{sensor_type}",
+                    "machine_id": machine_id,
+                    "component_id": sensor_to_component[sensor_type],
+                    "sensor_type": sensor_type,
+                    "degradation_start": degradation_start,
+                    "failure_time": failure_time,
+                    "failure_mode": mode,
+                    "description": f"{sensor_type} {mode} on {machine_id}",
+                })
+    return events
+
+
+def generate_yearly_raw_parquet(
+    out_path: Path,
+    events_out_path: Path,
+    seed: int = 42,
+) -> tuple[int, int]:
+    """Produce sensor_readings_raw.parquet (wide format, per-minute, full
+    year) and sensor_failure_events.parquet (label set for the ETL).
+
+    Returns (n_reading_rows, n_events).
+    """
+    import numpy as np
+    import pandas as pd
+
+    rng = random.Random(seed)
+    np_rng = np.random.default_rng(seed)
+
+    # -- timestamps -------------------------------------------------------
+    start_ts = pd.Timestamp(YEARLY_TODAY - timedelta(days=YEARLY_DAYS), tz="UTC")
+    end_ts   = pd.Timestamp(YEARLY_TODAY, tz="UTC")
+    timestamps = pd.date_range(start_ts, end_ts, freq="1min", inclusive="left")
+    n = len(timestamps)
+    print(f"[yr]  timestamps: {n:,} per minute over {YEARLY_DAYS} days")
+
+    # -- failure events ---------------------------------------------------
+    events = _build_yearly_failure_events(rng)
+    events_df = pd.DataFrame(events)
+    events_df["degradation_start"] = pd.to_datetime(events_df["degradation_start"], utc=True)
+    events_df["failure_time"]      = pd.to_datetime(events_df["failure_time"], utc=True)
+    print(f"[yr]  failure events: {len(events_df):,}")
+    per_machine = events_df["machine_id"].value_counts().to_dict()
+    print(f"[yr]  per machine: {per_machine}")
+
+    # Pre-compute timestamp epoch seconds for vectorized event masking.
+    # Cast through datetime64[s] explicitly so this is robust to whatever
+    # resolution the underlying numpy/pandas chose (date_range gives ns,
+    # parquet round-trip gives us — they don't divide by the same factor).
+    ts_int = timestamps.to_numpy().astype("datetime64[s]").astype("int64")
+    seconds_into_day = (ts_int % 86400).astype(np.float64)
+    diurnal_phase = np.sin(2 * np.pi * seconds_into_day / 86400.0)
+
+    sensor_specs = {s.sensor_type: s for s in SENSORS}
+
+    # -- per-machine generation ------------------------------------------
+    frames: list[pd.DataFrame] = []
+    for machine_id in MACHINE_IDS:
+        cols: dict = {
+            "timestamp":  timestamps,
+            "machine_id": np.full(n, machine_id, dtype=object),
+        }
+        machine_events = events_df[events_df["machine_id"] == machine_id]
+        for spec in SENSORS:
+            base = (
+                np.full(n, spec.mu, dtype=np.float64)
+                + spec.diurnal_amp * diurnal_phase
+                + np_rng.normal(0.0, spec.sigma, n)
+            )
+            # Apply failure overlays: ramp from 0 at degradation_start to
+            # (peak - mu) at failure_time. Multiple overlapping events on
+            # the same sensor combine via element-wise max so the most
+            # aggressive ramp wins.
+            overlay = np.zeros(n, dtype=np.float64)
+            sensor_events = machine_events[machine_events["sensor_type"] == spec.sensor_type]
+            if not sensor_events.empty:
+                deg_starts_int = sensor_events["degradation_start"].to_numpy().astype("datetime64[s]").astype("int64")
+                fail_times_int = sensor_events["failure_time"].to_numpy().astype("datetime64[s]").astype("int64")
+                # All events for this (machine, sensor) share the same peak
+                # since peak is a property of the sensor type.
+                pk = _PEAK_BY_SENSOR[spec.sensor_type]
+                for ds_int, ft_int in zip(deg_starts_int, fail_times_int):
+                    mask = (ts_int >= ds_int) & (ts_int <= ft_int)
+                    if not mask.any():
+                        continue
+                    progress = (ts_int[mask] - ds_int) / max(1.0, float(ft_int - ds_int))
+                    ramp = (pk - spec.mu) * progress
+                    overlay[mask] = np.maximum(overlay[mask], ramp)
+            cols[spec.sensor_type] = (base + overlay).astype(np.float32)
+
+        frames.append(pd.DataFrame(cols))
+        print(f"[yr]  generated {machine_id}: {n:,} rows")
+
+    df = pd.concat(frames, ignore_index=True)
+    print(f"[yr]  combined wide-format frame: {len(df):,} rows × {df.shape[1]} cols")
+
+    # -- write -----------------------------------------------------------
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    df.to_parquet(out_path, index=False, compression="snappy")
+    events_df.to_parquet(events_out_path, index=False, compression="snappy")
+
+    raw_size_mb = out_path.stat().st_size / (1024 * 1024)
+    events_size_kb = events_out_path.stat().st_size / 1024
+    print(f"[yr]  wrote raw    → {out_path} ({raw_size_mb:.2f} MB)")
+    print(f"[yr]  wrote events → {events_out_path} ({events_size_kb:.1f} KB)")
+    return len(df), len(events_df)
+
+
+def _yearly_main() -> None:
+    """Entry point for the --yearly-raw CLI flag."""
+    here = Path(__file__).parent
+    raw_path = here / "sensor_readings_raw.parquet"
+    events_path = here / "sensor_failure_events.parquet"
+    n_rows, n_events = generate_yearly_raw_parquet(raw_path, events_path)
+    print(f"[yr]  OK — {n_rows:,} readings, {n_events:,} events.")
+
+
 if __name__ == "__main__":
-    main()
+    import sys
+    if "--yearly-raw" in sys.argv:
+        _yearly_main()
+    else:
+        main()
