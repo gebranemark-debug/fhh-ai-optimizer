@@ -13,11 +13,14 @@ Run:
 
 from __future__ import annotations
 
+import os
 import sys
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Optional
 
 from fastapi import FastAPI, HTTPException, Query
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 
@@ -44,6 +47,38 @@ app = FastAPI(
     version="1.1",
     description="Endpoints conform to docs/API_CONTRACT-2.md v1.1.",
 )
+
+
+# -- CORS --------------------------------------------------------------------
+# Allowed origins are configurable via the FHH_CORS_ALLOWED_ORIGINS env var
+# (comma-separated). Defaults cover prod Vercel + local Vite/CRA dev. The
+# regex matches Vercel preview deploys (fhh-ai-optimizer-<sha>.vercel.app).
+_DEFAULT_CORS_ORIGINS = [
+    "https://fhh-ai-optimizer.vercel.app",
+    "http://localhost:5173",
+    "http://localhost:3000",
+]
+_cors_env = os.environ.get("FHH_CORS_ALLOWED_ORIGINS")
+_allowed_origins = (
+    [o.strip() for o in _cors_env.split(",") if o.strip()]
+    if _cors_env
+    else _DEFAULT_CORS_ORIGINS
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=_allowed_origins,
+    allow_origin_regex=r"^https://fhh-ai-optimizer-[A-Za-z0-9-]+\.vercel\.app$",
+    allow_credentials=True,
+    allow_methods=["GET", "POST", "DELETE", "OPTIONS"],
+    allow_headers=["*"],
+)
+
+
+# -- Startup clock -----------------------------------------------------------
+# Captured at import. /health subtracts from monotonic() for uptime so the
+# value is robust to wall-clock changes (NTP corrections, container moves).
+_APP_START_TIME = _time.monotonic()
 
 
 @app.exception_handler(HTTPException)
@@ -98,21 +133,97 @@ def _sensor_404(machine_id: str, sensor_type: str) -> HTTPException:
 # Routes
 # ---------------------------------------------------------------------------
 
+# Routes that don't belong to a contract module (status, docs, etc.) and
+# are excluded from the root summary's module breakdown.
+_META_PATHS = {"/", "/health", "/docs", "/openapi.json", "/redoc"}
+
+
+def _classify_route(path: str) -> Optional[str]:
+    """Map a route path to its contract module bucket. Returns None for
+    meta routes (root, health, docs) so they don't appear in the summary."""
+    if path in _META_PATHS:
+        return None
+    if path.startswith("/kpis/"):
+        # Both /kpis/overview and /kpis/cost-savings live under the
+        # contract's "CROSS-CUTTING ENDPOINTS" section.
+        return "cross_cutting"
+    if path.startswith("/machines") or path.startswith("/alerts"):
+        return "module_1_maintenance"
+    if (
+        path.startswith("/products")
+        or path.startswith("/markets")
+        or path.startswith("/forecast")
+        or path.startswith("/demand")
+    ):
+        return "module_2_demand"
+    if path.startswith("/chat"):
+        return "module_3_chat"
+    return None
+
+
+def _now_iso_utc() -> str:
+    """Contract canonical ISO timestamp — no ms, Z suffix."""
+    return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+
+@app.get("/health")
+def health() -> dict:
+    """Liveness probe for deploy platforms (Railway / Render / Fly.io).
+    Hot path — must respond in <50ms. No model load, no Anthropic call,
+    no data-layer reads."""
+    return {
+        "status": "ok",
+        "service": "fhh-ai-optimizer",
+        "version": "1.1",
+        "uptime_seconds": int(_time.monotonic() - _APP_START_TIME),
+        "timestamp": _now_iso_utc(),
+    }
+
+
 @app.get("/")
 def root() -> dict:
+    """Service summary: enumerate currently-registered routes, grouped
+    by contract module, so the listing can never drift from the actual
+    app surface."""
+    # Local import keeps the global namespace clean and avoids importing
+    # internal FastAPI types until the root route is actually hit.
+    from fastapi.routing import APIRoute
+
+    buckets: dict[str, list[str]] = {
+        "module_1_maintenance": [],
+        "module_2_demand": [],
+        "module_3_chat": [],
+        "cross_cutting": [],
+    }
+    for route in app.routes:
+        if not isinstance(route, APIRoute):
+            continue
+        bucket = _classify_route(route.path)
+        if bucket is None:
+            continue
+        # Strip HEAD (FastAPI auto-adds it for GET routes); show only the
+        # methods a client would actually call.
+        for method in sorted((route.methods or set()) - {"HEAD"}):
+            buckets[bucket].append(f"{method} {route.path}")
+    for endpoints in buckets.values():
+        endpoints.sort()
+
     return {
-        "service": "fhh-ai-optimizer",
-        "version": "v1.1",
+        "service": "FHH AI Optimizer",
+        "version": "1.1",
+        "description": (
+            "Predictive maintenance + demand forecasting for Fine Hygienic "
+            "Holding's Valmet DCT 200TS tissue lines."
+        ),
         "contract": "API_CONTRACT.md v1.1",
-        "endpoints": [
-            "/machines",
-            "/machines/{machine_id}",
-            "/machines/{machine_id}/risk-score",
-            "/machines/{machine_id}/predictions",
-            "/alerts",
-            "/alerts/{alert_id}",
-            "/kpis/overview",
-        ],
+        "modules": {
+            mod: {"endpoints": len(eps), "endpoints_list": eps}
+            for mod, eps in buckets.items()
+        },
+        "docs": "/docs",
+        "health": "/health",
+        "openapi": "/openapi.json",
+        "github": "https://github.com/gebranemark-debug/fhh-ai-optimizer",
     }
 
 
