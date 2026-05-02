@@ -1,0 +1,5 @@
+# Local environment files — never commit
+.env
+.env.local
+.env.*.local
+!.env.example
