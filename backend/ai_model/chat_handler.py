@@ -47,7 +47,23 @@ except ImportError:
 
 # -- Defaults & constants ---------------------------------------------------
 
-_DEFAULT_BASE_URL = "http://127.0.0.1:8000"
+def _resolve_base_url() -> str:
+    """Resolve the URL the chat handler uses for its self-targeted HTTP
+    tool calls. Precedence:
+      1. ``FHH_INTERNAL_BASE_URL`` — explicit override (any deployment).
+      2. ``PORT`` — Railway/Render-style. Build ``http://localhost:$PORT``
+         since the chat handler runs in the same container as the API.
+      3. ``http://127.0.0.1:8000`` — local dev default."""
+    explicit = os.environ.get("FHH_INTERNAL_BASE_URL")
+    if explicit:
+        return explicit.rstrip("/")
+    port = os.environ.get("PORT")
+    if port:
+        return f"http://localhost:{port}"
+    return "http://127.0.0.1:8000"
+
+
+_DEFAULT_BASE_URL = _resolve_base_url()
 _DEFAULT_MODEL = "claude-sonnet-4-6"
 _MAX_TOOL_ROUNDS = 5
 _MAX_OUTPUT_TOKENS = 1024
