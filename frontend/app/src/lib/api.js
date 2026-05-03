@@ -243,10 +243,12 @@ export async function getKpisOverview() {
   return _fetch('/kpis/overview');
 }
 
-export async function getCostSavings() {
-  // GET /kpis/cost-savings → flat object (window, total_predictions, ...
-  // estimated_cost_saved_usd, breakdown_by_machine[]). No unwrapping.
-  return _fetch('/kpis/cost-savings');
+export async function getCostSavings(window = 'mtd') {
+  // GET /kpis/cost-savings?window=mtd|qtd|ytd|all → flat object
+  // (window, total_predictions, ..., estimated_cost_saved_usd,
+  // breakdown_by_machine[]). Default window=mtd matches the Overview KPI tile.
+  const params = new URLSearchParams({ window });
+  return _fetch(`/kpis/cost-savings?${params.toString()}`);
 }
 
 // ---------------------------------------------------------------------------

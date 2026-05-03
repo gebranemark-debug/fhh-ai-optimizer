@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { getKpisOverview, getMachines, getAlerts } from '../lib/api.js';
+import { getKpisOverview, getMachines, getAlerts, getCostSavings } from '../lib/api.js';
 import KpiStrip from '../components/KpiStrip.jsx';
 import MachineGrid from '../components/MachineGrid.jsx';
 import CriticalAlertsTicker from '../components/CriticalAlertsTicker.jsx';
@@ -7,9 +7,10 @@ import CriticalAlertsTicker from '../components/CriticalAlertsTicker.jsx';
 export default function Overview() {
   // Three independent fetches. Each piece lands when it lands — partial
   // failure on one section doesn't block the others from rendering.
-  const [kpis, setKpis] = useState({ status: 'loading', data: null, error: null });
-  const [fleet, setFleet] = useState({ status: 'loading', data: null, error: null });
-  const [alerts, setAlerts] = useState({ status: 'loading', data: null, error: null });
+const [kpis, setKpis] = useState({ status: 'loading', data: null, error: null });
+const [fleet, setFleet] = useState({ status: 'loading', data: null, error: null });
+const [alerts, setAlerts] = useState({ status: 'loading', data: null, error: null });
+const [costSavings, setCostSavings] = useState({ status: 'loading', data: null, error: null });
 
   useEffect(() => {
     let cancelled = false;
@@ -25,6 +26,10 @@ export default function Overview() {
     getAlerts()
       .then((data) => { if (!cancelled) setAlerts({ status: 'ok', data, error: null }); })
       .catch((error) => { if (!cancelled) setAlerts({ status: 'error', data: null, error }); });
+
+    getCostSavings('mtd')
+      .then((data) => { if (!cancelled) setCostSavings({ status: 'ok', data, error: null }); })
+      .catch((error) => { if (!cancelled) setCostSavings({ status: 'error', data: null, error }); });
 
     return () => { cancelled = true; };
   }, []);
@@ -58,9 +63,20 @@ export default function Overview() {
           </div>
         </div>
       </header>
-
-      {kpis.status === 'ok' ? (
-        <KpiStrip kpis={kpis.data} />
+{kpis.status === 'ok' ? (
+        <KpiStrip
+          kpis={{
+            ...kpis.data,
+            // Override with the canonical cost-savings value when it's loaded.
+            // /kpis/overview returns a different (stale) MTD figure than
+            // /kpis/cost-savings?window=mtd; the cost-savings endpoint is
+            // canonical because it ties to the auditable predictions trail.
+            estimated_cost_saved_usd_mtd:
+              costSavings.status === 'ok'
+                ? costSavings.data.estimated_cost_saved_usd
+                : kpis.data.estimated_cost_saved_usd_mtd,
+          }}
+        />
       ) : kpis.status === 'error' ? (
         <SectionError label="KPI strip" />
       ) : (
