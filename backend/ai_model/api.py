@@ -70,7 +70,7 @@ _allowed_origins = (
 app.add_middleware(
     CORSMiddleware,
     allow_origins=_allowed_origins,
-    allow_origin_regex=r"^https://fhh-ai-optimizer-[A-Za-z0-9-]+\.vercel\.app$",
+    allow_origin_regex=r"^https://(fhh-ai-optimizer-[A-Za-z0-9-]+\.vercel\.app|[A-Za-z0-9-]+-\d+\.app\.github\.dev)$",
     allow_credentials=True,
     allow_methods=["GET", "POST", "DELETE", "OPTIONS"],
     allow_headers=["*"],
