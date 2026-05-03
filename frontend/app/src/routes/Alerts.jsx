@@ -1,5 +1,6 @@
-import { useMemo, useState } from 'react';
-import { alerts as allAlerts, getAlertCounts } from '../mockData.js';
+import { useEffect, useMemo, useState } from 'react';
+import { getAlerts } from '../lib/api.js';
+import { getAlertCounts } from '../mockData.js';
 import AlertsFilterBar from '../components/alerts/AlertsFilterBar.jsx';
 import AlertCountsStrip from '../components/alerts/AlertCountsStrip.jsx';
 import AlertsTable from '../components/alerts/AlertsTable.jsx';
@@ -19,8 +20,22 @@ const DEFAULT_FILTERS = {
 export default function Alerts() {
   const [filters, setFilters] = useState(DEFAULT_FILTERS);
   const [selectedId, setSelectedId] = useState(null);
-  // Local override map: alert_id → boolean. Wins over the mock acknowledged flag.
+  // Local override map: alert_id → boolean. Wins over the backend acknowledged flag.
   const [ackOverrides, setAckOverrides] = useState({});
+
+  // Async state for the alerts list. Empty array fallback during loading
+  // keeps all the downstream filter/find/memo calls happy.
+  const [alertsState, setAlertsState] = useState({ status: 'loading', data: null, error: null });
+
+  useEffect(() => {
+    let cancelled = false;
+    getAlerts()
+      .then((data) => { if (!cancelled) setAlertsState({ status: 'ok', data, error: null }); })
+      .catch((error) => { if (!cancelled) setAlertsState({ status: 'error', data: null, error }); });
+    return () => { cancelled = true; };
+  }, []);
+
+  const allAlerts = alertsState.data || [];
 
   const isAck = (alert) =>
     Object.prototype.hasOwnProperty.call(ackOverrides, alert.alert_id)
@@ -49,16 +64,15 @@ export default function Alerts() {
       if (sev !== 0) return sev;
       return b.risk_score - a.risk_score;
     });
-    // ackOverrides is intentionally a dep — it changes which rows pass the
-    // acknowledged tri-state filter.
+    // ackOverrides and allAlerts are intentional deps.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filters, ackOverrides]);
+  }, [filters, ackOverrides, allAlerts]);
 
   const counts = useMemo(() => getAlertCounts(filtered), [filtered]);
 
   const selectedAlert = useMemo(
     () => allAlerts.find((a) => a.alert_id === selectedId) || null,
-    [selectedId]
+    [selectedId, allAlerts]
   );
 
   const toggleAck = () => {
@@ -80,28 +94,42 @@ export default function Alerts() {
         </p>
       </div>
 
-      <AlertCountsStrip counts={counts} />
+      {alertsState.status === 'error' ? (
+        <div className="rounded-xl bg-red-50 ring-1 ring-red-200 p-4 text-[12px] text-red-800">
+          Couldn't load alerts. Check the network and refresh.
+        </div>
+      ) : alertsState.status === 'loading' ? (
+        <>
+          <div className="h-[80px] rounded-xl bg-slate-100 animate-pulse" />
+          <div className="h-[44px] rounded-xl bg-slate-100 animate-pulse" />
+          <div className="h-[400px] rounded-xl bg-slate-100 animate-pulse" />
+        </>
+      ) : (
+        <>
+          <AlertCountsStrip counts={counts} />
 
-      <AlertsFilterBar
-        filters={filters}
-        onChange={setFilters}
-        totalShown={filtered.length}
-        totalAll={allAlerts.length}
-      />
+          <AlertsFilterBar
+            filters={filters}
+            onChange={setFilters}
+            totalShown={filtered.length}
+            totalAll={allAlerts.length}
+          />
 
-      <AlertsTable
-        alerts={filtered}
-        selectedId={selectedId}
-        onSelect={setSelectedId}
-        ackOverrides={ackOverrides}
-      />
+          <AlertsTable
+            alerts={filtered}
+            selectedId={selectedId}
+            onSelect={setSelectedId}
+            ackOverrides={ackOverrides}
+          />
 
-      <AlertDrawer
-        alert={selectedAlert}
-        acknowledged={selectedAlert ? isAck(selectedAlert) : false}
-        onClose={() => setSelectedId(null)}
-        onToggleAck={toggleAck}
-      />
+          <AlertDrawer
+            alert={selectedAlert}
+            acknowledged={selectedAlert ? isAck(selectedAlert) : false}
+            onClose={() => setSelectedId(null)}
+            onToggleAck={toggleAck}
+          />
+        </>
+      )}
     </div>
   );
 }

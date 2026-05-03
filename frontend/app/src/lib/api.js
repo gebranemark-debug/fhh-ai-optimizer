@@ -84,9 +84,26 @@ export async function getRiskScore(machineId) {
 }
 
 export async function getComponents(machineId) {
-  // GET /machines/{id}/components → { machine_id, components: [...] }. Return just the array.
+  // GET /machines/{id}/components → {machine_id, components: [...]} where each
+  //   entry is {component_id, machine_id, name, is_critical, risk_score,
+  //   risk_tier, expected_lifetime_hours, hours_since_last_maintenance,
+  //   last_maintenance_date}.
+  // ComponentHealthRow expects mockData-shape:
+  //   {component_id, health_score, tier, last_service_date}.
+  // Adapt the field names AND invert risk→health (Railway's risk_score: 9
+  // means "low risk", which mockData represented as health_score: 91).
   const result = await _fetch(`/machines/${machineId}/components`);
-  return result.components;
+  return (result.components || []).map((c) => ({
+    component_id: c.component_id,
+    health_score: typeof c.risk_score === 'number' ? 100 - c.risk_score : null,
+    tier: c.risk_tier,
+    last_service_date: c.last_maintenance_date,
+    // Pass through the extra fields in case other code paths consume them.
+    name: c.name,
+    is_critical: c.is_critical,
+    expected_lifetime_hours: c.expected_lifetime_hours,
+    hours_since_last_maintenance: c.hours_since_last_maintenance,
+  }));
 }
 
 export async function getComponentRiskScore(machineId, componentId) {
@@ -102,31 +119,106 @@ export async function getPredictions(machineId) {
   return result.predictions;
 }
 
+// Static normal-range lookup. The backend's sensor reading objects don't
+// include normal_range per the API contract, but the SensorGrid + chart
+// components expect it. Values come from API_CONTRACT.md §"Sensor types".
+// When we eventually move to a richer reading payload these can be deleted.
+const SENSOR_NORMAL_RANGES = {
+  yankee_surface_temp:        [100, 120],
+  yankee_steam_pressure:      [8, 10],
+  yankee_vibration_bearing_1: [2, 4],
+  yankee_vibration_bearing_2: [2, 4],
+  yankee_vibration_bearing_3: [2, 4],
+  yankee_blade_pressure:      [80, 120],
+  visconip_nip_pressure:      [4, 6],
+  visconip_nip_load:          [85, 110],
+  visconip_felt_moisture:     [35, 45],
+  aircap_inlet_temp:          [480, 520],
+  aircap_exhaust_humidity:    [32, 42],
+  aircap_energy:              [1.8, 2.4],
+  headbox_stock_temp:         [45, 55],
+  headbox_stock_consistency:  [0.28, 0.34],
+  headbox_jet_velocity:       [23.0, 27.0],
+  softreel_tension:           [180, 220],
+  softreel_drive_current:     [130, 160],
+  rewinder_speed:             [1800, 2222],
+  rewinder_drive_current:     [75, 105],
+  rewinder_dancer_position:   [18, 32],
+  qcs_softness_index:         [70, 90],
+  qcs_basis_weight_cd_stddev: [0.4, 1.2],
+};
+
 export async function getSensors(machineId) {
-  // GET /machines/{id}/sensors → { machine_id, readings: [...] }. Return the readings
-  // array (mockData calls this collection "sensors" — same shape per row).
+  // GET /machines/{id}/sensors → { machine_id, readings: [...] }. Return the
+  // readings array, enriched with normal_range from the contract spec — the
+  // backend doesn't include normal_range per-reading but the UI needs it for
+  // the "X–Y unit" label and for in-range visual logic.
   const result = await _fetch(`/machines/${machineId}/sensors`);
-  return result.readings;
+  return result.readings.map((reading) => ({
+    ...reading,
+    normal_range: SENSOR_NORMAL_RANGES[reading.sensor_type] || [0, 0],
+  }));
 }
 
 export async function getSensorHistory(machineId, sensorType) {
-  // GET /machines/{id}/sensors/{type}/history → { machine_id, sensor_type, unit,
-  //   window, aggregation, normal_range, points: [...] }.
-  // Return the FULL object — the chart needs unit + normal_range alongside the
-  // points array for rendering, matching what mockData's getSensorHistory provides.
-  return _fetch(`/machines/${machineId}/sensors/${sensorType}/history`);
+  // GET /machines/{id}/sensors/{type}/history → {machine_id, sensor_type, unit,
+  //   window, aggregation, normal_range: {min, max}, points: [{timestamp, value, min, max}]}.
+  // SensorHistoryChart expects mockData-shape:
+  //   {sensor_type, unit, normal_range: [lo, hi], points: [{timestamp, value}]}.
+  // Adapt the object→array for normal_range, and drop per-point CI fields the
+  // chart doesn't render.
+  const result = await _fetch(`/machines/${machineId}/sensors/${sensorType}/history`);
+  const range = result.normal_range || {};
+  const lo = typeof range.min === 'number' ? range.min : (SENSOR_NORMAL_RANGES[sensorType] || [0, 0])[0];
+  const hi = typeof range.max === 'number' ? range.max : (SENSOR_NORMAL_RANGES[sensorType] || [0, 0])[1];
+  return {
+    sensor_type: result.sensor_type,
+    unit: result.unit,
+    normal_range: [lo, hi],
+    points: (result.points || []).map((p) => ({
+      timestamp: p.timestamp,
+      value: p.value,
+    })),
+  };
 }
 
 export async function getAlarms(machineId) {
-  // GET /machines/{id}/alarms → { machine_id, alarms: [...], total }. Return just the array.
+  // GET /machines/{id}/alarms → {machine_id, alarms: [...]} where each entry is
+  //   {alarm_id, timestamp, severity, description, resolved_at, downtime_minutes}.
+  // AlarmsTable component (built against mockData) expects
+  //   {alarm_id, machine_id, component_id, severity, message, raised_at, resolved}.
+  // Adapt to that shape so the renderer works without changes.
   const result = await _fetch(`/machines/${machineId}/alarms`);
-  return result.alarms;
+  return (result.alarms || []).map((a) => ({
+    alarm_id: a.alarm_id,
+    machine_id: machineId,
+    component_id: a.component_id || null,
+    severity: a.severity,
+    message: a.description,
+    raised_at: a.timestamp,
+    resolved: a.resolved_at !== null && a.resolved_at !== undefined,
+    resolved_at: a.resolved_at,
+    downtime_minutes: a.downtime_minutes,
+  }));
 }
 
 export async function getMaintenanceLog(machineId) {
-  // GET /machines/{id}/maintenance-log → { machine_id, logs: [...] }. Return just the array.
+  // GET /machines/{id}/maintenance-log → {machine_id, logs: [...]} where each
+  //   log is {log_id, component_id, maintenance_type, date_performed, cost_usd,
+  //   downtime_hours, technician, notes}.
+  // MaintenanceLog component expects mockData-shape
+  //   {entry_id, date, kind, component_id, summary, cost_usd, technician}.
   const result = await _fetch(`/machines/${machineId}/maintenance-log`);
-  return result.logs;
+  return (result.logs || []).map((l) => ({
+    entry_id: l.log_id,
+    date: l.date_performed,
+    kind: l.maintenance_type,
+    component_id: l.component_id,
+    summary: l.notes,
+    cost_usd: l.cost_usd,
+    technician: l.technician,
+    downtime_hours: l.downtime_hours,
+  }));
 }
 
 export async function getAlerts() {
