@@ -21,31 +21,55 @@ export default function SensorGrid({ sensors, selected, onSelect, isMaintenance 
 }
 
 function SensorCell({ sensor, selected, onClick, isMaintenance }) {
-  const anomaly = sensor.is_anomaly && !isMaintenance;
+  // Three-state coloring:
+  // - critical: backend flagged anomaly AND value is outside the spec band
+  // - watch: backend flagged anomaly but value is still inside the spec band
+  //   (drift detection — leading indicator, not yet at hard limit)
+  // - normal: not flagged
+  const [lo, hi] = sensor.normal_range || [0, 0];
+  const inBand = sensor.value >= lo && sensor.value <= hi;
+  const flagged = sensor.is_anomaly && !isMaintenance;
+  const tone = !flagged ? 'normal' : inBand ? 'watch' : 'critical';
+
   const ring = selected
     ? 'ring-2 ring-navy'
-    : anomaly
+    : tone === 'critical'
     ? 'ring-1 ring-red-200'
+    : tone === 'watch'
+    ? 'ring-1 ring-amber-200'
     : 'ring-1 ring-slate-200';
-  const bg = anomaly ? 'bg-red-50/50' : 'bg-white';
+  const bg =
+    tone === 'critical' ? 'bg-red-50/50' : tone === 'watch' ? 'bg-amber-50/40' : 'bg-white';
+  const valueColor =
+    tone === 'critical' ? 'text-risk-critical' : tone === 'watch' ? 'text-amber-600' : 'text-navy';
+  const dotColor =
+    tone === 'critical' ? RISK_TIER_COLORS.critical : RISK_TIER_COLORS.watch;
+
   const shortLabel = SENSOR_SHORT_LABELS[sensor.sensor_type] || labelize(sensor.sensor_type);
 
   return (
     <button
       onClick={onClick}
-      title={sensor.sensor_type}
+      title={
+        tone === 'watch'
+          ? `${sensor.sensor_type} — drift toward limit (in spec but trending)`
+          : sensor.sensor_type
+      }
       className={`text-left rounded-lg p-3 transition-all ${ring} ${bg} hover:shadow-card`}
     >
       <div className="flex items-center justify-between gap-1.5 mb-1">
         <div className="text-[10px] uppercase tracking-wider text-slate-400 font-semibold truncate">
           {shortLabel}
         </div>
-        {anomaly && (
-          <span className="w-1.5 h-1.5 rounded-full shrink-0 animate-pulse" style={{ backgroundColor: RISK_TIER_COLORS.critical }} />
+        {tone !== 'normal' && (
+          <span
+            className="w-1.5 h-1.5 rounded-full shrink-0 animate-pulse"
+            style={{ backgroundColor: dotColor }}
+          />
         )}
       </div>
       <div className="flex items-baseline gap-1">
-        <span className={`font-mono text-lg font-semibold tabular-nums ${anomaly ? 'text-risk-critical' : 'text-navy'}`}>
+        <span className={`font-mono text-lg font-semibold tabular-nums ${valueColor}`}>
           {isMaintenance ? '—' : formatVal(sensor.value)}
         </span>
         <span className="font-mono text-[10px] text-slate-400">{sensor.unit}</span>

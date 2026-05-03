@@ -172,7 +172,19 @@ export default function MachineDetail() {
               </div>
               {activeSensor && !isMaintenance && (
                 <div className="flex items-center gap-3">
-                  <Stat label="Current" value={activeSensor.value} unit={activeSensor.unit} highlight={activeSensor.is_anomaly} />
+                  <Stat
+                   label="Current"
+                   value={activeSensor.value}
+                   unit={activeSensor.unit}
+                   tone={
+                    !activeSensor.is_anomaly
+                       ? 'normal'
+                       : activeSensor.value >= activeSensor.normal_range[0] &&
+                        activeSensor.value <= activeSensor.normal_range[1]
+                        ? 'watch'
+                        : 'critical'
+                    }
+                 />
                   <Stat label="Normal" value={`${activeSensor.normal_range[0]}–${activeSensor.normal_range[1]}`} unit={activeSensor.unit} />
                 </div>
               )}
@@ -219,11 +231,14 @@ function SectionError({ label }) {
   );
 }
 
-function Stat({ label, value, unit, highlight }) {
+function Stat({ label, value, unit, tone = 'normal' }) {
+  // tone: 'critical' (red), 'watch' (amber), 'normal' (navy)
+  const valueColor =
+    tone === 'critical' ? 'text-risk-critical' : tone === 'watch' ? 'text-amber-600' : 'text-navy';
   return (
     <div className="text-right">
       <div className="text-[10px] uppercase tracking-wider text-slate-400 font-medium">{label}</div>
-      <div className={`font-mono text-sm font-semibold tabular-nums ${highlight ? 'text-risk-critical' : 'text-navy'}`}>
+      <div className={`font-mono text-sm font-semibold tabular-nums ${valueColor}`}>
         {value}<span className="text-slate-400 ml-1 text-[10px]">{unit}</span>
       </div>
     </div>
