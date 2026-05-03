@@ -1285,29 +1285,114 @@ _FORECAST_ANCHOR_DATE = date(2026, 4, 25)
 _FORECAST_HORIZON_MIN = 1
 _FORECAST_HORIZON_MAX = 12
 
-# Holiday dates fed into Prophet so the model picks up Ramadan/Eid lifts
-# in the historical signal. ``upper_window`` covers the duration of the
-# event (Ramadan ≈ 30 days, Eid ≈ 3 days).
-_PROPHET_HOLIDAYS = pd.DataFrame({
-    "holiday": [
-        "ramadan", "ramadan", "ramadan",
-        "eid_al_fitr", "eid_al_fitr", "eid_al_fitr",
-    ],
-    "ds": pd.to_datetime([
-        "2024-03-10", "2025-03-01", "2026-02-18",
-        "2024-04-10", "2025-03-30", "2026-03-20",
-    ]),
-    "lower_window": [0, 0, 0, 0, 0, 0],
-    "upper_window": [29, 29, 29, 3, 3, 3],
-})
+# ─── Hijri calendar integration ─────────────────────────────────────────────
+# Ramadan begins on Hijri month 9 day 1 (Ramadan 1). Eid al-Fitr begins on
+# Hijri month 10 day 1 (Shawwal 1). Both shift ~10-11 days earlier in the
+# Gregorian calendar each year because the Hijri lunar year is ~354 days
+# vs Gregorian's 365. We compute these dates from the Hijri calendar
+# (via the hijri-converter library) instead of hardcoding, so the system
+# stays correct for any forecast horizon as the demo anchor advances.
 
-# Seasonality event markers returned in the /forecast response. These are
-# the contract's stylized values — anchor-relative, illustrative, suitable
-# for the chart's "Ramadan / Eid begins" reference lines.
-_FORECAST_SEASONALITY_EVENTS: list[dict] = [
-    {"date": "2026-03-10", "label": "Ramadan begins", "expected_lift_percent": 35},
-    {"date": "2026-04-09", "label": "Eid al-Fitr",    "expected_lift_percent": 22},
-]
+from hijri_converter import Hijri  # noqa: E402 — local import after pd is set up.
+
+
+def _ramadan_start_gregorian(gregorian_year: int) -> date:
+    """Return the Gregorian date when Ramadan begins for a given Gregorian year.
+    Ramadan can fall in two different Hijri years within one Gregorian year
+    (around 2030 it crosses Jan 1). We pick the Ramadan that *starts* in the
+    given Gregorian year. If multiple, we pick the earlier one."""
+    candidates = []
+    # Hijri year roughly = Gregorian year - 579, ±1.
+    for hy in range(gregorian_year - 580, gregorian_year - 577):
+        try:
+            g = Hijri(hy, 9, 1).to_gregorian()
+            d = date(g.year, g.month, g.day)
+            if d.year == gregorian_year:
+                candidates.append(d)
+        except (ValueError, OverflowError):
+            continue
+    if not candidates:
+        # Fall back to Hijri year that lands closest, in case Ramadan crosses
+        # into the next Gregorian year (e.g. late-2030 onward).
+        for hy in range(gregorian_year - 580, gregorian_year - 577):
+            try:
+                g = Hijri(hy, 9, 1).to_gregorian()
+                candidates.append(date(g.year, g.month, g.day))
+            except (ValueError, OverflowError):
+                continue
+        candidates = [c for c in candidates if c.year >= gregorian_year - 1]
+    return sorted(candidates)[0] if candidates else date(gregorian_year, 3, 1)
+
+
+def _eid_al_fitr_gregorian(ramadan_start: date) -> date:
+    """Return the Gregorian date of Eid al-Fitr (Shawwal 1, the day after
+    Ramadan ends). Approximated as Ramadan start + 30 days, which matches
+    the Hijri month 10 day 1 within ±1 day."""
+    # Use Hijri arithmetic when we can — convert ramadan_start to Hijri,
+    # bump month to 10. Falls back to +30d if conversion fails for any reason.
+    try:
+        from hijri_converter import Gregorian
+        h = Gregorian(ramadan_start.year, ramadan_start.month, ramadan_start.day).to_hijri()
+        eid = Hijri(h.year, 10, 1).to_gregorian()
+        return date(eid.year, eid.month, eid.day)
+    except Exception:
+        return ramadan_start + timedelta(days=30)
+
+
+def _build_prophet_holidays(start_year: int, end_year: int) -> pd.DataFrame:
+    """Build the Prophet holidays DataFrame covering Ramadan + Eid al-Fitr
+    for every year in [start_year, end_year] inclusive. Auto-shifts ~10-11
+    days earlier per year via the Hijri calendar."""
+    rows = []
+    for year in range(start_year, end_year + 1):
+        ramadan = _ramadan_start_gregorian(year)
+        eid = _eid_al_fitr_gregorian(ramadan)
+        # Snap each holiday to the first of the month that contains it. This is
+        # the correct semantics for monthly-aggregated training data: each
+        # holiday flags exactly one month-row, regardless of which day-of-month
+        # the Hijri calendar puts it on.
+        ramadan_month = ramadan.replace(day=1)
+        eid_month = eid.replace(day=1)
+        rows.append({"holiday": "ramadan",     "ds": pd.Timestamp(ramadan_month), "lower_window": 0, "upper_window": 0})
+        rows.append({"holiday": "eid_al_fitr", "ds": pd.Timestamp(eid_month),     "lower_window": 0, "upper_window": 0})
+    return pd.DataFrame(rows)
+
+
+# Holiday dates fed into Prophet. Built dynamically so the system stays
+# correct as the demo anchor moves forward year over year.
+_PROPHET_HOLIDAYS = _build_prophet_holidays(
+    start_year=2023,  # 1 year before training data starts
+    end_year=2030,    # 4 years past max forecast horizon — generous buffer
+)
+
+
+def _compute_seasonality_events(anchor: date) -> list[dict]:
+    """Return the next upcoming Ramadan + Eid relative to ``anchor`` for the
+    /forecast response. The frontend renders these as diamond markers."""
+    # Look at next 2 years to cover horizons up to 24 months.
+    candidates = []
+    for year in range(anchor.year, anchor.year + 3):
+        ramadan = _ramadan_start_gregorian(year)
+        if ramadan >= anchor:
+            eid = _eid_al_fitr_gregorian(ramadan)
+            candidates.append((ramadan, eid))
+    if not candidates:
+        # Anchor past all candidates (unreachable in practice). Use the
+        # nearest forward Ramadan even if it's outside the search window.
+        ramadan = _ramadan_start_gregorian(anchor.year + 1)
+        eid = _eid_al_fitr_gregorian(ramadan)
+        candidates = [(ramadan, eid)]
+    ramadan, eid = candidates[0]
+    return [
+        {"date": ramadan.isoformat(), "label": "Ramadan begins", "expected_lift_percent": 35},
+        {"date": eid.isoformat(),     "label": "Eid al-Fitr",    "expected_lift_percent": 22},
+    ]
+
+
+# Seasonality event markers returned in the /forecast response. Computed
+# from the demo anchor so the chart always shows the *next* Ramadan/Eid
+# relative to the forecast window.
+_FORECAST_SEASONALITY_EVENTS: list[dict] = _compute_seasonality_events(_FORECAST_ANCHOR_DATE)
 
 _FORECAST_REGRESSORS = ["historical_sales", "ramadan_calendar", "b2b_pipeline"]
 
@@ -1336,14 +1421,29 @@ def _fit_prophet_model(sku: str, market: str):
     history = get_demand_history(sku, market)
     df = history[["date", "units_sold"]].rename(columns={"date": "ds", "units_sold": "y"})
 
+    # Use logistic growth with explicit cap/floor so yhat stays bounded.
+    # Cap = 5x the historical max; floor = 0. This eliminates the negative
+    # values and 10x spikes we were seeing at horizon edges where Prophet's
+    # default linear growth was free to extrapolate without constraint.
+    cap = float(df["y"].max()) * 5.0
+    floor = 0.0
+    df = df.assign(cap=cap, floor=floor)
+
     model = Prophet(
+        growth="logistic",
         yearly_seasonality=True,
         weekly_seasonality=False,
         daily_seasonality=False,
         holidays=_PROPHET_HOLIDAYS,
+        seasonality_mode="additive",         # both seasonality and holidays additive
+        seasonality_prior_scale=2.0,
+        holidays_prior_scale=15.0,
         interval_width=0.85,
     )
     model.fit(df)
+    # Stash cap/floor on the model so prediction can re-attach them.
+    model._fhh_cap = cap
+    model._fhh_floor = floor
     return model
 
 
@@ -1367,12 +1467,14 @@ def get_forecast(sku: str, market: str, horizon_months: int) -> dict:
 
     _product_or_raise(sku)
     _market_or_raise(market)
-
     model = _get_or_fit_forecast_model(sku, market)
 
     start = _next_month_start(_FORECAST_ANCHOR_DATE)
     future_dates = pd.date_range(start=start, periods=horizon_months, freq="MS")
     future_df = pd.DataFrame({"ds": future_dates})
+    # Logistic growth requires cap and floor on the future dataframe too.
+    future_df["cap"] = model._fhh_cap
+    future_df["floor"] = model._fhh_floor
     pred = model.predict(future_df)
 
     forecast_points: list[dict] = []
