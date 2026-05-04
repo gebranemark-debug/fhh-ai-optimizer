@@ -280,14 +280,27 @@ export async function getForecast(sku, market, horizonMonths = 6) {
   return _fetch(`/forecast?${params.toString()}`);
 }
 
+// Map the frontend's simple scenario keys (used in the UI) to the
+// structured ScenarioBody shape the backend expects:
+//   { type: <enum>, event?: str, magnitude_percent?: float }
+// Magnitudes are illustrative defaults — the backend's _apply_scenario
+// uses them as the lift/drop applied to the baseline forecast.
+const SCENARIO_MAP = {
+  ramadan_boost:     { type: 'seasonality_shift', event: 'ramadan',  magnitude_percent: 35 },
+  supply_disruption: { type: 'supply_disruption',                    magnitude_percent: -25 },
+  price_drop:        { type: 'price_change',                         magnitude_percent: -10 },
+  competitor_entry:  { type: 'competitor_entry',                     magnitude_percent: -15 },
+};
+
 export async function getForecastScenario(sku, market, horizonMonths, scenario) {
-  // POST /forecast/scenario  body { sku, market, horizon_months, scenario }
+  // POST /forecast/scenario  body { sku, market, horizon_months, scenario: ScenarioBody }
   // → { baseline_forecast, scenario_forecast, delta_summary }.
+  const scenarioBody = SCENARIO_MAP[scenario] ?? SCENARIO_MAP.ramadan_boost;
   return _fetchPost('/forecast/scenario', {
     sku,
     market,
     horizon_months: horizonMonths,
-    scenario,
+    scenario: scenarioBody,
   });
 }
 
