@@ -471,6 +471,7 @@ def get_alert(alert_id: str) -> dict:
 
 
 def get_kpis_overview() -> dict:
+    _mtd = get_cost_savings("mtd")
     machines = [_machine_payload(m["machine_id"]) for m in _MACHINES]
     running = [m for m in machines if m["status"] == "running"]
     fleet_oee = (
@@ -488,8 +489,14 @@ def get_kpis_overview() -> dict:
         "fleet_avg_oee_percent": fleet_oee,
         "active_critical_alerts": active_critical,
         "active_warning_alerts": active_warning,
-        "predicted_downtime_prevented_hours_mtd": 14,
-        "estimated_cost_saved_usd_mtd": 280000,
+        # Pull from the canonical /kpis/cost-savings logic so the two
+        # endpoints can never disagree. Previously these were hardcoded
+        # ($280K / 14h) and diverged from cost-savings ($141K / 7h),
+        # which surfaced as a $280K answer in the chat assistant while
+        # every visible KPI tile showed $141K. One source of truth fixes
+        # both at once.
+        "predicted_downtime_prevented_hours_mtd": _mtd["estimated_downtime_hours_prevented"],
+        "estimated_cost_saved_usd_mtd": _mtd["estimated_cost_saved_usd"],
         "machines_running": len(running),
         "machines_total": len(machines),
         "last_updated": _now_iso(),
