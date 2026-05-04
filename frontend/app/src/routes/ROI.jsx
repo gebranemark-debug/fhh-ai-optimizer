@@ -23,6 +23,7 @@ import {
   RefreshCw,
 } from 'lucide-react';
 import { COLORS, RISK_TIER_COLORS } from '../brand/tokens.js';
+import { getCostSavings, getKpisOverview } from '../lib/api.js';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // ROI / Cost Savings page
@@ -34,49 +35,7 @@ import { COLORS, RISK_TIER_COLORS } from '../brand/tokens.js';
 //
 // All fetches are mocked. Each is wrapped in a TODO(wiring) marker so Task 5
 // can swap in the real lib/api.js calls without touching layout.
-// ─────────────────────────────────────────────────────────────────────────────
 
-// ─── Hardcoded mock payloads ─────────────────────────────────────────────────
-// Per-machine ratios are constant across all windows. We derive each window's
-// breakdown from the totals using these so the math always lines up.
-const MACHINE_RATIOS = [
-  { machine_id: 'al-nakheel', ratio: 0.51 },
-  { machine_id: 'al-bardi',   ratio: 0.23 },
-  { machine_id: 'al-sindian', ratio: 0.17 },
-  { machine_id: 'al-snobar',  ratio: 0.09 },
-];
-
-// Headline window totals — straight from the brief's tested values.
-const WINDOW_TOTALS = {
-  mtd: { total_predictions: 3,  predictions_acted_on: 3,  estimated_downtime_hours_prevented: 7,  estimated_cost_saved_usd:   141000 },
-  qtd: { total_predictions: 9,  predictions_acted_on: 7,  estimated_downtime_hours_prevented: 19, estimated_cost_saved_usd:   376000 },
-  ytd: { total_predictions: 23, predictions_acted_on: 18, estimated_downtime_hours_prevented: 47, estimated_cost_saved_usd:   940000 },
-  all: { total_predictions: 37, predictions_acted_on: 29, estimated_downtime_hours_prevented: 75, estimated_cost_saved_usd:  1504000 },
-};
-
-const buildCostSavingsMock = (window) => {
-  const totals = WINDOW_TOTALS[window];
-  // Round to nearest $1K so we don't show $71,910 noise. Last bucket absorbs
-  // the rounding remainder so the per-machine sum equals the headline exactly.
-  const rounded = MACHINE_RATIOS.map((m) => ({
-    machine_id: m.machine_id,
-    cost_saved_usd: Math.round((totals.estimated_cost_saved_usd * m.ratio) / 1000) * 1000,
-  }));
-  const remainder = totals.estimated_cost_saved_usd - rounded.reduce((s, m) => s + m.cost_saved_usd, 0);
-  rounded[rounded.length - 1].cost_saved_usd += remainder;
-  return { window, ...totals, breakdown_by_machine: rounded };
-};
-
-const MOCK_OVERVIEW = {
-  fleet_avg_oee_percent: 93.7,
-  active_critical_alerts: 1,
-  active_warning_alerts: 4,
-  predicted_downtime_prevented_hours_mtd: 14, // ⚠️ never displayed (see brief)
-  estimated_cost_saved_usd_mtd: 280000,        // ⚠️ never displayed (see brief)
-  machines_running: 3,
-  machines_total: 4,
-  last_updated: '2026-05-02T23:42:22Z',
-};
 
 // ─── Static reference data ───────────────────────────────────────────────────
 const MACHINE_INFO = {
@@ -128,32 +87,39 @@ export default function ROI() {
   const [overview, setOverview]       = useState({ status: 'loading', data: null, error: null });
 
   // Re-fetch the active window on change.
+// Re-fetch the active window on change.
   useEffect(() => {
+    let cancelled = false;
     setCostSavings({ status: 'loading', data: null, error: null });
-    // TODO(wiring): replace with getCostSavings(window)
-    const t = setTimeout(() => {
-      setCostSavings({ status: 'ok', data: buildCostSavingsMock(window), error: null });
-    }, 200);
-    return () => clearTimeout(t);
+
+    getCostSavings(window)
+      .then((data) => { if (!cancelled) setCostSavings({ status: 'ok', data, error: null }); })
+      .catch((error) => { if (!cancelled) setCostSavings({ status: 'error', data: null, error }); });
+
+    return () => { cancelled = true; };
   }, [window]);
 
   // All-time fetch is independent of the selected window — it powers the
   // "Total predictions to-date" tile in the Fleet strip.
   useEffect(() => {
-    // TODO(wiring): replace with getCostSavings('all')
-    const t = setTimeout(() => {
-      setAllTime({ status: 'ok', data: buildCostSavingsMock('all'), error: null });
-    }, 220);
-    return () => clearTimeout(t);
+    let cancelled = false;
+
+    getCostSavings('all')
+      .then((data) => { if (!cancelled) setAllTime({ status: 'ok', data, error: null }); })
+      .catch((error) => { if (!cancelled) setAllTime({ status: 'error', data: null, error }); });
+
+    return () => { cancelled = true; };
   }, []);
 
   // Overview is "now" — fetched once.
   useEffect(() => {
-    // TODO(wiring): replace with getOverviewKpis()
-    const t = setTimeout(() => {
-      setOverview({ status: 'ok', data: MOCK_OVERVIEW, error: null });
-    }, 80);
-    return () => clearTimeout(t);
+    let cancelled = false;
+
+    getKpisOverview()
+      .then((data) => { if (!cancelled) setOverview({ status: 'ok', data, error: null }); })
+      .catch((error) => { if (!cancelled) setOverview({ status: 'error', data: null, error }); });
+
+    return () => { cancelled = true; };
   }, []);
 
   return (
