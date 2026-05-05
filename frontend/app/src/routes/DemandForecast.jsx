@@ -779,7 +779,7 @@ function AnomalyCard({ anomaly, productMap, marketMap }) {
 function SeasonalitySection({ seasonality }) {
   return (
     <section className="bg-white rounded-xl shadow-card p-5 h-full flex flex-col">
-      <SectionHead title="12-Month Seasonality Index" subtitle="Index 1.0 = average month for this SKU" />
+      <SectionHead title="Historical month-shape" subtitle="Average of past 5 years · Index 1.0 = typical month for this SKU" />
       {seasonality.status === 'loading' ? (
         <div className="h-[180px] rounded-lg bg-slate-100 animate-pulse" />
       ) : seasonality.status === 'error' || !seasonality.data ? (
@@ -810,6 +810,11 @@ function SeasonalitySection({ seasonality }) {
               <div className="text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-2">
                 Recurring events
               </div>
+              <p className="text-[11px] text-slate-500 leading-relaxed mb-2.5">
+                Ramadan and Eid drift ~10–11 days earlier each Hijri year, so the historical
+                peak shown above shifts year to year. The forecast chart re-anchors these to
+                the live Hijri-aware dates.
+              </p>
               <div className="flex flex-wrap gap-1.5">
                 {seasonality.data.events.map((ev) => (
                   <span key={ev.name}
