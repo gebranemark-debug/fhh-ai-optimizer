@@ -511,6 +511,7 @@ function ForecastSection({ forecast }) {
           ))}
         </div>
       )}
+      <RamadanDriftTimeline activeForecastYear={2027} />
     </section>
   );
 }
@@ -895,6 +896,96 @@ function EmptyPanel({ message }) {
     <div className="bg-white rounded-xl shadow-card p-10 text-center">
       <div className="text-[13px] font-semibold text-navy mb-1">No data</div>
       <p className="text-[12px] text-slate-500">{message}</p>
+    </div>
+  );
+}
+
+// ─── Ramadan-drift timeline ─────────────────────────────────────────────────
+// Hijri events drift ~10–11 days earlier each Gregorian year. Hardcoded here
+// because the dates are deterministic and we don't need to refetch. Stays in
+// the same Gregorian month for 2–3 years, then shifts to the previous month.
+// Generated from the same hijri-converter library the backend uses, so dates
+// match the backend's _ramadan_start_gregorian / _eid_al_fitr_gregorian.
+const RAMADAN_DRIFT = [
+  { year: 2024, ramadan: '2024-03-11', eid: '2024-04-10' },
+  { year: 2025, ramadan: '2025-03-01', eid: '2025-03-30' },
+  { year: 2026, ramadan: '2026-02-18', eid: '2026-03-20' },
+  { year: 2027, ramadan: '2027-02-08', eid: '2027-03-09' },
+  { year: 2028, ramadan: '2028-01-28', eid: '2028-02-26' },
+  { year: 2029, ramadan: '2029-01-16', eid: '2029-02-14' },
+  { year: 2030, ramadan: '2030-01-05', eid: '2030-02-04' },
+];
+
+function RamadanDriftTimeline({ activeForecastYear }) {
+  // The "current" highlight follows whichever year the active forecast falls
+  // in. If unspecified, default to 2027 (next Ramadan from a May 2026 anchor).
+  const currentYear = activeForecastYear ?? 2027;
+
+  return (
+    <div className="mt-5 pt-4 border-t border-slate-100">
+      <div className="flex items-baseline justify-between mb-3">
+        <div>
+          <div className="text-[11px] uppercase tracking-[0.14em] text-slate-500 font-semibold">
+            Ramadan calendar drift
+          </div>
+          <p className="text-[11px] text-slate-500 mt-1">
+            Hijri lunar year is ~354 days, so Ramadan and Eid land ~10–11 days
+            earlier in the Gregorian calendar each year. The model auto-shifts.
+          </p>
+        </div>
+      </div>
+
+      <ol className="space-y-1.5">
+        {RAMADAN_DRIFT.map((row) => {
+          const isCurrent = row.year === currentYear;
+          const ramadanMonth = new Date(row.ramadan + 'T00:00:00Z').toLocaleDateString('en-US', {
+            month: 'short', day: '2-digit', timeZone: 'UTC',
+          });
+          const eidMonth = new Date(row.eid + 'T00:00:00Z').toLocaleDateString('en-US', {
+            month: 'short', day: '2-digit', timeZone: 'UTC',
+          });
+          return (
+            <li
+              key={row.year}
+              className={`flex items-center gap-3 px-2.5 py-1.5 rounded-md ${
+                isCurrent ? 'bg-amber-50 ring-1 ring-amber-200' : ''
+              }`}
+            >
+              <span
+                className="w-1.5 h-1.5 rounded-full shrink-0"
+                style={{ backgroundColor: isCurrent ? COLORS.gold : '#CBD5E1' }}
+              />
+              <span
+                className={`font-mono text-[11px] tabular-nums shrink-0 w-12 ${
+                  isCurrent ? 'text-amber-900 font-semibold' : 'text-slate-500'
+                }`}
+              >
+                {row.year}
+              </span>
+              <span
+                className={`text-[12px] flex-1 ${
+                  isCurrent ? 'text-amber-900' : 'text-slate-600'
+                }`}
+              >
+                Ramadan{' '}
+                <span className={`font-mono tabular-nums ${isCurrent ? 'font-semibold' : ''}`}>
+                  {ramadanMonth}
+                </span>
+                <span className="text-slate-300 mx-1.5">·</span>
+                Eid al-Fitr{' '}
+                <span className={`font-mono tabular-nums ${isCurrent ? 'font-semibold' : ''}`}>
+                  {eidMonth}
+                </span>
+              </span>
+              {isCurrent && (
+                <span className="text-[10px] uppercase tracking-wider font-semibold text-amber-800 shrink-0">
+                  active
+                </span>
+              )}
+            </li>
+          );
+        })}
+      </ol>
     </div>
   );
 }
