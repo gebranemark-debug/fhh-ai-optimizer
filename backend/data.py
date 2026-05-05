@@ -723,11 +723,11 @@ def _alarm_downtime_minutes(severity: str, resolved: bool, i: int) -> int:
 
 def _gen_alarms(machine_id: str, count: int, seed: int) -> list[dict]:
     """Python port of mockData.js > genAlarms. Output is contract-shaped:
-    {alarm_id, timestamp, severity, description, resolved_at, downtime
-    _minutes}. machine_id, component_id and the raw resolved flag from
-    mockData are intentionally dropped (machine_id is on the wrapper;
-    component_id and resolved aren't on the contract's per-alarm shape).
-    """
+    {alarm_id, timestamp, severity, component_id, description,
+    resolved_at, downtime_minutes}. machine_id and the raw resolved flag
+    from mockData are intentionally dropped (machine_id is on the
+    wrapper; resolved is derived from resolved_at being non-null)."""
+  
     out: list[dict] = []
     for i in range(count):
         tmpl = _ALARM_TEMPLATES[(i + seed) % len(_ALARM_TEMPLATES)]
@@ -741,6 +741,7 @@ def _gen_alarms(machine_id: str, count: int, seed: int) -> list[dict]:
             "alarm_id": f"alm-{machine_id}-{(count - i):04d}",
             "timestamp": timestamp,
             "severity": tmpl["severity"],
+            "component_id": tmpl["component_id"],
             "description": tmpl["message"],
             "resolved_at": resolved_at,
             "downtime_minutes": _alarm_downtime_minutes(tmpl["severity"], resolved, i),
@@ -1077,9 +1078,16 @@ def get_cost_savings(window: str) -> dict:
 
     scale = _COST_SAVINGS_WINDOW_SCALE[window]
     base = _COST_SAVINGS_YTD_BASELINE
-
     total_predictions = int(round(base["total_predictions"] * scale))
     predictions_acted_on = int(round(base["predictions_acted_on"] * scale))
+    # Rounding artifact: MTD's predictions_acted_on (18 × 0.15 = 2.7)
+    # rounds up to 3, equaling total_predictions (23 × 0.15 = 3.45 → 3),
+    # producing a misleading 100% adoption rate that's inconsistent with
+    # the 78% YTD baseline. If both round to the same integer but the
+    # unscaled ratio is < 1, force a 1-prediction gap so the displayed
+    # adoption rate stays representative.
+    if predictions_acted_on == total_predictions and base["predictions_acted_on"] < base["total_predictions"]:
+        predictions_acted_on = max(0, predictions_acted_on - 1)
     downtime_hours = int(round(base["estimated_downtime_hours_prevented"] * scale))
     total_cost_saved = _round_to_thousand(base["estimated_cost_saved_usd"] * scale)
 

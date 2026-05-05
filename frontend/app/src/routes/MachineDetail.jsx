@@ -168,7 +168,7 @@ export default function MachineDetail() {
                 <div className="text-sm font-semibold text-navy">
                   {activeSensor ? prettySensorName(selectedSensor) : 'Sensor history'}
                 </div>
-                <div className="text-[11px] text-slate-500">Last 48 h · normal range shown as green band</div>
+                <div className="text-[11px] text-slate-500">Last 24 h · normal range shown as green band</div>
               </div>
               {activeSensor && !isMaintenance && (
                 <div className="flex items-center gap-3">
