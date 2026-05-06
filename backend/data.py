@@ -1691,17 +1691,17 @@ def get_forecast_scenario(
 _SUGGESTED_PROMPTS_DEFAULT: list[str] = [
     "What's the overall fleet status right now?",
     "Which machine has the highest risk?",
-    "When is the next scheduled maintenance window?",
+    "When was the last maintenance on Al Nakheel?",
     "How much have we saved this year from predictive maintenance?",
 ]
 
 # Per-page base prompts. Adapted further when current_machine_id /
 # current_sku is supplied.
 _SUGGESTED_PROMPTS_BY_PAGE: dict[str, list[str]] = {
-    "overview": [
+"overview": [
         "What's wrong with Al Nakheel right now?",
         "Compare risk across all 4 machines",
-        "When should I schedule the next maintenance window?",
+        "When was the last maintenance on Al Nakheel?",
         "How will Ramadan affect production capacity?",
     ],
     "machine_detail": [
