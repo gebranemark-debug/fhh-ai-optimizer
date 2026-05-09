@@ -27,38 +27,99 @@
 const API_URL = (import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000').replace(/\/$/, '');
 
 // ---------------------------------------------------------------------------
-// HTTP layer — three private helpers covering GET / POST / DELETE. Errors
-// from non-2xx responses bubble up as plain Error objects with the status
-// code in the message so component error boundaries can render something
-// sensible.
+// Auth token storage. The AuthContext is the source of truth for the in-memory
+// state, but the API client also needs synchronous access to the bearer token
+// when building each request — keeping a tiny module-local cache avoids prop-
+// drilling the token through every fetch call. The cache is updated through
+// setAuthToken() and reseeded from localStorage on first load so a hard reload
+// keeps the user signed in.
+// ---------------------------------------------------------------------------
+
+const TOKEN_STORAGE_KEY = 'fhh_auth_token';
+
+let _authToken = null;
+try {
+  _authToken = typeof localStorage !== 'undefined'
+    ? localStorage.getItem(TOKEN_STORAGE_KEY)
+    : null;
+} catch (_) {
+  _authToken = null;
+}
+
+export function setAuthToken(token) {
+  _authToken = token || null;
+  try {
+    if (typeof localStorage === 'undefined') return;
+    if (_authToken) localStorage.setItem(TOKEN_STORAGE_KEY, _authToken);
+    else localStorage.removeItem(TOKEN_STORAGE_KEY);
+  } catch (_) { /* private mode / quota — fall back to in-memory only */ }
+}
+
+export function getAuthToken() {
+  return _authToken;
+}
+
+function _authHeaders(extra = {}) {
+  return _authToken
+    ? { ...extra, Authorization: `Bearer ${_authToken}` }
+    : extra;
+}
+
+// 401 handler hook — AuthContext registers a callback so it can clear the
+// token + redirect to /login when any authenticated request returns 401
+// (e.g. expired JWT). Default is a no-op so non-authed pages don't crash.
+let _onUnauthorized = () => {};
+export function setUnauthorizedHandler(fn) {
+  _onUnauthorized = typeof fn === 'function' ? fn : () => {};
+}
+
+class ApiError extends Error {
+  constructor(status, message, body) {
+    super(message);
+    this.status = status;
+    this.body = body;
+  }
+}
+
+async function _readError(response, method, path) {
+  let body = null;
+  try { body = await response.json(); } catch (_) { /* non-JSON body */ }
+  const msg = body?.error?.message || body?.detail || `API ${response.status} on ${method} ${path}`;
+  return new ApiError(response.status, msg, body);
+}
+
+// ---------------------------------------------------------------------------
+// HTTP layer — three private helpers covering GET / POST / DELETE. All three
+// inject the Authorization: Bearer header when a token is present, and any
+// 401 response routes through the registered unauthorized handler so expired
+// tokens log the user out instead of leaving the UI in a broken state.
 // ---------------------------------------------------------------------------
 
 async function _fetch(path) {
-  const response = await fetch(`${API_URL}${path}`);
-  if (!response.ok) {
-    throw new Error(`API ${response.status} on GET ${path}`);
-  }
+  const response = await fetch(`${API_URL}${path}`, { headers: _authHeaders() });
+  if (response.status === 401) _onUnauthorized();
+  if (!response.ok) throw await _readError(response, 'GET', path);
   return response.json();
 }
 
 async function _fetchPost(path, body) {
   const response = await fetch(`${API_URL}${path}`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: _authHeaders({ 'Content-Type': 'application/json' }),
     body: JSON.stringify(body),
   });
-  if (!response.ok) {
-    throw new Error(`API ${response.status} on POST ${path}`);
-  }
+  if (response.status === 401) _onUnauthorized();
+  if (!response.ok) throw await _readError(response, 'POST', path);
   return response.json();
 }
 
 async function _fetchDelete(path) {
-  const response = await fetch(`${API_URL}${path}`, { method: 'DELETE' });
-  if (!response.ok) {
-    throw new Error(`API ${response.status} on DELETE ${path}`);
-  }
-  // 204 No Content has no body — guard against JSON parse on empty.
+  const response = await fetch(`${API_URL}${path}`, {
+    method: 'DELETE',
+    headers: _authHeaders(),
+  });
+  if (response.status === 401) _onUnauthorized();
+  if (!response.ok) throw await _readError(response, 'DELETE', path);
   if (response.status === 204) return null;
   return response.json();
 }
@@ -205,9 +266,11 @@ export async function getAlarms(machineId) {
 export async function getMaintenanceLog(machineId) {
   // GET /machines/{id}/maintenance-log → {machine_id, logs: [...]} where each
   //   log is {log_id, component_id, maintenance_type, date_performed, cost_usd,
-  //   downtime_hours, technician, notes}.
+  //   downtime_hours, technician, notes, source}.
   // MaintenanceLog component expects mockData-shape
-  //   {entry_id, date, kind, component_id, summary, cost_usd, technician}.
+  //   {entry_id, date, kind, component_id, summary, cost_usd, technician, source}.
+  // source ∈ {"analytics", "user"} — preserved so the UI can badge user-written
+  // entries distinctly from parquet-backed historical ones.
   const result = await _fetch(`/machines/${machineId}/maintenance-log`);
   return (result.logs || []).map((l) => ({
     entry_id: l.log_id,
@@ -218,7 +281,28 @@ export async function getMaintenanceLog(machineId) {
     cost_usd: l.cost_usd,
     technician: l.technician,
     downtime_hours: l.downtime_hours,
+    source: l.source || 'analytics',
   }));
+}
+
+export async function postMaintenanceEntry(machineId, entry) {
+  // POST /machines/{id}/maintenance-log  body {maintenance_type, work_description,
+  //   technician_name, cost_usd?, duration_hours?, performed_at?, component_id?}
+  // → MaintenanceLogEntry (backend shape with source="user").
+  // Adapt the response into mockData-shape so callers can splice the new entry
+  // into an existing entries[] array without re-shaping.
+  const created = await _fetchPost(`/machines/${machineId}/maintenance-log`, entry);
+  return {
+    entry_id: created.log_id,
+    date: created.date_performed,
+    kind: created.maintenance_type,
+    component_id: created.component_id,
+    summary: created.notes,
+    cost_usd: created.cost_usd,
+    technician: created.technician,
+    downtime_hours: created.downtime_hours,
+    source: created.source || 'user',
+  };
 }
 
 export async function getAlerts() {
@@ -361,3 +445,21 @@ export async function getHealth() {
   // GET /health → { status, service, version, uptime_seconds, timestamp }.
   return _fetch('/health');
 }
+
+// ---------------------------------------------------------------------------
+// Auth — Path C feature 1
+// ---------------------------------------------------------------------------
+
+export async function login(email, password) {
+  // POST /auth/login  body { email, password }
+  // → { access_token, token_type, expires_in, user: {...} }.
+  return _fetchPost('/auth/login', { email, password });
+}
+
+export async function getMe() {
+  // GET /auth/me → UserResponse {id, email, role, full_name, is_active, ...}.
+  return _fetch('/auth/me');
+}
+
+// Re-export so AuthContext consumers get one canonical error type.
+export { ApiError };
