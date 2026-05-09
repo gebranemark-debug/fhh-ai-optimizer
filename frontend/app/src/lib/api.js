@@ -474,5 +474,23 @@ export async function getMe() {
   return _fetch('/auth/me');
 }
 
+export async function getUsers() {
+  // GET /auth/users → { users: [UserResponse, ...] }. Admin-only on the
+  // backend; operator tokens get 403. Returns the array directly.
+  const result = await _fetch('/auth/users');
+  return result.users || [];
+}
+
+export async function createUser({ email, password, full_name, role }) {
+  // POST /auth/register  body { email, password, full_name?, role? }
+  // → UserResponse. Bearer interceptor injects the admin's token; the
+  // backend rejects with 401 if no token, 403 if non-admin, 409 on
+  // duplicate email, 422 on validation failure.
+  const body = { email, password };
+  if (full_name) body.full_name = full_name;
+  if (role) body.role = role;
+  return _fetchPost('/auth/register', body);
+}
+
 // Re-export so AuthContext consumers get one canonical error type.
 export { ApiError };

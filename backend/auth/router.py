@@ -22,6 +22,7 @@ from backend.auth.security import (
     decode_access_token,
     get_current_user,
     get_user_by_email,
+    list_users,
     require_role,
     touch_last_login,
     verify_password,
@@ -62,6 +63,10 @@ class TokenResponse(BaseModel):
     token_type: str = "bearer"
     expires_in: int  # seconds
     user: UserResponse
+
+
+class UserListResponse(BaseModel):
+    users: list[UserResponse]
 
 
 def _user_to_response(user: AppUser) -> UserResponse:
@@ -175,6 +180,19 @@ def login(body: LoginRequest):
 @router.get("/me", response_model=UserResponse)
 def me(user: AppUser = Depends(get_current_user)):
     return _user_to_response(user)
+
+
+@router.get("/users", response_model=UserListResponse)
+def list_users_route(_admin: AppUser = Depends(require_role("admin"))):
+    """Admin-only roster of all app_users, newest first.
+
+    Used by the admin Users management page. password_hash is intentionally
+    not in UserResponse — it's never serialised. No pagination: the user
+    set is small for this deployment.
+    """
+    with session_scope() as s:
+        users = list_users(s)
+        return UserListResponse(users=[_user_to_response(u) for u in users])
 
 
 @router.get("/_admin-ping", response_model=dict, include_in_schema=False)

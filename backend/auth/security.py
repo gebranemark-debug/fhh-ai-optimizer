@@ -143,6 +143,12 @@ def count_users(s: Session) -> int:
     return int(s.scalar(select(func.count(AppUser.id))) or 0)
 
 
+def list_users(s: Session) -> list[AppUser]:
+    """Roster ordered by created_at DESC — newest user first so the admin
+    page surfaces recent invites at the top without client-side sorting."""
+    return list(s.scalars(select(AppUser).order_by(AppUser.created_at.desc())))
+
+
 def create_user(
     s: Session,
     *,
