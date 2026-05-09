@@ -8,7 +8,9 @@ import DemandForecast from './routes/DemandForecast.jsx';
 import ROI from './routes/ROI.jsx';
 import NotFound from './routes/NotFound.jsx';
 import Login from './routes/Login.jsx';
+import Users from './routes/Users.jsx';
 import ProtectedRoute from './components/ProtectedRoute.jsx';
+import AdminRoute from './components/AdminRoute.jsx';
 
 export default function App() {
   return (
@@ -25,6 +27,9 @@ export default function App() {
           <Route path="alerts" element={<Alerts />} />
           <Route path="demand" element={<DemandForecast />} />
           <Route path="roi" element={<ROI />} />
+          <Route element={<AdminRoute />}>
+            <Route path="users" element={<Users />} />
+          </Route>
           <Route path="*" element={<NotFound />} />
         </Route>
       </Route>

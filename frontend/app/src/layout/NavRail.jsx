@@ -1,5 +1,6 @@
 import { NavLink } from 'react-router-dom';
-import { LayoutDashboard, Factory, Bell, TrendingUp, DollarSign } from 'lucide-react';
+import { LayoutDashboard, Factory, Bell, TrendingUp, DollarSign, Users as UsersIcon } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext.jsx';
 
 const NAV_ITEMS = [
   { to: '/', label: 'Overview', icon: LayoutDashboard, end: true },
@@ -9,7 +10,16 @@ const NAV_ITEMS = [
   { to: '/roi', label: 'Cost Savings', icon: DollarSign },
 ];
 
+// Admin-only items. Kept separate so the role check is explicit at the
+// render call site instead of buried inside a filter on NAV_ITEMS.
+const ADMIN_NAV_ITEMS = [
+  { to: '/users', label: 'Users', icon: UsersIcon },
+];
+
 export default function NavRail() {
+  const { user } = useAuth();
+  const items = user?.role === 'admin' ? [...NAV_ITEMS, ...ADMIN_NAV_ITEMS] : NAV_ITEMS;
+
   return (
     <aside className="w-[220px] shrink-0 bg-white border-r border-slate-200 flex flex-col">
       <nav className="flex-1 px-3 py-5">
@@ -17,7 +27,7 @@ export default function NavRail() {
           Workspace
         </div>
         <ul className="flex flex-col gap-1">
-          {NAV_ITEMS.map(({ to, label, icon: Icon, end }) => (
+          {items.map(({ to, label, icon: Icon, end }) => (
             <li key={to}>
               <NavLink
                 to={to}
