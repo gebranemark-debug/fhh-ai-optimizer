@@ -17,11 +17,12 @@ import hashlib
 import os
 import random
 import sys
+import uuid
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Optional
 
-from fastapi import FastAPI, HTTPException, Query
+from fastapi import Depends, FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
@@ -36,7 +37,16 @@ if str(_PROJECT_ROOT) not in sys.path:
 from backend import data as fhh_data  # noqa: E402
 from backend.ai_model import chat_handler as chat_mod  # noqa: E402
 from backend.auth import router as auth_router  # noqa: E402
+from backend.auth.security import AppUser, get_current_user  # noqa: E402
+from backend.chat import (  # noqa: E402
+    router as chat_router,
+    conversation_history_for_model,
+    ensure_conversation_for_user,
+    persist_assistant_turn,
+    persist_user_turn,
+)
 from backend.maintenance import router as maintenance_router  # noqa: E402
+from backend.postgres.db import session_scope  # noqa: E402
 
 import time as _time
 from collections import deque as _deque
@@ -84,6 +94,7 @@ app.add_middleware(
 # below by being registered first; the legacy handler has been removed.
 app.include_router(auth_router)
 app.include_router(maintenance_router)
+app.include_router(chat_router)
 
 
 # -- Startup clock -----------------------------------------------------------
@@ -564,33 +575,8 @@ def chat_suggested_prompts(
     )
 
 
-def _conversation_404(conversation_id: str) -> HTTPException:
-    return HTTPException(
-        status_code=404,
-        detail={"error": {
-            "code": "conversation_not_found",
-            "message": f"No conversation exists with ID '{conversation_id}'.",
-            "status": 404,
-        }},
-    )
-
-
-@app.get("/chat/conversations/{conversation_id}")
-def chat_get_conversation(conversation_id: str) -> dict:
-    try:
-        return fhh_data.get_conversation(conversation_id)
-    except fhh_data.ConversationNotFound:
-        raise _conversation_404(conversation_id)
-
-
-@app.delete("/chat/conversations/{conversation_id}", status_code=204)
-def chat_delete_conversation(conversation_id: str):
-    try:
-        fhh_data.delete_conversation(conversation_id)
-    except fhh_data.ConversationNotFound:
-        raise _conversation_404(conversation_id)
-    # 204 No Content — return None so FastAPI sends an empty body.
-    return None
+# GET / DELETE /chat/conversations/{id} are now served by backend.chat.router,
+# which scopes conversations to the signed-in user via Postgres app schema.
 
 
 # -- POST /chat -------------------------------------------------------------
@@ -687,28 +673,29 @@ class ChatRequest(BaseModel):
 
 
 @app.post("/chat")
-def post_chat(body: ChatRequest) -> dict:
+def post_chat(
+    body: ChatRequest,
+    user: AppUser = Depends(get_current_user),
+) -> dict:
     # 0. Rate limit: 429 envelope if too many recent requests.
     _check_chat_rate_limit()
 
-    # 1. Resolve conversation: existing id or create a new one.
-    if body.conversation_id is None:
-        cid = fhh_data.create_conversation()
-    else:
-        try:
-            fhh_data.get_conversation(body.conversation_id)
-        except fhh_data.ConversationNotFound:
-            raise _conversation_404(body.conversation_id)
-        cid = body.conversation_id
+    # 1. Resolve conversation + load prior history while the session is open.
+    #    The user's message is persisted in the same transaction so even if
+    #    Anthropic fails, the input is in the conversation log.
+    with session_scope() as s:
+        conv = ensure_conversation_for_user(
+            s,
+            user_id=user.id,
+            conversation_id=body.conversation_id,
+            first_message=body.message,
+        )
+        history = conversation_history_for_model(s, conv.id)
+        persist_user_turn(s, conv.id, body.message)
+        cid = str(conv.id)
 
-    # 2. Pull prior turns (role + content only) before appending the new one.
-    history = fhh_data.conversation_message_history(cid)
-
-    # 3. Persist the user's message right away so even if Anthropic fails the
-    #    user's input is in the conversation log.
-    fhh_data.append_user_message(cid, body.message)
-
-    # 4. Run the model.
+    # 2. Run the model (no DB session held during the network call so the
+    #    pool isn't tied up while Anthropic streams).
     handler = _get_chat_handler()
     context = body.context.model_dump() if body.context else None
     try:
@@ -718,12 +705,15 @@ def post_chat(body: ChatRequest) -> dict:
     except chat_mod.ChatUnavailableError as exc:
         raise _chat_unavailable(str(exc))
 
-    # 5. Persist the assistant's reply with data_sources_used metadata.
-    fhh_data.append_assistant_message(
-        cid,
-        result["reply"],
-        data_sources_used=result.get("data_sources_used"),
-    )
+    # 3. Persist the assistant reply with data_sources_used metadata. Trigger
+    #    chat_messages_touch_conversation auto-bumps conversations.updated_at.
+    with session_scope() as s:
+        persist_assistant_turn(
+            s,
+            uuid.UUID(cid),
+            result["reply"],
+            data_sources_used=result.get("data_sources_used"),
+        )
 
     return {
         "conversation_id": cid,

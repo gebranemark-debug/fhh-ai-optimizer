@@ -410,24 +410,37 @@ export async function getDemandSeasonality(sku, market) {
 }
 
 // ---------------------------------------------------------------------------
-// Module 3 — Chat assistant
+// Module 3 — Chat assistant + memory
 // ---------------------------------------------------------------------------
 
 export async function postChat(message, conversationId = null) {
   // POST /chat  body { message, conversation_id? }
   // → { conversation_id, reply, data_sources_used, suggested_followups, timestamp }.
+  // Auth required; the bearer interceptor handles it. The backend persists
+  // both turns to chat_conversations + chat_messages and echoes the
+  // conversation_id back so the caller can keep threading.
   const body = { message };
   if (conversationId) body.conversation_id = conversationId;
   return _fetchPost('/chat', body);
 }
 
-export async function getChatConversation(conversationId) {
-  // GET /chat/conversations/{id} → { conversation_id, created_at, messages: [...] }.
+export async function getConversations() {
+  // GET /chat/conversations → { conversations: [{id, title, updated_at, message_count}] }
+  // Newest-first, capped at 10. Auth required; the response is scoped to the
+  // current user. Returns the array directly so the sidebar can map it.
+  const result = await _fetch('/chat/conversations');
+  return result.conversations || [];
+}
+
+export async function getConversation(conversationId) {
+  // GET /chat/conversations/{id} → { id, title, created_at, messages: [...] }
+  // where each message is {id, role, content, data_sources_used, created_at}.
   return _fetch(`/chat/conversations/${conversationId}`);
 }
 
-export async function deleteChatConversation(conversationId) {
+export async function deleteConversation(conversationId) {
   // DELETE /chat/conversations/{id} → 204 No Content (returns null here).
+  // Cascade-deletes messages via the FK ON DELETE CASCADE.
   return _fetchDelete(`/chat/conversations/${conversationId}`);
 }
 
