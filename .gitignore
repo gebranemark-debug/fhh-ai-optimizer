@@ -23,3 +23,6 @@ backend/ai_model/artifacts/*
 # Node modules — should never be committed
 node_modules/
 **/node_modules/
+
+# Vite build output — regenerate locally with `npm run build`.
+frontend/app/dist/

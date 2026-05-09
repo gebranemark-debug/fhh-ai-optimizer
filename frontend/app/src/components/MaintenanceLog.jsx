@@ -1,10 +1,14 @@
 import { useState } from 'react';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown, Plus } from 'lucide-react';
 import { COMPONENT_LABELS } from '../mockData.js';
-import { MAINT_KIND_CLASSES } from '../brand/tokens.js';
+import {
+  MAINT_KIND_CLASSES,
+  MAINT_SOURCE_CLASSES,
+  MAINT_SOURCE_LABELS,
+} from '../brand/tokens.js';
 import { formatCurrencyCompact } from '../lib/format.js';
 
-export default function MaintenanceLog({ entries }) {
+export default function MaintenanceLog({ entries, onAddEntry }) {
   const items = entries.slice(0, 8);
   const [expandedId, setExpandedId] = useState(null);
 
@@ -21,8 +25,20 @@ export default function MaintenanceLog({ entries }) {
             Last {items.length} entries · 6-month window
           </div>
         </div>
-        <div className="text-[11px] text-slate-400 font-mono">
-          {formatCurrencyCompact(items.reduce((s, e) => s + (e.cost_usd || 0), 0))} total
+        <div className="flex items-center gap-3">
+          <div className="text-[11px] text-slate-400 font-mono">
+            {formatCurrencyCompact(items.reduce((s, e) => s + (e.cost_usd || 0), 0))} total
+          </div>
+          {onAddEntry && (
+            <button
+              type="button"
+              onClick={onAddEntry}
+              className="inline-flex items-center gap-1 h-7 px-2.5 rounded-md bg-navy text-white text-[11px] font-medium hover:bg-navy/90 transition"
+            >
+              <Plus className="w-3 h-3" />
+              Add entry
+            </button>
+          )}
         </div>
       </header>
       <ul className="divide-y divide-slate-100 max-h-[420px] overflow-y-auto">
@@ -40,12 +56,20 @@ export default function MaintenanceLog({ entries }) {
                 <div className="flex items-center justify-between gap-2 mb-1">
                   <div className="flex items-center gap-2 min-w-0">
                     <span
-                      className={`text-[10px] px-1.5 py-0.5 rounded font-semibold uppercase tracking-wide ${MAINT_KIND_CLASSES[e.kind]}`}
+                      className={`text-[10px] px-1.5 py-0.5 rounded font-semibold uppercase tracking-wide ${MAINT_KIND_CLASSES[e.kind] || MAINT_KIND_CLASSES.inspection}`}
                     >
                       {e.kind}
                     </span>
+                    {e.source === 'user' && (
+                      <span
+                        className={`text-[9px] px-1.5 py-0.5 rounded font-semibold uppercase tracking-wide ${MAINT_SOURCE_CLASSES.user}`}
+                        title={MAINT_SOURCE_LABELS.user}
+                      >
+                        New
+                      </span>
+                    )}
                     <span className="text-[11px] text-slate-500 font-mono truncate">
-                      {COMPONENT_LABELS[e.component_id] || e.component_id}
+                      {COMPONENT_LABELS[e.component_id] || e.component_id || '—'}
                     </span>
                   </div>
                   <div className="flex items-center gap-2 shrink-0">

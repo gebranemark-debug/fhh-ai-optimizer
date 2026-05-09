@@ -7,18 +7,26 @@ import Alerts from './routes/Alerts.jsx';
 import DemandForecast from './routes/DemandForecast.jsx';
 import ROI from './routes/ROI.jsx';
 import NotFound from './routes/NotFound.jsx';
+import Login from './routes/Login.jsx';
+import ProtectedRoute from './components/ProtectedRoute.jsx';
 
 export default function App() {
   return (
     <Routes>
-      <Route element={<AppShell />}>
-        <Route index element={<Overview />} />
-        <Route path="machines" element={<MachinesIndex />} />
-        <Route path="machines/:machine_id" element={<MachineDetail />} />
-        <Route path="alerts" element={<Alerts />} />
-        <Route path="demand" element={<DemandForecast />} />
-        <Route path="roi" element={<ROI />} />
-        <Route path="*" element={<NotFound />} />
+      {/* Public */}
+      <Route path="/login" element={<Login />} />
+
+      {/* Authenticated app — gate the entire shell behind ProtectedRoute */}
+      <Route element={<ProtectedRoute />}>
+        <Route element={<AppShell />}>
+          <Route index element={<Overview />} />
+          <Route path="machines" element={<MachinesIndex />} />
+          <Route path="machines/:machine_id" element={<MachineDetail />} />
+          <Route path="alerts" element={<Alerts />} />
+          <Route path="demand" element={<DemandForecast />} />
+          <Route path="roi" element={<ROI />} />
+          <Route path="*" element={<NotFound />} />
+        </Route>
       </Route>
     </Routes>
   );

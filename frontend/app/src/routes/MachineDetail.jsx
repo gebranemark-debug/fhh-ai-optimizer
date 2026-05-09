@@ -1,18 +1,21 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import {
   getMachine, getComponents, getPredictions, getSensors,
   getAlarms, getMaintenanceLog, getSensorHistory,
 } from '../lib/api.js';
+import { useAuth } from '../contexts/AuthContext.jsx';
 import MachineHeader from '../components/MachineHeader.jsx';
 import ComponentHealthRow from '../components/ComponentHealthRow.jsx';
 import SensorGrid from '../components/SensorGrid.jsx';
 import SensorHistoryChart from '../components/SensorHistoryChart.jsx';
 import AlarmsTable from '../components/AlarmsTable.jsx';
 import MaintenanceLog from '../components/MaintenanceLog.jsx';
+import MaintenanceLogModal from '../components/MaintenanceLogModal.jsx';
 
 export default function MachineDetail() {
   const { machine_id } = useParams();
+  const { user } = useAuth();
 
   // 6 independent fetches per machine. Each tracked separately so partial
   // failures (e.g. maintenance-log down) don't blank the whole page.
@@ -23,10 +26,25 @@ export default function MachineDetail() {
   const [alarms, setAlarms] = useState({ status: 'loading', data: null, error: null });
   const [maintenance, setMaintenance] = useState({ status: 'loading', data: null, error: null });
 
+  // Maintenance modal state — triggered from the MaintenanceLog "Add entry" button.
+  const [maintModalOpen, setMaintModalOpen] = useState(false);
+
   // Sensor history is keyed on (machine_id, selectedSensor) so it refetches
   // when the user clicks a different sensor cell.
   const [history, setHistory] = useState({ status: 'idle', data: null, error: null });
   const [selectedSensor, setSelectedSensor] = useState(null);
+
+  // Refetch only the maintenance log — used after the modal saves a new entry
+  // so the list reflects the canonical server state without a full page reload.
+  const refetchMaintenance = useCallback(async () => {
+    if (!machine_id) return;
+    try {
+      const data = await getMaintenanceLog(machine_id);
+      setMaintenance({ status: 'ok', data, error: null });
+    } catch (error) {
+      setMaintenance({ status: 'error', data: null, error });
+    }
+  }, [machine_id]);
 
   // Fire all 6 main fetches when the machine_id in the URL changes.
   useEffect(() => {
@@ -41,6 +59,7 @@ export default function MachineDetail() {
     setMaintenance({ status: 'loading', data: null, error: null });
     setSelectedSensor(null);
     setHistory({ status: 'idle', data: null, error: null });
+    setMaintModalOpen(false);
 
     const guard = (setter) => ({
       ok: (data) => { if (!cancelled) setter({ status: 'ok', data, error: null }); },
@@ -211,7 +230,10 @@ export default function MachineDetail() {
           )}
 
           {maintenance.status === 'ok' ? (
-            <MaintenanceLog entries={maintenance.data} />
+            <MaintenanceLog
+              entries={maintenance.data}
+              onAddEntry={() => setMaintModalOpen(true)}
+            />
           ) : maintenance.status === 'error' ? (
             <SectionError label="maintenance log" />
           ) : (
@@ -219,6 +241,14 @@ export default function MachineDetail() {
           )}
         </div>
       </div>
+
+      <MaintenanceLogModal
+        open={maintModalOpen}
+        onClose={() => setMaintModalOpen(false)}
+        onCreated={() => { refetchMaintenance(); }}
+        machineId={machine_id}
+        currentUserName={user?.full_name || user?.email || ''}
+      />
     </div>
   );
 }
