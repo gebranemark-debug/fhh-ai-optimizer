@@ -19,3 +19,7 @@ backend/ai_model/artifacts/*
 # ...except the clean-baseline checkpoint, which is a safety fallback
 # we always want available without having to retrain.
 !backend/ai_model/artifacts/clean_baseline/
+
+# Node modules — should never be committed
+node_modules/
+**/node_modules/
