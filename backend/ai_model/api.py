@@ -35,6 +35,8 @@ if str(_PROJECT_ROOT) not in sys.path:
 
 from backend import data as fhh_data  # noqa: E402
 from backend.ai_model import chat_handler as chat_mod  # noqa: E402
+from backend.auth import router as auth_router  # noqa: E402
+from backend.maintenance import router as maintenance_router  # noqa: E402
 
 import time as _time
 from collections import deque as _deque
@@ -75,6 +77,13 @@ app.add_middleware(
     allow_methods=["GET", "POST", "DELETE", "OPTIONS"],
     allow_headers=["*"],
 )
+
+
+# -- Path C feature routers --------------------------------------------------
+# These take precedence over the legacy GET /machines/{id}/maintenance-log
+# below by being registered first; the legacy handler has been removed.
+app.include_router(auth_router)
+app.include_router(maintenance_router)
 
 
 # -- Startup clock -----------------------------------------------------------
@@ -383,12 +392,8 @@ def get_machine_alarms(
         raise _machine_404(machine_id)
 
 
-@app.get("/machines/{machine_id}/maintenance-log")
-def get_machine_maintenance_log(machine_id: str) -> dict:
-    try:
-        return fhh_data.get_maintenance_log(machine_id)
-    except fhh_data.MachineNotFound:
-        raise _machine_404(machine_id)
+# GET /machines/{id}/maintenance-log is now served by backend.maintenance.router,
+# which merges analytics (parquet) + user-written (Postgres) entries.
 
 
 @app.get("/machines/{machine_id}/sensors/{sensor_type}/history")
