@@ -1,7 +1,7 @@
 # FHH AI Optimizer
 
 Predictive maintenance + demand forecasting for Fine Hygienic Holding's
-Valmet DCT 200TS tissue lines. Built for the May 10 panel pitch as the
+Valmet DCT 200TS tissue lines. Built for the May 15 panel pitch as the
 Malia Group's AI initiative deliverable.
 
 ## Live URLs
