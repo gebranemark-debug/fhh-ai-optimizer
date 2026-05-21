@@ -86,4 +86,4 @@ A clean-baseline model checkpoint lives at
 Phase 2 complete: 24/24 contract endpoints live, model evaluated under
 five categories of realistic noise (Precision 0.985, Recall 0.915
 on time-based holdout), backend deployed to Railway, frontend
-deployed to Vercel. Next: panel pitch on May 10.
+deployed to Vercel. Next: panel pitch on May 15.
