@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Sparkles, Plus, Send, ChevronRight, AlertCircle, History, ArrowLeft, Trash2 } from 'lucide-react';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import {
   postChat,
   getSuggestedPrompts,
@@ -428,17 +430,143 @@ function ChatBubble({ role, content }) {
       </div>
     );
   }
-  // Assistant: light bubble, full width, preserve markdown line breaks.
-  // No markdown parser yet — the reply renders ** literals and ### headers
-  // as text. Acceptable for the v0 demo; can swap react-markdown in later.
+  // Assistant: light bubble. Body is markdown — render with react-markdown +
+  // remark-gfm so tables, lists, code, bold/italic display properly. Custom
+  // element components keep the styling tight enough for the narrow chat
+  // bubble (text-[13px], compact margins, monospace code blocks) rather than
+  // pulling in @tailwindcss/typography and overriding its defaults.
   return (
-    <div className="flex justify-start">
-      <div className="max-w-[95%] rounded-2xl rounded-bl-md px-3.5 py-2.5 bg-slate-50 ring-1 ring-slate-200 text-[13px] leading-relaxed text-slate-700 whitespace-pre-wrap">
-        {content}
+    <div className="flex justify-start min-w-0 w-full">
+      <div className="max-w-[95%] min-w-0 rounded-2xl rounded-bl-md px-3.5 py-2.5 bg-slate-50 ring-1 ring-slate-200 text-[13px] leading-relaxed text-slate-700">
+        <ReactMarkdown remarkPlugins={[remarkGfm]} components={MARKDOWN_COMPONENTS}>
+          {content}
+        </ReactMarkdown>
       </div>
     </div>
   );
 }
+
+// react-markdown element overrides tuned for the chat sidebar. Each component
+// returns a single element with Tailwind classes matching the bubble aesthetic:
+// 13px body, slate-700 text, navy accents, monospace JetBrains for code, and
+// margin-zero on first/last children so headings/lists don't add gaps that
+// fight the bubble padding. Tables get overflow-x so wide rows scroll inside
+// the bubble instead of blowing past the sidebar's max-w.
+const MARKDOWN_COMPONENTS = {
+  p: ({ children }) => (
+    <p className="my-1.5 first:mt-0 last:mb-0 leading-relaxed">{children}</p>
+  ),
+  h1: ({ children }) => (
+    <h1 className="mt-3 mb-1.5 first:mt-0 text-[14px] font-semibold text-navy">{children}</h1>
+  ),
+  h2: ({ children }) => (
+    <h2 className="mt-3 mb-1.5 first:mt-0 text-[13.5px] font-semibold text-navy">{children}</h2>
+  ),
+  h3: ({ children }) => (
+    <h3 className="mt-2.5 mb-1 first:mt-0 text-[13px] font-semibold text-navy">{children}</h3>
+  ),
+  h4: ({ children }) => (
+    <h4 className="mt-2 mb-1 first:mt-0 text-[12.5px] font-semibold text-navy uppercase tracking-wide">{children}</h4>
+  ),
+  ul: ({ children }) => (
+    <ul className="my-1.5 pl-4 list-disc marker:text-slate-400 space-y-0.5">{children}</ul>
+  ),
+  ol: ({ children }) => (
+    <ol className="my-1.5 pl-4 list-decimal marker:text-slate-400 space-y-0.5">{children}</ol>
+  ),
+  li: ({ children }) => (
+    <li className="leading-snug">{children}</li>
+  ),
+  strong: ({ children }) => (
+    <strong className="font-semibold text-navy">{children}</strong>
+  ),
+  em: ({ children }) => (
+    <em className="italic">{children}</em>
+  ),
+  del: ({ children }) => (
+    <del className="line-through text-slate-400">{children}</del>
+  ),
+  a: ({ href, children }) => (
+    <a href={href} target="_blank" rel="noopener noreferrer" className="text-navy underline decoration-slate-300 hover:decoration-navy">
+      {children}
+    </a>
+  ),
+  code: ({ inline, className, children, ...props }) => {
+    // react-markdown passes `inline` for inline code (single backticks) and
+    // wraps fenced code in <pre><code className="language-..."> — we treat
+    // anything without `inline` (i.e. inside <pre>) as a code block.
+    const isInline = inline ?? !className?.startsWith('language-');
+    if (isInline) {
+      return (
+        <code className="font-mono text-[11.5px] px-1 py-0.5 rounded bg-slate-200/60 text-navy" {...props}>
+          {children}
+        </code>
+      );
+    }
+    return (
+      <code className="font-mono text-[11.5px] text-slate-700 whitespace-pre" {...props}>
+        {children}
+      </code>
+    );
+  },
+  pre: ({ children }) => (
+    <pre className="my-2 px-3 py-2 rounded-md bg-slate-200/50 ring-1 ring-slate-200 overflow-x-auto">
+      {children}
+    </pre>
+  ),
+  blockquote: ({ children }) => (
+    <blockquote className="my-2 pl-3 border-l-2 border-slate-300 text-slate-600 italic">
+      {children}
+    </blockquote>
+  ),
+  hr: () => <hr className="my-3 border-slate-200" />,
+  // Tables: wrap in an overflow-x container so wide tables scroll inside the
+  // bubble instead of forcing the bubble (and the sidebar) to grow.
+  table: ({ children }) => (
+    <div className="my-2 -mx-1 overflow-x-auto">
+      <table className="min-w-full text-[11.5px] border-collapse">
+        {children}
+      </table>
+    </div>
+  ),
+  thead: ({ children }) => (
+    <thead className="bg-slate-100">{children}</thead>
+  ),
+  tbody: ({ children }) => (
+    <tbody className="divide-y divide-slate-200">{children}</tbody>
+  ),
+  tr: ({ children }) => <tr>{children}</tr>,
+  th: ({ children, style }) => (
+    <th
+      style={style}
+      className="px-2 py-1 text-left text-[10px] uppercase tracking-wide font-semibold text-slate-600 border-b border-slate-200"
+    >
+      {children}
+    </th>
+  ),
+  td: ({ children, style }) => (
+    <td style={style} className="px-2 py-1 align-top text-slate-700">
+      {children}
+    </td>
+  ),
+  // GFM task list — render the checkbox inline but disabled (this is read-only
+  // assistant output, not an interactive form).
+  input: ({ type, checked, ...props }) => {
+    if (type === 'checkbox') {
+      return (
+        <input
+          type="checkbox"
+          checked={!!checked}
+          readOnly
+          disabled
+          className="mr-1 align-middle accent-navy"
+          {...props}
+        />
+      );
+    }
+    return <input type={type} {...props} />;
+  },
+};
 
 function PendingBubble() {
   return (
